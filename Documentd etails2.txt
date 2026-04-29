@@ -1,0 +1,335 @@
+{
+    "submissionUUID": "P4DTEBAGHPMEZG22KNDYT6KK10",
+    "dateTimeRecevied": "2026-03-08T13:42:18.0351226Z",
+    "validationResults": {
+        "status": "Valid",
+        "validationSteps": [
+            {
+                "status": "Valid",
+                "error": null,
+                "stepName": "Step-03.ITIDA Signature Validator",
+                "stepId": "4"
+            },
+            {
+                "status": "Valid",
+                "error": null,
+                "stepName": "Step-04.NationalID Validator",
+                "stepId": "5"
+            },
+            {
+                "status": "Valid",
+                "error": null,
+                "stepName": "Step-05.TaxpayerProfile Validator",
+                "stepId": "6"
+            },
+            {
+                "status": "Valid",
+                "error": null,
+                "stepName": "Step-06.Simple Validator",
+                "stepId": "9"
+            },
+            {
+                "status": "Valid",
+                "error": null,
+                "stepName": "Step-07.Code Field Validator",
+                "stepId": "10"
+            },
+            {
+                "status": "Valid",
+                "error": null,
+                "stepName": "Step-08. Duplicate Submission Validator",
+                "stepId": "8"
+            }
+        ]
+    },
+    "transformationStatus": "original",
+    "statusId": 2,
+    "status": "Valid",
+    "documentStatusReason": "",
+    "cancelRequestDate": null,
+    "rejectRequestDate": null,
+    "cancelRequestDelayedDate": null,
+    "rejectRequestDelayedDate": null,
+    "declineCancelRequestDate": null,
+    "declineRejectRequestDate": null,
+    "canbeCancelledUntil": "2026-03-15T13:42:18.0351226Z",
+    "canbeRejectedUntil": "2026-03-15T13:42:18.0351226Z",
+    "submissionChannel": 1,
+    "freezeStatus": {
+        "frozen": false,
+        "type": null,
+        "scope": null,
+        "actionDate": null,
+        "auCode": null,
+        "auName": null
+    },
+    "serviceDeliveryDate": null,
+    "customsClearanceDate": null,
+    "customsDeclarationNumber": null,
+    "ePaymentNumber": null,
+    "additionalMetadata": [],
+    "alertDetails": null,
+    "uuid": "FHWF3CSXYWPNWG0FKNDYT6KK10",
+    "publicUrl": "https://invoicing.eta.gov.eg/documents/FHWF3CSXYWPNWG0FKNDYT6KK10/share/E64PAVKGRVJ0PVBYKNDYT6KK10x8hMD51772977338",
+    "purchaseOrderDescription": "",
+    "totalItemsDiscountAmount": 0.0,
+    "delivery": {
+        "approach": "",
+        "packaging": "",
+        "dateValidity": "2026-03-08T12:30:09Z",
+        "exportPort": "",
+        "countryOfOrigin": "",
+        "grossWeight": 1.0,
+        "netWeight": 1.0,
+        "terms": ""
+    },
+    "payment": {
+        "bankName": null,
+        "bankAddress": null,
+        "bankAccountNo": null,
+        "bankAccountIBAN": null,
+        "swiftCode": null,
+        "terms": null
+    },
+    "totalAmount": 218693.88065,
+    "taxTotals": [
+        {
+            "taxType": "T1",
+            "amount": 26857.14324
+        },
+        {
+            "taxType": "T2",
+            "amount": 12942.49901
+        },
+        {
+            "taxType": "T20",
+            "amount": 0.0
+        }
+    ],
+    "netAmount": 178894.2384,
+    "totalDiscount": 9348.7656,
+    "totalSales": 188243.004,
+    "invoiceLines": [
+        {
+            "itemPrimaryName": "Unionaire UC-400VVA-02DS 1 Piece",
+            "itemPrimaryDescription": "",
+            "itemSecondaryName": "يونيون آير ديب افقى 320 لتر (الثلاجة/الفريزر (المجمدة 1 قطعه",
+            "itemSecondaryDescription": "",
+            "unitTypePrimaryName": "each (ST) ( ST )",
+            "unitTypePrimaryDescription": "",
+            "unitTypeSecondaryName": null,
+            "unitTypeSecondaryDescription": "",
+            "weightUnitTypePrimaryName": null,
+            "weightUnitTypePrimaryDescription": null,
+            "weightUnitTypeSecondaryName": null,
+            "weightUnitTypeSecondaryDescription": null,
+            "salesTotalForeign": 171130.0032,
+            "netTotalForeign": 161781.2376,
+            "totalForeign": 199185.05974,
+            "totalTaxableFeesForeign": 0.0,
+            "itemsDiscountForeign": 0.0,
+            "valueDifferenceForeign": 0.0,
+            "discountForeign": {
+                "amountForeign": 9348.7656,
+                "rate": 0.0,
+                "amount": 9348.7656
+            },
+            "lineTaxableItems": [
+                {
+                    "amountForeign": 24461.32313,
+                    "taxType": "T1",
+                    "amount": 24461.32313,
+                    "subType": "V009",
+                    "rate": 14.0
+                },
+                {
+                    "amountForeign": 0.0,
+                    "taxType": "T20",
+                    "amount": 0.0,
+                    "subType": "OF04",
+                    "rate": null
+                },
+                {
+                    "amountForeign": 12942.49901,
+                    "taxType": "T2",
+                    "amount": 12942.49901,
+                    "subType": "Tbl01",
+                    "rate": 8.0
+                }
+            ],
+            "description": "UC-400VVA-02DS",
+            "itemType": "GS1",
+            "itemCode": "6221044050422",
+            "unitType": "EA",
+            "quantity": 24.0,
+            "weightUnitType": null,
+            "weightQuantity": 0.0,
+            "unitValue": {
+                "currencySold": "EGP",
+                "amountSold": 0.0,
+                "amountEGP": 7130.4168,
+                "currencyExchangeRate": 0.0
+            },
+            "factoryUnitValue": null,
+            "salesTotal": 171130.0032,
+            "discount": {
+                "rate": 0.0,
+                "amount": 9348.7656
+            },
+            "taxableItems": null,
+            "internalCode": "UC-400VVA-02DS",
+            "itemsDiscount": 0.0,
+            "netTotal": 161781.2376,
+            "totalTaxableFees": 0.0,
+            "valueDifference": 0.0,
+            "total": 199185.05974
+        },
+        {
+            "itemPrimaryName": "Temporary Classification",
+            "itemPrimaryDescription": "",
+            "itemSecondaryName": "التصنيف المؤقت",
+            "itemSecondaryDescription": "",
+            "unitTypePrimaryName": "each (ST) ( ST )",
+            "unitTypePrimaryDescription": "",
+            "unitTypeSecondaryName": null,
+            "unitTypeSecondaryDescription": "",
+            "weightUnitTypePrimaryName": null,
+            "weightUnitTypePrimaryDescription": null,
+            "weightUnitTypeSecondaryName": null,
+            "weightUnitTypeSecondaryDescription": null,
+            "salesTotalForeign": 17113.0008,
+            "netTotalForeign": 17113.0008,
+            "totalForeign": 19508.82091,
+            "totalTaxableFeesForeign": 0.0,
+            "itemsDiscountForeign": 0.0,
+            "valueDifferenceForeign": 0.0,
+            "discountForeign": {
+                "amountForeign": 0.0,
+                "rate": 0.0,
+                "amount": 0.0
+            },
+            "lineTaxableItems": [
+                {
+                    "amountForeign": 2395.82011,
+                    "taxType": "T1",
+                    "amount": 2395.82011,
+                    "subType": "V009",
+                    "rate": 14.0
+                }
+            ],
+            "description": "ضمان",
+            "itemType": "GS1",
+            "itemCode": "99999999",
+            "unitType": "EA",
+            "quantity": 24.0,
+            "weightUnitType": null,
+            "weightQuantity": 0.0,
+            "unitValue": {
+                "currencySold": "EGP",
+                "amountSold": 0.0,
+                "amountEGP": 713.0417,
+                "currencyExchangeRate": 0.0
+            },
+            "factoryUnitValue": null,
+            "salesTotal": 17113.0008,
+            "discount": {
+                "rate": 0.0,
+                "amount": 0.0
+            },
+            "taxableItems": null,
+            "internalCode": "ضمان",
+            "itemsDiscount": 0.0,
+            "netTotal": 17113.0008,
+            "totalTaxableFees": 0.0,
+            "valueDifference": 0.0,
+            "total": 19508.82091
+        }
+    ],
+    "documentLinesTotalCount": 2,
+    "references": [],
+    "salesOrderDescription": "44521",
+    "salesOrderReference": "44521",
+    "proformaInvoiceNumber": null,
+    "signatures": [
+        {
+            "signatureType": "I",
+            "value": "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",
+            "signedBy": "العالمية لصناعات التكييف والاجهزة الكهربائية يونيون اير جروب"
+        }
+    ],
+    "purchaseOrderReference": "",
+    "internalID": "1307-3996559",
+    "taxpayerActivityCode": "2819",
+    "dateTimeIssued": "2026-03-08T12:30:09Z",
+    "documentTypeVersion": "1.0",
+    "documentType": "I",
+    "documentTypeNamePrimaryLang": "Invoice",
+    "documentTypeNameSecondaryLang": "فاتورة",
+    "receiver": {
+        "address": {
+            "buildingNumber": "5555",
+            "room": "",
+            "floor": "",
+            "street": "ش مصر اسيوط السريع بجوار بنزينة توتال",
+            "landmark": "",
+            "additionalInformation": "",
+            "governate": "APPLIANCE",
+            "regionCity": "APPLIANCE",
+            "postalCode": "0",
+            "country": "EG",
+            "branchID": null
+        },
+        "type": 0,
+        "id": "768881595",
+        "name": "القهوجي لتجارة الاجهزة لكهربائية-الجيزة"
+    },
+    "issuer": {
+        "address": {
+            "buildingNumber": "606",
+            "room": "0",
+            "floor": "00",
+            "street": "6اكتوبر امتداد المنطقة الصناعية التالته",
+            "landmark": "0",
+            "additionalInformation": "0",
+            "governate": "Giza",
+            "regionCity": "0",
+            "postalCode": "0",
+            "country": "EG",
+            "branchID": "0"
+        },
+        "type": 0,
+        "id": "230270980",
+        "name": "الشركة العالمية لصناعات التكييف الاجهزة الكهربائية يونيون"
+    },
+    "extraDiscountAmount": 0.0,
+    "maxPercision": 5,
+    "currenciesSold": "EGP",
+    "currencySegments": [
+        {
+            "currency": "EGP",
+            "currencyExchangeRate": 0.0,
+            "totalItemsDiscountAmount": 0.0,
+            "totalAmount": 218693.88065,
+            "taxTotals": [
+                {
+                    "taxType": "T1",
+                    "amount": 26857.14324
+                },
+                {
+                    "taxType": "T2",
+                    "amount": 12942.49901
+                },
+                {
+                    "taxType": "T20",
+                    "amount": 0.0
+                }
+            ],
+            "netAmount": 178894.2384,
+            "totalDiscount": 9348.7656,
+            "totalSales": 188243.0040,
+            "extraDiscountAmount": 0.0,
+            "totalTaxableFees": 0.0
+        }
+    ],
+    "lateSubmissionRequestNumber": null
+}

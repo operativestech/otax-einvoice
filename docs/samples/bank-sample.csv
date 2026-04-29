@@ -1,0 +1,9 @@
+date,description,reference,amount,currency,balance
+2026-03-05,Wire transfer from Acme Corp,TX20260305-001,12500.50,EGP,125000.50
+2026-03-12,Acme Corp second invoice payment,TX20260312-002,3200.00,EGP,128200.50
+2026-03-10,Globex Ltd payment net of 3% WHT,TX20260310-003,970.00,EGP,129170.50
+2026-03-15,Initech USD payment (converted),TX20260315-004,155000.00,EGP,284170.50
+2026-03-18,Stark Industries advance,TX20260318-005,22500.00,EGP,306670.50
+2026-03-20,Office Supplies Co - bill 2026-1001,TX20260320-006,-875.25,EGP,305795.25
+2026-03-22,Delta Logistics paid,TX20260322-007,-6700.00,EGP,299095.25
+2026-03-31,Bank monthly fee,FEE-202603,-150.00,EGP,298945.25

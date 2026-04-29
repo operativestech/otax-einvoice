@@ -1,0 +1,6 @@
+e:\app\OTax New App\backend-service\agent\UniversalTokenSigner\UniversalTokenSigner.exe
+e:\app\OTax New App\backend-service\agent\UniversalTokenSigner\UniversalTokenSigner.dll
+e:\app\OTax New App\backend-service\agent\UniversalTokenSigner\UniversalTokenSigner.deps.json
+e:\app\OTax New App\backend-service\agent\UniversalTokenSigner\UniversalTokenSigner.runtimeconfig.json
+e:\app\OTax New App\backend-service\agent\UniversalTokenSigner\UniversalTokenSigner.pdb
+e:\app\OTax New App\backend-service\agent\UniversalTokenSigner\Pkcs11Interop.dll

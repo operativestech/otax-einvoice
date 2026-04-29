@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "tbBk4LeQfV9oiNwLiS4QBpBOq72DQuVbrUA2U4fMUHI=",
+  "Source": "UniversalTokenSigner",
+  "BasePath": "_content/UniversalTokenSigner",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

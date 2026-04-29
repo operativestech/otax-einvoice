@@ -1,0 +1,272 @@
+# 📋 OTax E-Invoice — Changes Report
+**Date:** March 1, 2026  
+**Session:** Full-day development & debugging session  
+**Prepared for:** Team review
+
+---
+
+## 🎯 Executive Summary
+
+This session focused on resolving critical issues blocking the cloud deployment cycle: JWT authentication failures, database constraint violations, missing issuer configuration, and data storage gaps between the legacy and new SaaS table systems. The OTax Signing Agent was also upgraded to v2.1.0.
+
+---
+
+## 🔧 Changes Made
+
+### 1. JWT Token Storage Fix
+
+**Files Changed:** [App.tsx](file:///e:/app/OTax%20New%20App/E-Invoice/App.tsx)
+
+**Problem:** Multiple frontend pages ([Settings.tsx](file:///e:/app/OTax%20New%20App/E-Invoice/pages/Settings.tsx), [InvoiceExcel.tsx](file:///e:/app/OTax%20New%20App/E-Invoice/pages/InvoiceExcel.tsx), [TokenSignatureSettings.tsx](file:///e:/app/OTax%20New%20App/E-Invoice/components/TokenSignatureSettings.tsx)) read the JWT from `localStorage.getItem('token')`, but this key was **never set**. The token was only stored inside the `invoice_user` JSON object. This caused `401 Unauthorized` errors on:
+- `GET /api/signing/method`
+- `GET /api/signing/agent-status`
+- `POST /api/eta/test-connection`
+
+**Fix:**
+```diff
+// In handleLogin():
++ localStorage.setItem('token', u.token);
+
+// In handleLogout():
++ localStorage.removeItem('token');
+```
+
+> [!IMPORTANT]
+> Users must **log out and log back in** after this deployment for the fix to take effect.
+
+---
+
+### 2. Null HWID Constraint Fix
+
+**Files Changed:** [server.ts](file:///e:/app/OTax%20New%20App/backend-service/server/server.ts) (settings/save endpoint)
+
+**Problem:** Users created via the new SaaS signup flow don't have a hardware ID (`hwid`). The `clients_info_new` table uses `@@id([hwid, uid, propertyName])` — a composite primary key that requires `hwid` to be non-null. This caused:
+```
+null value in column 'hwid' violates not-null constraint
+```
+
+**Fix:** Auto-generate an `hwid` for cloud users when it's null:
+```typescript
+let hwid = hwidResult.rows[0].hwid;
+if (!hwid) {
+    hwid = 'CLOUD-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    await client.query(
+        `UPDATE "LoginDb".credentials SET hwid = $1 WHERE id = $2`,
+        [hwid, userId]
+    );
+}
+```
+
+---
+
+### 3. Test Connection — Body Credentials Fallback
+
+**Files Changed:**
+- [etaRoutes.ts](file:///e:/app/OTax%20New%20App/backend-service/server/routes/etaRoutes.ts) (test-connection endpoint)
+- [Settings.tsx](file:///e:/app/OTax%20New%20App/E-Invoice/pages/Settings.tsx)
+
+**Problem:** `POST /api/eta/test-connection` returned 500 because it reads credentials from `organization_settings`, which was empty (previous save failures prevented credentials from being stored).
+
+**Fix — Backend:** The test-connection endpoint now accepts `{ clientId, clientSecret, env }` in the request body as a fallback:
+```typescript
+router.post('/test-connection', authenticate, async (req, res) => {
+    let service;
+    try {
+        const result = await getETAServiceForUser(req);
+        service = result.service;
+    } catch (orgErr) {
+        // Fallback: use credentials from request body
+        const { clientId, clientSecret, env } = req.body || {};
+        if (clientId && clientSecret) {
+            service = new ETAService(0, { clientId, clientSecret, environment });
+        } else {
+            throw orgErr;
+        }
+    }
+    const result = await service.testConnection();
+    res.json(result);
+});
+```
+
+**Fix — Frontend:** [Settings.tsx](file:///e:/app/OTax%20New%20App/E-Invoice/pages/Settings.tsx) now sends the credentials in the test-connection request body.
+
+---
+
+### 4. Issuer Configuration — Organization Table Fallback
+
+**Files Changed:** [server.ts](file:///e:/app/OTax%20New%20App/backend-service/server/server.ts) (excel/submit endpoint)
+
+**Problem:** The `/api/excel/submit` endpoint reads issuer data (Tax ID, Company Name, Governate, Street) from `clients_info_new` properties. SaaS users store this data in the `organizations` table instead, causing:
+```
+Issuer configuration incomplete:
+Issuer ID (Tax Registration Number) is missing.
+Issuer Name (Company Name) is missing.
+Issuer Governate is missing.
+Issuer Street is missing.
+```
+
+**Fix:** Added organization data fallback:
+```typescript
+// Load organization data
+const orgQuery = `
+    SELECT o.* FROM "LoginDb".organizations o
+    JOIN "LoginDb".credentials c ON c.organization_id = o.id
+    WHERE c.id = $1`;
+const orgRes = await client.query(orgQuery, [userId]);
+if (orgRes.rows.length > 0) orgData = orgRes.rows[0];
+
+// Use org data as fallback for issuer fields
+const issuerData = {
+    id: getProp('issuer_id') || orgData?.tax_id || '',
+    name: getProp('issuer_name') || orgData?.name || '',
+    governate: getProp('issuer_governorate') || orgData?.governorate || '',
+    street: getProp('issuer_street') || orgData?.street || '',
+    buildingNumber: getProp('issuer_buildingNumber') || orgData?.building_number || '0',
+    // ... etc
+};
+```
+
+---
+
+### 5. JWT Extraction from Authorization Header
+
+**Files Changed:** [server.ts](file:///e:/app/OTax%20New%20App/backend-service/server/server.ts) (excel/submit endpoint)
+
+**Problem:** The `/api/excel/submit` only read `X-User-ID` from headers. The SaaS frontend sends `Authorization: Bearer <token>` instead, causing `userId` to be undefined.
+
+**Fix:** Extract userId from JWT when `X-User-ID` is absent:
+```typescript
+let userId = req.headers['x-user-id'] as string;
+if (!userId) {
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith('Bearer ')) {
+        const decoded = jwt.verify(authHeader.replace('Bearer ', ''), JWT_SECRET);
+        userId = String(decoded.userId);
+    }
+}
+```
+
+---
+
+### 6. Dual-Write to Org-Specific Tables
+
+**Files Changed:** [server.ts](file:///e:/app/OTax%20New%20App/backend-service/server/server.ts) (excel/submit endpoint)
+
+**Problem:** After successful ETA submission, documents were only saved to `public.documents`. The org-specific tables (`"InvoicesDb".org_5_operatives_documents`) remained empty, causing the new dashboard and search features to show no data.
+
+**Fix:** After saving to `public.documents`, also save to the org table:
+```typescript
+if (orgData) {
+    const orgTables = getOrgTableNames(orgData.id, orgData.name);
+    await createOrgTables(pool, orgData.id, orgData.name);
+    await client.query(`
+        INSERT INTO "InvoicesDb"."${orgTables.documents}" (...)
+        ON CONFLICT (uuid) DO UPDATE SET status = EXCLUDED.status, synced_at = NOW()
+    `, [...]);
+}
+```
+
+---
+
+### 7. OTax Signing Agent v2.1.0
+
+**Files Changed:** [agent.ts](file:///e:/app/OTax%20New%20App/backend-service/agent/agent.ts)
+
+**Enhancements Applied:**
+
+| Feature | Before (v2.0) | After (v2.1.0) |
+|---------|---------------|-----------------|
+| **Concurrent signing** | Shared temp files → race condition | Unique temp dir per request (`temp/{reqId}/`) |
+| **Signer validation** | None — fails silently at first sign | Pre-validates all DLLs on startup |
+| **Version reporting** | Not reported | Sent in `register_agent` + heartbeat |
+| **Memory monitoring** | Not tracked | `memoryMB` sent in heartbeat |
+| **Temp cleanup** | Files left on disk | Auto-deleted after each sign request |
+| **Platform info** | Not sent | OS/version sent during registration |
+
+---
+
+## 📊 Data Flow Architecture
+
+```mermaid
+flowchart TB
+    subgraph Frontend
+        A[Excel Import Page] -->|POST /api/excel/submit| B[Cloud Server]
+        C[Settings Page] -->|PUT /api/admin/organization/eta-settings| B
+        D[Settings Page] -->|POST /api/settings/save| B
+    end
+
+    subgraph Cloud Server
+        B --> E{Build & Sign Invoice}
+        E -->|Agent Bridge| F[OTax Agent on PC]
+        E -->|PFX Cloud| G[PFX Signer]
+        F -->|Signed Doc| H[Submit to ETA]
+        G -->|Signed Doc| H
+    end
+
+    subgraph Database
+        H -->|Save| I["public.documents"]
+        H -->|Save| J["InvoicesDb.org_N_*_documents ← NEW"]
+        D -->|Save| K["LoginDb.clients_info_new"]
+        C -->|Save| L["LoginDb.organization_settings"]
+    end
+
+    subgraph Dashboard
+        M[Dashboard API] --> I
+        M --> J
+        N[ETA Sync] -->|Populate| J
+    end
+```
+
+---
+
+## 🐛 Known Remaining Issues
+
+### 1. Background ETA Sync Error
+```
+Cannot read properties of undefined (reading 'docs')
+```
+The legacy [getAllETADocuments](file:///e:/app/OTax%20New%20App/backend-service/server/server.ts#2067-2335) sync function has a bug where `syncCache[userId]` is not initialized with a `docs` array before being accessed. This is a **server-side** issue broadcast to all WebSocket clients (including the agent).
+
+**Impact:** Low — only affects the legacy dashboard sync, not invoice submission.
+**Fix needed in:** [server.ts](file:///e:/app/OTax%20New%20App/backend-service/server/server.ts) → [getAllETADocuments()](file:///e:/app/OTax%20New%20App/backend-service/server/server.ts#2067-2335) function — ensure `syncCache[userId].docs` is initialized as `[]`.
+
+### 2. JWT Malformed in Agent Logs
+The agent receives `"jwt malformed"` errors broadcast by the server. These come from the frontend polling `/api/signing/method` and `/api/signing/agent-status` with a null token.
+
+**Impact:** Resolved after users log out and log back in (token will be stored correctly).
+
+---
+
+## ✅ Testing Checklist
+
+After deployment, verify the following:
+
+- [ ] **Log out and log back in** — Required for JWT fix to take effect
+- [ ] **Save Settings** — Should succeed without hwid error
+- [ ] **Test Connection (PreProd)** — Should return success with valid credentials
+- [ ] **Test Connection (Prod)** — Should return success with valid credentials
+- [ ] **Submit Invoice from Excel** — Should:
+  - [ ] Read issuer data from org table
+  - [ ] Sign via agent bridge
+  - [ ] Submit to ETA successfully
+  - [ ] Save to `public.documents`
+  - [ ] Save to `"InvoicesDb".org_N_*_documents`
+- [ ] **Dashboard** — Should show submitted invoices
+- [ ] **Agent logs** — Should show clean registration without JWT errors
+
+---
+
+## 📁 Files Modified Summary
+
+### Backend (`backend-service`)
+| File | Changes |
+|------|---------|
+| [server/server.ts](file:///e:/app/OTax%20New%20App/backend-service/server/server.ts) | hwid auto-gen, JWT extraction, org issuer fallback, org table dual-write |
+| [server/routes/etaRoutes.ts](file:///e:/app/OTax%20New%20App/backend-service/server/routes/etaRoutes.ts) | test-connection body credentials fallback |
+| [agent/agent.ts](file:///e:/app/OTax%20New%20App/backend-service/agent/agent.ts) | Full rewrite → v2.1.0 with concurrent signing, validation, cleanup |
+
+### Frontend (`E-Invoice`)
+| File | Changes |
+|------|---------|
+| [App.tsx](file:///e:/app/OTax%20New%20App/E-Invoice/App.tsx) | Store JWT token in `localStorage['token']` on login, remove on logout |
+| [pages/Settings.tsx](file:///e:/app/OTax%20New%20App/E-Invoice/pages/Settings.tsx) | Send credentials in test-connection request body |

@@ -1,0 +1,8 @@
+date,description,reference,credit,debit,balance
+2026-03-05,Wire transfer from Acme Corp,TX001,12500.50,,125000.50
+2026-03-12,Acme Corp second invoice payment,TX002,3200.00,,128200.50
+2026-03-10,Globex Ltd payment net of 3% WHT,TX003,970.00,,129170.50
+2026-03-15,Initech USD payment (converted),TX004,155000.00,,284170.50
+2026-03-20,Office Supplies Co - bill 2026-1001,TX006,,875.25,283295.25
+2026-03-22,Delta Logistics paid,TX007,,6700.00,276595.25
+2026-03-31,Bank monthly fee,FEE-202603,,150.00,276445.25

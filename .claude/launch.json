@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "OTax Backend (Express + tsx watch)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "backend-service",
+      "port": 3001
+    },
+    {
+      "name": "OTax Frontend (Vite)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "E-Invoice",
+      "port": 3000
+    }
+  ]
+}

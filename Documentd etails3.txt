@@ -1,0 +1,447 @@
+{
+    "submissionUUID": "32750H3J1C47XK0Y8F5B1AKK10",
+    "dateTimeRecevied": "2026-03-09T19:31:50.3760188Z",
+    "validationResults": {
+        "status": "Valid",
+        "validationSteps": [
+            {
+                "status": "Valid",
+                "error": null,
+                "stepName": "Step-05.TaxpayerProfile Validator",
+                "stepId": "6"
+            },
+            {
+                "status": "Valid",
+                "error": null,
+                "stepName": "Step-03.ITIDA Signature Validator",
+                "stepId": "4"
+            },
+            {
+                "status": "Valid",
+                "error": null,
+                "stepName": "Step-04.NationalID Validator",
+                "stepId": "5"
+            },
+            {
+                "status": "Valid",
+                "error": null,
+                "stepName": "Step-06.Simple Validator",
+                "stepId": "9"
+            },
+            {
+                "status": "Valid",
+                "error": null,
+                "stepName": "Step-07.Code Field Validator",
+                "stepId": "10"
+            },
+            {
+                "status": "Valid",
+                "error": null,
+                "stepName": "Step-08. Duplicate Submission Validator",
+                "stepId": "8"
+            }
+        ]
+    },
+    "transformationStatus": "original",
+    "statusId": 2,
+    "status": "Valid",
+    "documentStatusReason": "",
+    "cancelRequestDate": null,
+    "rejectRequestDate": null,
+    "cancelRequestDelayedDate": null,
+    "rejectRequestDelayedDate": null,
+    "declineCancelRequestDate": null,
+    "declineRejectRequestDate": null,
+    "canbeCancelledUntil": "2026-03-16T19:31:50.3760188Z",
+    "canbeRejectedUntil": "2026-03-16T19:31:50.3760188Z",
+    "submissionChannel": 1,
+    "freezeStatus": {
+        "frozen": false,
+        "type": null,
+        "scope": null,
+        "actionDate": null,
+        "auCode": null,
+        "auName": null
+    },
+    "serviceDeliveryDate": null,
+    "customsClearanceDate": null,
+    "customsDeclarationNumber": null,
+    "ePaymentNumber": null,
+    "additionalMetadata": [],
+    "alertDetails": null,
+    "uuid": "QD7J89GWRAJEVC0W8F5B1AKK10",
+    "publicUrl": "https://invoicing.eta.gov.eg/documents/QD7J89GWRAJEVC0W8F5B1AKK10/share/5WXPCGVD97V1PSHM8F5B1AKK10Sv1ZCA1773084710",
+    "purchaseOrderDescription": "",
+    "totalItemsDiscountAmount": 0.0,
+    "delivery": {
+        "approach": "",
+        "packaging": "",
+        "dateValidity": "2026-03-09T18:30:02Z",
+        "exportPort": "",
+        "countryOfOrigin": "",
+        "grossWeight": 1.0,
+        "netWeight": 1.0,
+        "terms": ""
+    },
+    "payment": {
+        "bankName": null,
+        "bankAddress": null,
+        "bankAccountNo": null,
+        "bankAccountIBAN": null,
+        "swiftCode": null,
+        "terms": null
+    },
+    "totalAmount": 575224.99894,
+    "taxTotals": [
+        {
+            "taxType": "T1",
+            "amount": 70641.66654
+        },
+        {
+            "taxType": "T20",
+            "amount": 0.0
+        }
+    ],
+    "netAmount": 504583.3324,
+    "totalDiscount": 37396.6152,
+    "totalSales": 541979.9476,
+    "invoiceLines": [
+        {
+            "itemPrimaryName": "Unionaire RD-350VV-DHGHUSTO 1 Piece",
+            "itemPrimaryDescription": "",
+            "itemSecondaryName": "يونيون آير ثلاجة سعه 350 ديفروست ( كابينه سلفر ) (باب سلفر) مقبض علي فريم / يونيون اير جوستو 1 قطعه",
+            "itemSecondaryDescription": "",
+            "unitTypePrimaryName": "each (ST) ( ST )",
+            "unitTypePrimaryDescription": "",
+            "unitTypeSecondaryName": null,
+            "unitTypeSecondaryDescription": "",
+            "weightUnitTypePrimaryName": null,
+            "weightUnitTypePrimaryDescription": null,
+            "weightUnitTypeSecondaryName": null,
+            "weightUnitTypeSecondaryDescription": null,
+            "salesTotalForeign": 428628.3869,
+            "netTotalForeign": 396095.4935,
+            "totalForeign": 451548.86259,
+            "totalTaxableFeesForeign": 0.0,
+            "itemsDiscountForeign": 0.0,
+            "valueDifferenceForeign": 0.0,
+            "discountForeign": {
+                "amountForeign": 32532.8934,
+                "rate": 0.0,
+                "amount": 32532.8934
+            },
+            "lineTaxableItems": [
+                {
+                    "amountForeign": 55453.36909,
+                    "taxType": "T1",
+                    "amount": 55453.36909,
+                    "subType": "V009",
+                    "rate": 14.0
+                },
+                {
+                    "amountForeign": 0.0,
+                    "taxType": "T20",
+                    "amount": 0.0,
+                    "subType": "OF04",
+                    "rate": null
+                }
+            ],
+            "description": "RD-350VV-DHGHUSTO",
+            "itemType": "GS1",
+            "itemCode": "6221044039984",
+            "unitType": "EA",
+            "quantity": 49.0,
+            "weightUnitType": null,
+            "weightQuantity": 0.0,
+            "unitValue": {
+                "currencySold": "EGP",
+                "amountSold": 0.0,
+                "amountEGP": 8747.5181,
+                "currencyExchangeRate": 0.0
+            },
+            "factoryUnitValue": null,
+            "salesTotal": 428628.3869,
+            "discount": {
+                "rate": 0.0,
+                "amount": 32532.8934
+            },
+            "taxableItems": null,
+            "internalCode": "RD-350VV-DHGHUSTO",
+            "itemsDiscount": 0.0,
+            "netTotal": 396095.4935,
+            "totalTaxableFees": 0.0,
+            "valueDifference": 0.0,
+            "total": 451548.86259
+        },
+        {
+            "itemPrimaryName": "Unionaire RD-380VVA-DSH RD-380VVA-DSH 1 Piece",
+            "itemPrimaryDescription": "",
+            "itemSecondaryName": "يونيون آير ثلاجه ديفروست 380 لتر ثلاجه ديفروست 380 لتر 1 قطعه",
+            "itemSecondaryDescription": "",
+            "unitTypePrimaryName": "each (ST) ( ST )",
+            "unitTypePrimaryDescription": "",
+            "unitTypeSecondaryName": null,
+            "unitTypeSecondaryDescription": "",
+            "weightUnitTypePrimaryName": null,
+            "weightUnitTypePrimaryDescription": null,
+            "weightUnitTypeSecondaryName": null,
+            "weightUnitTypeSecondaryDescription": null,
+            "salesTotalForeign": 64080.6565,
+            "netTotalForeign": 59216.9347,
+            "totalForeign": 67507.30556,
+            "totalTaxableFeesForeign": 0.0,
+            "itemsDiscountForeign": 0.0,
+            "valueDifferenceForeign": 0.0,
+            "discountForeign": {
+                "amountForeign": 4863.7218,
+                "rate": 0.0,
+                "amount": 4863.7218
+            },
+            "lineTaxableItems": [
+                {
+                    "amountForeign": 8290.37086,
+                    "taxType": "T1",
+                    "amount": 8290.37086,
+                    "subType": "V009",
+                    "rate": 14.0
+                },
+                {
+                    "amountForeign": 0.0,
+                    "taxType": "T20",
+                    "amount": 0.0,
+                    "subType": "OF04",
+                    "rate": null
+                }
+            ],
+            "description": "RD-380VVA-DSH",
+            "itemType": "GS1",
+            "itemCode": "6221044050637",
+            "unitType": "EA",
+            "quantity": 7.0,
+            "weightUnitType": null,
+            "weightQuantity": 0.0,
+            "unitValue": {
+                "currencySold": "EGP",
+                "amountSold": 0.0,
+                "amountEGP": 9154.3795,
+                "currencyExchangeRate": 0.0
+            },
+            "factoryUnitValue": null,
+            "salesTotal": 64080.6565,
+            "discount": {
+                "rate": 0.0,
+                "amount": 4863.7218
+            },
+            "taxableItems": null,
+            "internalCode": "RD-380VVA-DSH",
+            "itemsDiscount": 0.0,
+            "netTotal": 59216.9347,
+            "totalTaxableFees": 0.0,
+            "valueDifference": 0.0,
+            "total": 67507.30556
+        },
+        {
+            "itemPrimaryName": "Temporary Classification",
+            "itemPrimaryDescription": "",
+            "itemSecondaryName": "التصنيف المؤقت",
+            "itemSecondaryDescription": "",
+            "unitTypePrimaryName": "each (ST) ( ST )",
+            "unitTypePrimaryDescription": "",
+            "unitTypeSecondaryName": null,
+            "unitTypeSecondaryDescription": "",
+            "weightUnitTypePrimaryName": null,
+            "weightUnitTypePrimaryDescription": null,
+            "weightUnitTypeSecondaryName": null,
+            "weightUnitTypeSecondaryDescription": null,
+            "salesTotalForeign": 42862.8382,
+            "netTotalForeign": 42862.8382,
+            "totalForeign": 48863.63555,
+            "totalTaxableFeesForeign": 0.0,
+            "itemsDiscountForeign": 0.0,
+            "valueDifferenceForeign": 0.0,
+            "discountForeign": {
+                "amountForeign": 0.0,
+                "rate": 0.0,
+                "amount": 0.0
+            },
+            "lineTaxableItems": [
+                {
+                    "amountForeign": 6000.79735,
+                    "taxType": "T1",
+                    "amount": 6000.79735,
+                    "subType": "V009",
+                    "rate": 14.0
+                }
+            ],
+            "description": "ضمان",
+            "itemType": "GS1",
+            "itemCode": "99999999",
+            "unitType": "EA",
+            "quantity": 49.0,
+            "weightUnitType": null,
+            "weightQuantity": 0.0,
+            "unitValue": {
+                "currencySold": "EGP",
+                "amountSold": 0.0,
+                "amountEGP": 874.7518,
+                "currencyExchangeRate": 0.0
+            },
+            "factoryUnitValue": null,
+            "salesTotal": 42862.8382,
+            "discount": {
+                "rate": 0.0,
+                "amount": 0.0
+            },
+            "taxableItems": null,
+            "internalCode": "ضمان",
+            "itemsDiscount": 0.0,
+            "netTotal": 42862.8382,
+            "totalTaxableFees": 0.0,
+            "valueDifference": 0.0,
+            "total": 48863.63555
+        },
+        {
+            "itemPrimaryName": "Temporary Classification",
+            "itemPrimaryDescription": "",
+            "itemSecondaryName": "التصنيف المؤقت",
+            "itemSecondaryDescription": "",
+            "unitTypePrimaryName": "each (ST) ( ST )",
+            "unitTypePrimaryDescription": "",
+            "unitTypeSecondaryName": null,
+            "unitTypeSecondaryDescription": "",
+            "weightUnitTypePrimaryName": null,
+            "weightUnitTypePrimaryDescription": null,
+            "weightUnitTypeSecondaryName": null,
+            "weightUnitTypeSecondaryDescription": null,
+            "salesTotalForeign": 6408.066,
+            "netTotalForeign": 6408.066,
+            "totalForeign": 7305.19524,
+            "totalTaxableFeesForeign": 0.0,
+            "itemsDiscountForeign": 0.0,
+            "valueDifferenceForeign": 0.0,
+            "discountForeign": {
+                "amountForeign": 0.0,
+                "rate": 0.0,
+                "amount": 0.0
+            },
+            "lineTaxableItems": [
+                {
+                    "amountForeign": 897.12924,
+                    "taxType": "T1",
+                    "amount": 897.12924,
+                    "subType": "V009",
+                    "rate": 14.0
+                }
+            ],
+            "description": "ضمان",
+            "itemType": "GS1",
+            "itemCode": "99999999",
+            "unitType": "EA",
+            "quantity": 7.0,
+            "weightUnitType": null,
+            "weightQuantity": 0.0,
+            "unitValue": {
+                "currencySold": "EGP",
+                "amountSold": 0.0,
+                "amountEGP": 915.438,
+                "currencyExchangeRate": 0.0
+            },
+            "factoryUnitValue": null,
+            "salesTotal": 6408.066,
+            "discount": {
+                "rate": 0.0,
+                "amount": 0.0
+            },
+            "taxableItems": null,
+            "internalCode": "ضمان",
+            "itemsDiscount": 0.0,
+            "netTotal": 6408.066,
+            "totalTaxableFees": 0.0,
+            "valueDifference": 0.0,
+            "total": 7305.19524
+        }
+    ],
+    "documentLinesTotalCount": 4,
+    "references": [],
+    "salesOrderDescription": "69154",
+    "salesOrderReference": "69154",
+    "proformaInvoiceNumber": null,
+    "signatures": [
+        {
+            "signatureType": "I",
+            "value": "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",
+            "signedBy": "العالمية لصناعات التكييف والاجهزة الكهربائية يونيون اير جروب"
+        }
+    ],
+    "purchaseOrderReference": "",
+    "internalID": "1712-3997590",
+    "taxpayerActivityCode": "2819",
+    "dateTimeIssued": "2026-03-09T18:30:02Z",
+    "documentTypeVersion": "1.0",
+    "documentType": "I",
+    "documentTypeNamePrimaryLang": "Invoice",
+    "documentTypeNameSecondaryLang": "فاتورة",
+    "receiver": {
+        "address": {
+            "buildingNumber": "5555",
+            "room": "",
+            "floor": "",
+            "street": "COOL_TECH",
+            "landmark": "",
+            "additionalInformation": "",
+            "governate": "COOL_TECH",
+            "regionCity": "COOL_TECH",
+            "postalCode": "0",
+            "country": "EG",
+            "branchID": null
+        },
+        "type": 0,
+        "id": "340367296",
+        "name": "اكسترا للأجهزة-حازم محمود عبدالعظيم-الفيوم"
+    },
+    "issuer": {
+        "address": {
+            "buildingNumber": "606",
+            "room": "0",
+            "floor": "00",
+            "street": "6اكتوبر امتداد المنطقة الصناعية التالته",
+            "landmark": "0",
+            "additionalInformation": "0",
+            "governate": "Giza",
+            "regionCity": "0",
+            "postalCode": "0",
+            "country": "EG",
+            "branchID": "0"
+        },
+        "type": 0,
+        "id": "230270980",
+        "name": "الشركة العالمية لصناعات التكييف الاجهزة الكهربائية يونيون"
+    },
+    "extraDiscountAmount": 0.0,
+    "maxPercision": 5,
+    "currenciesSold": "EGP",
+    "currencySegments": [
+        {
+            "currency": "EGP",
+            "currencyExchangeRate": 0.0,
+            "totalItemsDiscountAmount": 0.0,
+            "totalAmount": 575224.99894,
+            "taxTotals": [
+                {
+                    "taxType": "T1",
+                    "amount": 70641.66654
+                },
+                {
+                    "taxType": "T20",
+                    "amount": 0.0
+                }
+            ],
+            "netAmount": 504583.3324,
+            "totalDiscount": 37396.6152,
+            "totalSales": 541979.9476,
+            "extraDiscountAmount": 0.0,
+            "totalTaxableFees": 0.0
+        }
+    ],
+    "lateSubmissionRequestNumber": null
+}

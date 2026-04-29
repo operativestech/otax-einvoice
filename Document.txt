@@ -1,0 +1,95 @@
+{
+    "document": "<document><issuer><type>B</type><id>230270980</id><name>الشركة العالمية لصناعات التكييف الاجهزة الكهربائية يونيون</name><address><buildingNumber>606</buildingNumber><room>0</room><floor>00</floor><street>6اكتوبر امتداد المنطقة الصناعية التالته</street><landmark>0</landmark><additionalInformation>0</additionalInformation><governate>Giza</governate><regionCity>0</regionCity><postalCode>0</postalCode><country>EG</country><branchID>0</branchID></address></issuer><receiver><type>B</type><id>340367296</id><name>اكسترا للأجهزة-حازم محمود عبدالعظيم-الفيوم</name><address><buildingNumber>5555</buildingNumber><room /><floor /><street>COOL_TECH</street><landmark /><additionalInformation /><governate>COOL_TECH</governate><regionCity>COOL_TECH</regionCity><postalCode>0</postalCode><country>EG</country></address></receiver><documentType>I</documentType><documentTypeVersion>1.0</documentTypeVersion><dateTimeIssued>2026-03-09T18:30:02Z</dateTimeIssued><taxpayerActivityCode>2819</taxpayerActivityCode><internalID>1712-3997590</internalID><purchaseOrderReference /><purchaseOrderDescription /><salesOrderReference>69154</salesOrderReference><salesOrderDescription>69154</salesOrderDescription><payment /><delivery><approach /><packaging /><dateValidity>2026-03-09T18:30:02Z</dateValidity><exportPort /><countryOfOrigin /><grossWeight>1</grossWeight><netWeight>1</netWeight><terms /></delivery><invoiceLines><invoiceLine><description>RD-350VV-DHGHUSTO</description><itemType>GS1</itemType><itemCode>6221044039984</itemCode><unitType>EA</unitType><quantity>49</quantity><unitValue><currencySold>EGP</currencySold><amountSold>0</amountSold><amountEGP>8747.5181</amountEGP><currencyExchangeRate>0</currencyExchangeRate></unitValue><salesTotal>428628.3869</salesTotal><discount><rate>0</rate><amount>32532.8934</amount></discount><taxableItems><taxableItem><taxType>T1</taxType><amount>55453.36909</amount><subType>V009</subType><rate>14</rate></taxableItem><taxableItem><taxType>T20</taxType><amount>0</amount><subType>OF04</subType></taxableItem></taxableItems><internalCode>RD-350VV-DHGHUSTO</internalCode><itemsDiscount>0</itemsDiscount><netTotal>396095.4935</netTotal><totalTaxableFees>0</totalTaxableFees><valueDifference>0</valueDifference><total>451548.86259</total></invoiceLine><invoiceLine><description>RD-380VVA-DSH</description><itemType>GS1</itemType><itemCode>6221044050637</itemCode><unitType>EA</unitType><quantity>7</quantity><unitValue><currencySold>EGP</currencySold><amountSold>0</amountSold><amountEGP>9154.3795</amountEGP><currencyExchangeRate>0</currencyExchangeRate></unitValue><salesTotal>64080.6565</salesTotal><discount><rate>0</rate><amount>4863.7218</amount></discount><taxableItems><taxableItem><taxType>T1</taxType><amount>8290.37086</amount><subType>V009</subType><rate>14</rate></taxableItem><taxableItem><taxType>T20</taxType><amount>0</amount><subType>OF04</subType></taxableItem></taxableItems><internalCode>RD-380VVA-DSH</internalCode><itemsDiscount>0</itemsDiscount><netTotal>59216.9347</netTotal><totalTaxableFees>0</totalTaxableFees><valueDifference>0</valueDifference><total>67507.30556</total></invoiceLine><invoiceLine><description>ضمان</description><itemType>GS1</itemType><itemCode>99999999</itemCode><unitType>EA</unitType><quantity>49</quantity><unitValue><currencySold>EGP</currencySold><amountSold>0</amountSold><amountEGP>874.7518</amountEGP><currencyExchangeRate>0</currencyExchangeRate></unitValue><salesTotal>42862.8382</salesTotal><discount><rate>0</rate><amount>0</amount></discount><taxableItems><taxableItem><taxType>T1</taxType><amount>6000.79735</amount><subType>V009</subType><rate>14</rate></taxableItem></taxableItems><internalCode>ضمان</internalCode><itemsDiscount>0</itemsDiscount><netTotal>42862.8382</netTotal><totalTaxableFees>0</totalTaxableFees><valueDifference>0</valueDifference><total>48863.63555</total></invoiceLine><invoiceLine><description>ضمان</description><itemType>GS1</itemType><itemCode>99999999</itemCode><unitType>EA</unitType><quantity>7</quantity><unitValue><currencySold>EGP</currencySold><amountSold>0</amountSold><amountEGP>915.438</amountEGP><currencyExchangeRate>0</currencyExchangeRate></unitValue><salesTotal>6408.066</salesTotal><discount><rate>0</rate><amount>0</amount></discount><taxableItems><taxableItem><taxType>T1</taxType><amount>897.12924</amount><subType>V009</subType><rate>14</rate></taxableItem></taxableItems><internalCode>ضمان</internalCode><itemsDiscount>0</itemsDiscount><netTotal>6408.066</netTotal><totalTaxableFees>0</totalTaxableFees><valueDifference>0</valueDifference><total>7305.19524</total></invoiceLine></invoiceLines><totalSalesAmount>541979.9476</totalSalesAmount><totalDiscountAmount>37396.6152</totalDiscountAmount><netAmount>504583.3324</netAmount><taxTotals><taxTotal><taxType>T1</taxType><amount>70641.66654</amount></taxTotal><taxTotal><taxType>T20</taxType><amount>0</amount></taxTotal></taxTotals><totalAmount>575224.99894</totalAmount><totalItemsDiscountAmount>0</totalItemsDiscountAmount><extraDiscountAmount>0</extraDiscountAmount><signatures><signature><signatureType>I</signatureType><value>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</value></signature></signatures></document>",
+    "transformationStatus": "original",
+    "validationResults": {
+        "status": "Valid",
+        "validationSteps": [
+            {
+                "name": "Step-05.TaxpayerProfile Validator",
+                "status": "Valid",
+                "error": null
+            },
+            {
+                "name": "Step-03.ITIDA Signature Validator",
+                "status": "Valid",
+                "error": null
+            },
+            {
+                "name": "Step-04.NationalID Validator",
+                "status": "Valid",
+                "error": null
+            },
+            {
+                "name": "Step-06.Simple Validator",
+                "status": "Valid",
+                "error": null
+            },
+            {
+                "name": "Step-07.Code Field Validator",
+                "status": "Valid",
+                "error": null
+            },
+            {
+                "name": "Step-08. Duplicate Submission Validator",
+                "status": "Valid",
+                "error": null
+            }
+        ]
+    },
+    "maxPercision": 5,
+    "invoiceLineItemCodes": [
+        {
+            "codeTypeId": 2,
+            "codeTypeNamePrimaryLang": "GS1",
+            "codeTypeNameSecondaryLang": "GS1",
+            "itemCode": "6221044039984",
+            "codeNamePrimaryLang": "Unionaire RD-350VV-DHGHUSTO 1 Piece",
+            "codeNameSecondaryLang": "يونيون آير ثلاجة سعه 350 ديفروست ( كابينه سلفر ) (باب سلفر) مقبض علي فريم / يونيون اير جوستو 1 قطعه"
+        },
+        {
+            "codeTypeId": 2,
+            "codeTypeNamePrimaryLang": "GS1",
+            "codeTypeNameSecondaryLang": "GS1",
+            "itemCode": "6221044050637",
+            "codeNamePrimaryLang": "Unionaire RD-380VVA-DSH RD-380VVA-DSH 1 Piece",
+            "codeNameSecondaryLang": "يونيون آير ثلاجه ديفروست 380 لتر ثلاجه ديفروست 380 لتر 1 قطعه"
+        },
+        {
+            "codeTypeId": 2,
+            "codeTypeNamePrimaryLang": "GS1",
+            "codeTypeNameSecondaryLang": "GS1",
+            "itemCode": "99999999",
+            "codeNamePrimaryLang": "Temporary Classification",
+            "codeNameSecondaryLang": "التصنيف المؤقت"
+        },
+        {
+            "codeTypeId": 2,
+            "codeTypeNamePrimaryLang": "GS1",
+            "codeTypeNameSecondaryLang": "GS1",
+            "itemCode": "99999999",
+            "codeNamePrimaryLang": "Temporary Classification",
+            "codeNameSecondaryLang": "التصنيف المؤقت"
+        }
+    ],
+    "documentLinesTotalCount": 4,
+    "additionalMetadata": [],
+    "lateSubmissionRequestNumber": null,
+    "serviceDeliveryDate": null,
+    "uuid": "QD7J89GWRAJEVC0W8F5B1AKK10",
+    "submissionUUID": "32750H3J1C47XK0Y8F5B1AKK10",
+    "longId": "5WXPCGVD97V1PSHM8F5B1AKK10Sv1ZCA1773084710",
+    "internalId": "1712-3997590",
+    "typeName": "I",
+    "typeVersionName": "1.0",
+    "issuerId": "230270980",
+    "issuerName": "الشركة العالمية لصناعات التكييف الاجهزة الكهربائية يونيون",
+    "receiverId": "340367296",
+    "receiverName": "اكسترا للأجهزة-حازم محمود عبدالعظيم-الفيوم",
+    "dateTimeIssued": "2026-03-09T18:30:02Z",
+    "dateTimeReceived": "2026-03-09T19:31:50.3760188Z",
+    "totalSales": 541979.94760,
+    "totalDiscount": 37396.61520,
+    "netAmount": 504583.33240,
+    "total": 575224.99894,
+    "status": "Valid"
+}
