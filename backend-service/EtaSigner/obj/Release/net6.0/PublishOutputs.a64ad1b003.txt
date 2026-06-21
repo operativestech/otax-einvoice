@@ -1,0 +1,8 @@
+E:\E-Invoice\E-Invoice\EtaSigner\bin\Release\net6.0\EtaSigner.exe
+E:\E-Invoice\E-Invoice\EtaSigner\bin\Release\net6.0\EtaSigner.dll
+E:\E-Invoice\E-Invoice\EtaSigner\bin\Release\net6.0\EtaSigner.deps.json
+E:\E-Invoice\E-Invoice\EtaSigner\bin\Release\net6.0\EtaSigner.runtimeconfig.json
+E:\E-Invoice\E-Invoice\EtaSigner\bin\Release\net6.0\EtaSigner.pdb
+E:\E-Invoice\E-Invoice\EtaSigner\bin\Release\net6.0\BouncyCastle.Cryptography.dll
+E:\E-Invoice\E-Invoice\EtaSigner\bin\Release\net6.0\System.Security.Cryptography.Pkcs.dll
+E:\E-Invoice\E-Invoice\EtaSigner\bin\Release\net6.0\runtimes\win\lib\net6.0\System.Security.Cryptography.Pkcs.dll

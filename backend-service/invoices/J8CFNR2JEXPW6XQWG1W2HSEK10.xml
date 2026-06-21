@@ -1,0 +1,77 @@
+<document><uuid>J8CFNR2JEXPW6XQWG1W2HSEK10</uuid>
+<submissionUUID>RMJWE0EVHX4A40N7G1W2HSEK10</submissionUUID>
+<longId>J2R50NA1VB27JABPG1W2HSEK10oLR4kg1768235823</longId>
+<internalId>inv-047</internalId>
+<typeName>I</typeName>
+<typeVersionName>1.0</typeVersionName>
+<issuerId>562067566</issuerId>
+<issuerName>اوبراتفز لحلول تكنولوجيا المعلومات</issuerName>
+<receiverId>29909041402358</receiverId>
+<receiverName>essam</receiverName>
+<dateTimeIssued>2026-01-12T00:00:00</dateTimeIssued>
+<dateTimeReceived>2026-01-12T16:37:03</dateTimeReceived>
+<totalSales>100</totalSales>
+<totalDiscount>0</totalDiscount>
+<netAmount>100</netAmount>
+<total>100</total>
+<status>Invalid</status>
+<document>{&#34;issuer&#34;:{&#34;type&#34;:&#34;B&#34;,&#34;id&#34;:&#34;562067566&#34;,&#34;name&#34;:&#34;اوبراتفز لحلول تكنولوجيا المعلومات&#34;,&#34;address&#34;:{&#34;buildingNumber&#34;:&#34;22&#34;,&#34;room&#34;:&#34;0&#34;,&#34;floor&#34;:&#34;0&#34;,&#34;street&#34;:&#34;البرج الشمالى -ابراج النايل سيتى -كورنيش النيل الساحل ,&#34;,&#34;landmark&#34;:&#34;0&#34;,&#34;additionalInformation&#34;:&#34;0&#34;,&#34;governate&#34;:&#34;Cairo&#34;,&#34;regionCity&#34;:&#34;0&#34;,&#34;postalCode&#34;:&#34;0&#34;,&#34;country&#34;:&#34;EG&#34;,&#34;branchID&#34;:&#34;0&#34;}},&#34;receiver&#34;:{&#34;type&#34;:&#34;P&#34;,&#34;id&#34;:&#34;29909041402358&#34;,&#34;name&#34;:&#34;essam&#34;,&#34;address&#34;:{&#34;buildingNumber&#34;:&#34;1&#34;,&#34;room&#34;:&#34;1&#34;,&#34;floor&#34;:&#34;1&#34;,&#34;street&#34;:&#34;Egypt&#34;,&#34;landmark&#34;:&#34;1&#34;,&#34;additionalInformation&#34;:&#34;&#34;,&#34;governate&#34;:&#34;Egypt&#34;,&#34;regionCity&#34;:&#34;Egypt&#34;,&#34;postalCode&#34;:&#34;0&#34;,&#34;country&#34;:&#34;EG&#34;}},&#34;documentType&#34;:&#34;I&#34;,&#34;documentTypeVersion&#34;:&#34;1.0&#34;,&#34;dateTimeIssued&#34;:&#34;2026-01-12T00:00:00Z&#34;,&#34;taxpayerActivityCode&#34;:&#34;6209&#34;,&#34;internalID&#34;:&#34;inv-047&#34;,&#34;purchaseOrderReference&#34;:&#34;&#34;,&#34;purchaseOrderDescription&#34;:&#34;&#34;,&#34;salesOrderReference&#34;:&#34;101&#34;,&#34;salesOrderDescription&#34;:&#34;101&#34;,&#34;proformaInvoiceNumber&#34;:&#34;&#34;,&#34;payment&#34;:{&#34;bankName&#34;:&#34;&#34;,&#34;bankAddress&#34;:&#34;&#34;,&#34;bankAccountNo&#34;:&#34;&#34;,&#34;bankAccountIBAN&#34;:&#34;&#34;,&#34;swiftCode&#34;:&#34;&#34;,&#34;terms&#34;:&#34;&#34;},&#34;delivery&#34;:{&#34;approach&#34;:&#34;&#34;,&#34;packaging&#34;:&#34;&#34;,&#34;exportPort&#34;:&#34;&#34;,&#34;countryOfOrigin&#34;:&#34;&#34;,&#34;grossWeight&#34;:1,&#34;netWeight&#34;:1,&#34;terms&#34;:&#34;&#34;},&#34;invoiceLines&#34;:[{&#34;description&#34;:&#34;Support for one legal entity of OTax solution From 01 1 2026 To 30 6 2026&#34;,&#34;itemType&#34;:&#34;GS1&#34;,&#34;itemCode&#34;:&#34;99999999&#34;,&#34;unitType&#34;:&#34;EA&#34;,&#34;quantity&#34;:1,&#34;unitValue&#34;:{&#34;currencySold&#34;:&#34;EGP&#34;,&#34;amountSold&#34;:0,&#34;amountEGP&#34;:100,&#34;currencyExchangeRate&#34;:0},&#34;salesTotal&#34;:100,&#34;discount&#34;:{&#34;rate&#34;:0,&#34;amount&#34;:0},&#34;taxableItems&#34;:[{&#34;taxType&#34;:&#34;T1&#34;,&#34;amount&#34;:14,&#34;subType&#34;:&#34;V009&#34;,&#34;rate&#34;:14}],&#34;internalCode&#34;:&#34;Tech support&#34;,&#34;itemsDiscount&#34;:0,&#34;netTotal&#34;:100,&#34;totalTaxableFees&#34;:0,&#34;valueDifference&#34;:0,&#34;total&#34;:114}],&#34;totalSalesAmount&#34;:100,&#34;totalDiscountAmount&#34;:0,&#34;netAmount&#34;:100,&#34;taxTotals&#34;:[{&#34;taxType&#34;:&#34;T1&#34;,&#34;amount&#34;:14}],&#34;totalAmount&#34;:100,&#34;totalItemsDiscountAmount&#34;:0,&#34;extraDiscountAmount&#34;:14,&#34;signatures&#34;:[{&#34;signatureType&#34;:&#34;I&#34;,&#34;value&#34;:&#34;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&#34;}]}</document>
+<transformationStatus>original</transformationStatus>
+<validationResults>
+  <status>Invalid</status>
+  <validationSteps>
+    <name>Step-05.TaxpayerProfile Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-03.ITIDA Signature Validator</name>
+    <status>Invalid</status>
+    <error>
+      <propertyName />
+      <propertyPath />
+      <errorCode>Err03</errorCode>
+      <error>Invalid Digital Signature</error>
+      <innerError>
+        <propertyName>value</propertyName>
+        <propertyPath>documents.signatures.value</propertyPath>
+        <errorCode>4062</errorCode>
+        <error>4062:Attached digital signature is not supported.</error>
+      </innerError>
+    </error>
+  </validationSteps>
+  <validationSteps>
+    <name>Step-04.NationalID Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-06.Simple Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-07.Code Field Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-08. Duplicate Submission Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+</validationResults>
+<maxPercision>2</maxPercision>
+<invoiceLineItemCodes>
+  <codeTypeId>2</codeTypeId>
+  <codeTypeNamePrimaryLang>GS1</codeTypeNamePrimaryLang>
+  <codeTypeNameSecondaryLang>GS1</codeTypeNameSecondaryLang>
+  <itemCode>99999999</itemCode>
+  <codeNamePrimaryLang>Temporary Classification</codeNamePrimaryLang>
+  <codeNameSecondaryLang>التصنيف المؤقت</codeNameSecondaryLang>
+</invoiceLineItemCodes>
+<documentLinesTotalCount />
+<additionalMetadata />
+<lateSubmissionRequestNumber />
+<serviceDeliveryDate />
+</document>

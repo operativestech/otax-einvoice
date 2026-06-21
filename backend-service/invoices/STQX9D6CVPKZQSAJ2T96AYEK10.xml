@@ -1,0 +1,77 @@
+<document><uuid>STQX9D6CVPKZQSAJ2T96AYEK10</uuid>
+<submissionUUID>TWM1HHNDEJKAJY7G2T96AYEK10</submissionUUID>
+<longId>G2W4VQV5HMTK2H0J2T96AYEK10rIWIwY1768396367</longId>
+<internalId>inv-067</internalId>
+<typeName>I</typeName>
+<typeVersionName>1.0</typeVersionName>
+<issuerId>562067566</issuerId>
+<issuerName>اوبراتفز لحلول تكنولوجيا المعلومات</issuerName>
+<receiverId>29909041402358</receiverId>
+<receiverName>essam</receiverName>
+<dateTimeIssued>2026-01-14T13:12:39</dateTimeIssued>
+<dateTimeReceived>2026-01-14T13:12:47</dateTimeReceived>
+<totalSales>100</totalSales>
+<totalDiscount>0</totalDiscount>
+<netAmount>100</netAmount>
+<total>100</total>
+<status>Invalid</status>
+<document>{&#34;issuer&#34;:{&#34;address&#34;:{&#34;country&#34;:&#34;EG&#34;,&#34;governate&#34;:&#34;Cairo&#34;,&#34;regionCity&#34;:&#34;0&#34;,&#34;street&#34;:&#34; البرج الشمالى -ابراج النايل سيتى -كورنيش النيل الساحل , &#34;,&#34;buildingNumber&#34;:&#34;22&#34;,&#34;postalCode&#34;:&#34;0&#34;,&#34;floor&#34;:&#34;0&#34;,&#34;room&#34;:&#34;0&#34;,&#34;landmark&#34;:&#34;0&#34;,&#34;additionalInformation&#34;:&#34;0&#34;,&#34;branchID&#34;:&#34;0&#34;},&#34;type&#34;:&#34;B&#34;,&#34;id&#34;:&#34;562067566&#34;,&#34;name&#34;:&#34;اوبراتفز لحلول تكنولوجيا المعلومات&#34;},&#34;receiver&#34;:{&#34;address&#34;:{&#34;country&#34;:&#34;EG&#34;,&#34;governate&#34;:&#34;Egypt&#34;,&#34;regionCity&#34;:&#34;Egypt&#34;,&#34;street&#34;:&#34;Egypt&#34;,&#34;buildingNumber&#34;:&#34;1&#34;,&#34;postalCode&#34;:&#34;0&#34;,&#34;floor&#34;:&#34;1&#34;,&#34;room&#34;:&#34;1&#34;,&#34;landmark&#34;:&#34;1&#34;,&#34;additionalInformation&#34;:&#34;&#34;},&#34;type&#34;:&#34;P&#34;,&#34;id&#34;:&#34;29909041402358&#34;,&#34;name&#34;:&#34;essam&#34;},&#34;documentType&#34;:&#34;I&#34;,&#34;documentTypeVersion&#34;:&#34;1.0&#34;,&#34;invoiceLines&#34;:[{&#34;description&#34;:&#34;Support for one legal entity of OTax solution From 01 1 2026 To 30 6 2026&#34;,&#34;itemType&#34;:&#34;GS1&#34;,&#34;itemCode&#34;:&#34;99999999&#34;,&#34;unitType&#34;:&#34;EA&#34;,&#34;quantity&#34;:1,&#34;internalCode&#34;:&#34;Tech support&#34;,&#34;salesTotal&#34;:100,&#34;total&#34;:114,&#34;valueDifference&#34;:0,&#34;totalTaxableFees&#34;:0,&#34;netTotal&#34;:100,&#34;itemsDiscount&#34;:0,&#34;unitValue&#34;:{&#34;currencySold&#34;:&#34;EGP&#34;,&#34;amountEGP&#34;:100,&#34;amountSold&#34;:0,&#34;currencyExchangeRate&#34;:0},&#34;discount&#34;:{&#34;rate&#34;:0,&#34;amount&#34;:0},&#34;taxableItems&#34;:[{&#34;taxType&#34;:&#34;T1&#34;,&#34;amount&#34;:14,&#34;subType&#34;:&#34;V009&#34;,&#34;rate&#34;:14}]}],&#34;dateTimeIssued&#34;:&#34;2026-01-14T13:12:39Z&#34;,&#34;taxpayerActivityCode&#34;:&#34;6209&#34;,&#34;internalID&#34;:&#34;inv-067&#34;,&#34;salesOrderReference&#34;:&#34;101&#34;,&#34;salesOrderDescription&#34;:&#34;101&#34;,&#34;totalDiscountAmount&#34;:0,&#34;totalSalesAmount&#34;:100,&#34;netAmount&#34;:100,&#34;taxTotals&#34;:[{&#34;taxType&#34;:&#34;T1&#34;,&#34;amount&#34;:14}],&#34;totalAmount&#34;:100,&#34;extraDiscountAmount&#34;:14,&#34;totalItemsDiscountAmount&#34;:0,&#34;signatures&#34;:[{&#34;signatureType&#34;:&#34;I&#34;,&#34;value&#34;:&#34;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&#34;}]}</document>
+<transformationStatus>original</transformationStatus>
+<validationResults>
+  <status>Invalid</status>
+  <validationSteps>
+    <name>Step-03.ITIDA Signature Validator</name>
+    <status>Invalid</status>
+    <error>
+      <propertyName />
+      <propertyPath />
+      <errorCode>Err03</errorCode>
+      <error>Invalid Digital Signature</error>
+      <innerError>
+        <propertyName>value</propertyName>
+        <propertyPath>documents.signatures.value</propertyPath>
+        <errorCode>4043</errorCode>
+        <error>4043:Exception[message-digest attribute value does not match calculated value]</error>
+      </innerError>
+    </error>
+  </validationSteps>
+  <validationSteps>
+    <name>Step-04.NationalID Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-05.TaxpayerProfile Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-06.Simple Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-07.Code Field Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-08. Duplicate Submission Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+</validationResults>
+<maxPercision>2</maxPercision>
+<invoiceLineItemCodes>
+  <codeTypeId>2</codeTypeId>
+  <codeTypeNamePrimaryLang>GS1</codeTypeNamePrimaryLang>
+  <codeTypeNameSecondaryLang>GS1</codeTypeNameSecondaryLang>
+  <itemCode>99999999</itemCode>
+  <codeNamePrimaryLang>Temporary Classification</codeNamePrimaryLang>
+  <codeNameSecondaryLang>التصنيف المؤقت</codeNameSecondaryLang>
+</invoiceLineItemCodes>
+<documentLinesTotalCount />
+<additionalMetadata />
+<lateSubmissionRequestNumber />
+<serviceDeliveryDate />
+</document>

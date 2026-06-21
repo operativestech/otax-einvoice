@@ -1,0 +1,96 @@
+{"documents":[{
+  "issuer": {
+    "address": {
+      "country": "EG",
+      "governate": "Cairo",
+      "regionCity": "0",
+      "street": " البرج الشمالى -ابراج النايل سيتى -كورنيش النيل الساحل , ",
+      "buildingNumber": "22",
+      "postalCode": "0",
+      "floor": "0",
+      "room": "0",
+      "landmark": "0",
+      "additionalInformation": "0",
+      "branchID": "0"
+    },
+    "type": "B",
+    "id": "562067566",
+    "name": "اوبراتفز لحلول تكنولوجيا المعلومات"
+  },
+  "receiver": {
+    "address": {
+      "country": "EG",
+      "governate": "Egypt",
+      "regionCity": "Egypt",
+      "street": "Egypt",
+      "buildingNumber": "1",
+      "postalCode": "0",
+      "floor": "1",
+      "room": "1",
+      "landmark": "1",
+      "additionalInformation": ""
+    },
+    "type": "P",
+    "id": "29909041402358",
+    "name": "essam"
+  },
+  "documentType": "I",
+  "documentTypeVersion": "1.0",
+  "invoiceLines": [
+    {
+      "description": "Support for one legal entity of OTax solution From 01 1 2026 To 30 6 2026",
+      "itemType": "EGS",
+      "itemCode": "EG-562067566-Travel Services13",
+      "unitType": "EA",
+      "quantity": 1,
+      "internalCode": "Tech support",
+      "salesTotal": 1,
+      "total": 1.14,
+      "valueDifference": 0,
+      "totalTaxableFees": 0,
+      "netTotal": 1,
+      "itemsDiscount": 0,
+      "unitValue": {
+        "currencySold": "EGP",
+        "amountEGP": 1,
+        "amountSold": 0,
+        "currencyExchangeRate": 0
+      },
+      "discount": {
+        "rate": 0,
+        "amount": 0
+      },
+      "taxableItems": [
+        {
+          "taxType": "T1",
+          "amount": 0.14,
+          "subType": "V009",
+          "rate": 14
+        }
+      ]
+    }
+  ],
+  "dateTimeIssued": "2026-01-29T01:13:47Z",
+  "taxpayerActivityCode": "6209",
+  "internalID": "combo-01",
+  "salesOrderReference": "101",
+  "salesOrderDescription": "101",
+  "totalDiscountAmount": 0,
+  "totalSalesAmount": 1,
+  "netAmount": 1,
+  "taxTotals": [
+    {
+      "taxType": "T1",
+      "amount": 0.14
+    }
+  ],
+  "totalAmount": 1.14,
+  "extraDiscountAmount": 0,
+  "totalItemsDiscountAmount": 0,
+  "signatures": [
+    {
+      "signatureType": "I",
+      "value": "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"
+    }
+  ]
+}]}

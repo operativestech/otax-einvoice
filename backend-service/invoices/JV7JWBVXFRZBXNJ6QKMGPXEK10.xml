@@ -1,0 +1,77 @@
+<document><uuid>JV7JWBVXFRZBXNJ6QKMGPXEK10</uuid>
+<submissionUUID>DFP350QQEW0FBHY4QKMGPXEK10</submissionUUID>
+<longId>ZE43XQRGQHW2AKEYQKMGPXEK10MMNQnx1768375734</longId>
+<internalId>inv-062</internalId>
+<typeName>I</typeName>
+<typeVersionName>1.0</typeVersionName>
+<issuerId>562067566</issuerId>
+<issuerName>اوبراتفز لحلول تكنولوجيا المعلومات</issuerName>
+<receiverId>29909041402358</receiverId>
+<receiverName>essam</receiverName>
+<dateTimeIssued>2026-01-14T00:00:00</dateTimeIssued>
+<dateTimeReceived>2026-01-14T07:28:54</dateTimeReceived>
+<totalSales>100</totalSales>
+<totalDiscount>0</totalDiscount>
+<netAmount>100</netAmount>
+<total>100</total>
+<status>Invalid</status>
+<document>{&#34;issuer&#34;:{&#34;type&#34;:&#34;B&#34;,&#34;id&#34;:&#34;562067566&#34;,&#34;name&#34;:&#34;اوبراتفز لحلول تكنولوجيا المعلومات&#34;,&#34;address&#34;:{&#34;branchID&#34;:&#34;0&#34;,&#34;country&#34;:&#34;EG&#34;,&#34;governate&#34;:&#34;Cairo&#34;,&#34;regionCity&#34;:&#34;0&#34;,&#34;street&#34;:&#34;البرج الشمالى -ابراج النايل سيتى -كورنيش النيل الساحل ,&#34;,&#34;buildingNumber&#34;:&#34;22&#34;,&#34;postalCode&#34;:&#34;0&#34;,&#34;floor&#34;:&#34;0&#34;,&#34;room&#34;:&#34;0&#34;,&#34;landmark&#34;:&#34;0&#34;,&#34;additionalInformation&#34;:&#34;0&#34;}},&#34;receiver&#34;:{&#34;type&#34;:&#34;P&#34;,&#34;id&#34;:&#34;29909041402358&#34;,&#34;name&#34;:&#34;essam&#34;,&#34;address&#34;:{&#34;country&#34;:&#34;EG&#34;,&#34;governate&#34;:&#34;Egypt&#34;,&#34;regionCity&#34;:&#34;Egypt&#34;,&#34;street&#34;:&#34;Egypt&#34;,&#34;buildingNumber&#34;:&#34;1&#34;,&#34;postalCode&#34;:&#34;0&#34;,&#34;floor&#34;:&#34;1&#34;,&#34;room&#34;:&#34;1&#34;,&#34;landmark&#34;:&#34;1&#34;,&#34;additionalInformation&#34;:&#34;&#34;}},&#34;documentType&#34;:&#34;I&#34;,&#34;documentTypeVersion&#34;:&#34;1.0&#34;,&#34;dateTimeIssued&#34;:&#34;2026-01-14T00:00:00Z&#34;,&#34;taxpayerActivityCode&#34;:&#34;6209&#34;,&#34;internalID&#34;:&#34;inv-062&#34;,&#34;purchaseOrderReference&#34;:&#34;&#34;,&#34;purchaseOrderDescription&#34;:&#34;&#34;,&#34;salesOrderReference&#34;:&#34;101&#34;,&#34;salesOrderDescription&#34;:&#34;101&#34;,&#34;proformaInvoiceNumber&#34;:&#34;&#34;,&#34;payment&#34;:{&#34;bankName&#34;:&#34;&#34;,&#34;bankAddress&#34;:&#34;&#34;,&#34;bankAccountNo&#34;:&#34;&#34;,&#34;bankAccountIBAN&#34;:&#34;&#34;,&#34;swiftCode&#34;:&#34;&#34;,&#34;terms&#34;:&#34;&#34;},&#34;delivery&#34;:{&#34;approach&#34;:&#34;&#34;,&#34;packaging&#34;:&#34;&#34;,&#34;exportPort&#34;:&#34;&#34;,&#34;countryOfOrigin&#34;:&#34;&#34;,&#34;grossWeight&#34;:1,&#34;netWeight&#34;:1,&#34;terms&#34;:&#34;&#34;},&#34;invoiceLines&#34;:[{&#34;description&#34;:&#34;Support for one legal entity of OTax solution From 01 1 2026 To 30 6 2026&#34;,&#34;itemType&#34;:&#34;GS1&#34;,&#34;itemCode&#34;:&#34;99999999&#34;,&#34;unitType&#34;:&#34;EA&#34;,&#34;quantity&#34;:1,&#34;unitValue&#34;:{&#34;currencySold&#34;:&#34;EGP&#34;,&#34;amountSold&#34;:0,&#34;amountEGP&#34;:100,&#34;currencyExchangeRate&#34;:0},&#34;salesTotal&#34;:100,&#34;discount&#34;:{&#34;rate&#34;:0,&#34;amount&#34;:0},&#34;taxableItems&#34;:[{&#34;taxType&#34;:&#34;T1&#34;,&#34;amount&#34;:14,&#34;subType&#34;:&#34;V009&#34;,&#34;rate&#34;:14}],&#34;internalCode&#34;:&#34;Tech support&#34;,&#34;itemsDiscount&#34;:0,&#34;netTotal&#34;:100,&#34;totalTaxableFees&#34;:0,&#34;valueDifference&#34;:0,&#34;total&#34;:114}],&#34;totalSalesAmount&#34;:100,&#34;totalDiscountAmount&#34;:0,&#34;netAmount&#34;:100,&#34;taxTotals&#34;:[{&#34;taxType&#34;:&#34;T1&#34;,&#34;amount&#34;:14}],&#34;totalAmount&#34;:100,&#34;totalItemsDiscountAmount&#34;:0,&#34;extraDiscountAmount&#34;:14,&#34;signatures&#34;:[{&#34;signatureType&#34;:&#34;I&#34;,&#34;value&#34;:&#34;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&#34;}]}</document>
+<transformationStatus>original</transformationStatus>
+<validationResults>
+  <status>Invalid</status>
+  <validationSteps>
+    <name>Step-03.ITIDA Signature Validator</name>
+    <status>Invalid</status>
+    <error>
+      <propertyName />
+      <propertyPath />
+      <errorCode>Err03</errorCode>
+      <error>Invalid Digital Signature</error>
+      <innerError>
+        <propertyName>value</propertyName>
+        <propertyPath>documents.signatures.value</propertyPath>
+        <errorCode>4043</errorCode>
+        <error>4043:Exception[message-digest attribute value does not match calculated value]</error>
+      </innerError>
+    </error>
+  </validationSteps>
+  <validationSteps>
+    <name>Step-04.NationalID Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-05.TaxpayerProfile Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-06.Simple Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-07.Code Field Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-08. Duplicate Submission Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+</validationResults>
+<maxPercision>2</maxPercision>
+<invoiceLineItemCodes>
+  <codeTypeId>2</codeTypeId>
+  <codeTypeNamePrimaryLang>GS1</codeTypeNamePrimaryLang>
+  <codeTypeNameSecondaryLang>GS1</codeTypeNameSecondaryLang>
+  <itemCode>99999999</itemCode>
+  <codeNamePrimaryLang>Temporary Classification</codeNamePrimaryLang>
+  <codeNameSecondaryLang>التصنيف المؤقت</codeNameSecondaryLang>
+</invoiceLineItemCodes>
+<documentLinesTotalCount />
+<additionalMetadata />
+<lateSubmissionRequestNumber />
+<serviceDeliveryDate />
+</document>

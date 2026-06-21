@@ -1,0 +1,90 @@
+{
+  "issuer": {
+    "address": {
+      "country": "EG",
+      "governate": "Cairo",
+      "regionCity": "0",
+      "street": " البرج الشمالى -ابراج النايل سيتى -كورنيش النيل الساحل , ",
+      "buildingNumber": "22",
+      "postalCode": "0",
+      "floor": "0",
+      "room": "0",
+      "landmark": "0",
+      "additionalInformation": "0",
+      "branchID": "0"
+    },
+    "type": "B",
+    "id": "562067566",
+    "name": "اوبراتفز لحلول تكنولوجيا المعلومات"
+  },
+  "receiver": {
+    "address": {
+      "country": "EG",
+      "governate": "Egypt",
+      "regionCity": "Egypt",
+      "street": "Egypt",
+      "buildingNumber": "1",
+      "postalCode": "0",
+      "floor": "1",
+      "room": "1",
+      "landmark": "1",
+      "additionalInformation": ""
+    },
+    "type": "P",
+    "id": "29909041402358",
+    "name": "essam"
+  },
+  "documentType": "I",
+  "documentTypeVersion": "1.0",
+  "invoiceLines": [
+    {
+      "description": "Support for one legal entity of OTax solution From 01 1 2026 To 30 6 2026",
+      "itemType": "GS1",
+      "itemCode": "99999999",
+      "unitType": "EA",
+      "quantity": 1,
+      "internalCode": "Tech support",
+      "salesTotal": 1,
+      "total": 1.14,
+      "valueDifference": 0,
+      "totalTaxableFees": 0,
+      "netTotal": 1,
+      "itemsDiscount": 0,
+      "unitValue": {
+        "currencySold": "EGP",
+        "amountEGP": 1,
+        "amountSold": 0,
+        "currencyExchangeRate": 0
+      },
+      "discount": {
+        "rate": 0,
+        "amount": 0
+      },
+      "taxableItems": [
+        {
+          "taxType": "T1",
+          "amount": 0.14,
+          "subType": "V009",
+          "rate": 14
+        }
+      ]
+    }
+  ],
+  "dateTimeIssued": "2026-02-24T09:20:56Z",
+  "taxpayerActivityCode": "6209",
+  "internalID": "combo-01",
+  "salesOrderReference": "101",
+  "salesOrderDescription": "101",
+  "totalDiscountAmount": 0,
+  "totalSalesAmount": 1,
+  "netAmount": 1,
+  "taxTotals": [
+    {
+      "taxType": "T1",
+      "amount": 0.14
+    }
+  ],
+  "totalAmount": 1.14,
+  "extraDiscountAmount": 0,
+  "totalItemsDiscountAmount": 0
+}

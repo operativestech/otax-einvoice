@@ -1,0 +1,511 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["otaxdb"]
+}
+
+model Credential {
+  id                                                                         BigInt                     @id @default(autoincrement())
+  username                                                                   String?                    @unique @db.VarChar(255)
+  email                                                                      String?                    @unique @db.VarChar(255)
+  password                                                                   String?                    @db.VarChar(255)
+  hwid                                                                       String?                    @db.VarChar(255)
+  isValid                                                                    Boolean                    @default(false) @map("isValid")
+  isDemo                                                                     Boolean?                   @map("isDemo")
+  email_verified                                                             Boolean?                   @default(false)
+  registerDate                                                               DateTime?                  @default(now()) @map("registerDate") @db.Time(6)
+  expiryDate                                                                 DateTime?                  @default(dbgenerated("(CURRENT_TIMESTAMP + '9 days'::interval)")) @map("expiryDate") @db.Timestamp(6)
+  configHash                                                                 String?                    @map("configHash") @db.VarChar
+  organization_id                                                            Int?
+  organizations                                                              organizations?             @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  organization_audit_logs                                                    organization_audit_logs[]
+  organization_invitations_organization_invitations_accepted_byTocredentials organization_invitations[] @relation("organization_invitations_accepted_byTocredentials")
+  organization_invitations_organization_invitations_invited_byTocredentials  organization_invitations[] @relation("organization_invitations_invited_byTocredentials")
+  userRoles                                                                  UserRole[]
+  userPermissions                                                            UserPermission[]
+
+  @@index([organization_id], map: "idx_credentials_org")
+  @@map("credentials")
+  @@schema("otaxdb")
+}
+
+model ClientInfo {
+  id            BigInt    @default(autoincrement())
+  hwid          String    @db.VarChar
+  uid           BigInt
+  propertyName  String    @map("property_name") @db.VarChar
+  propertyValue String?   @map("property_value") @db.VarChar
+  nonAdminEdit  Boolean?  @map("nonAdminEdit")
+  modifyDate    DateTime? @default(now()) @db.Timestamp(6)
+  modify_date   DateTime? @default(now()) @db.Timestamp(6)
+
+  @@id([hwid, uid, propertyName])
+  @@map("clients_info_new")
+  @@schema("otaxdb")
+}
+
+model Role {
+  id                       Int                        @id @default(autoincrement())
+  name                     String                     @unique @db.VarChar(255)
+  displayName              String                     @map("display_name") @db.VarChar(255)
+  description              String?
+  isSystem                 Boolean?                   @default(false) @map("is_system")
+  createdAt                DateTime?                  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt                DateTime?                  @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  organization_invitations organization_invitations[]
+  rolePermissions          RolePermission[]
+  userRoles                UserRole[]
+  portalUserRoles          PortalUserRole[]
+
+  @@map("roles")
+  @@schema("otaxdb")
+}
+
+model Permission {
+  id                    Int                    @id @default(autoincrement())
+  name                  String                 @unique @db.VarChar(255)
+  displayName           String                 @map("display_name") @db.VarChar(255)
+  description           String?
+  module                String                 @db.VarChar(255)
+  action                String                 @db.VarChar(255)
+  createdAt             DateTime?              @default(now()) @map("created_at") @db.Timestamp(6)
+  rolePermissions       RolePermission[]
+  portalUserPermissions PortalUserPermission[]
+  userPermissions       UserPermission[]
+
+  @@map("permissions")
+  @@schema("otaxdb")
+}
+
+model UserRole {
+  id         Int        @id @default(autoincrement())
+  userId     BigInt     @map("user_id")
+  roleId     Int        @map("role_id")
+  assignedAt DateTime?  @default(now()) @map("assigned_at") @db.Timestamp(6)
+  assignedBy BigInt?    @map("assigned_by")
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user       Credential @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([userId, roleId])
+  @@map("user_roles")
+  @@schema("otaxdb")
+}
+
+model RolePermission {
+  id           Int        @id @default(autoincrement())
+  roleId       Int        @map("role_id")
+  permissionId Int        @map("permission_id")
+  createdAt    DateTime?  @default(now()) @map("created_at") @db.Timestamp(6)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+  @@schema("otaxdb")
+}
+
+
+model UserActivityLog {
+  id           Int       @id @default(autoincrement())
+  userId       Int       @map("user_id")
+  username     String    @db.VarChar(255)
+  action       String    @db.VarChar(255)
+  module       String?   @db.VarChar(255)
+  resourceType String?   @map("resource_type") @db.VarChar(255)
+  resourceId   String?   @map("resource_id") @db.VarChar(255)
+  details      String?
+  ipAddress    String?   @map("ip_address") @db.VarChar(50)
+  userAgent    String?   @map("user_agent")
+  status       String?   @default("success") @db.VarChar(50)
+  errorMessage String?   @map("error_message")
+  createdAt    DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+
+  @@index([action], map: "idx_user_activity_action")
+  @@index([createdAt], map: "idx_user_activity_created_at")
+  @@index([userId], map: "idx_user_activity_user_id")
+  @@map("user_activity_logs")
+  @@schema("otaxdb")
+}
+
+model UserLoginHistory {
+  id              Int       @id @default(autoincrement())
+  userId          Int       @map("user_id")
+  username        String    @db.VarChar(255)
+  loginTime       DateTime? @default(now()) @map("login_time") @db.Timestamp(6)
+  logoutTime      DateTime? @map("logout_time") @db.Timestamp(6)
+  ipAddress       String?   @map("ip_address") @db.VarChar(50)
+  userAgent       String?   @map("user_agent")
+  device          String?   @db.VarChar(100)
+  browser         String?   @db.VarChar(100)
+  os              String?   @db.VarChar(100)
+  location        String?   @db.VarChar(255)
+  sessionDuration Int?      @map("session_duration")
+  status          String?   @default("active") @db.VarChar(50)
+
+  @@index([loginTime], map: "idx_login_history_login_time")
+  @@index([userId], map: "idx_login_history_user_id")
+  @@map("user_login_history")
+  @@schema("otaxdb")
+}
+
+model ETASyncStatus {
+  id                 Int            @id @default(autoincrement())
+  userId             Int            @unique @map("user_id")
+  username           String         @db.VarChar(255)
+  environment        String?        @default("PreProd") @db.VarChar(20)
+  lastSyncTime       DateTime?      @map("last_sync_time") @db.Timestamp(6)
+  nextSyncTime       DateTime?      @map("next_sync_time") @db.Timestamp(6)
+  syncStatus         String?        @default("pending") @map("sync_status") @db.VarChar(50)
+  totalDocuments     Int?           @default(0) @map("total_documents")
+  validDocuments     Int?           @default(0) @map("valid_documents")
+  invalidDocuments   Int?           @default(0) @map("invalid_documents")
+  rejectedDocuments  Int?           @default(0) @map("rejected_documents")
+  cancelledDocuments Int?           @default(0) @map("cancelled_documents")
+  submittedDocuments Int?           @default(0) @map("submitted_documents")
+  lastError          String?        @map("last_error")
+  syncDuration       Int?           @map("sync_duration")
+  isAutoSync         Boolean?       @default(true) @map("is_auto_sync")
+  syncInterval       Int?           @default(300) @map("sync_interval")
+  createdAt          DateTime?      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime?      @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  organization_id    Int?
+  organizations      organizations? @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([lastSyncTime], map: "idx_eta_sync_last_sync")
+  @@index([userId], map: "idx_eta_sync_user_id")
+  @@map("eta_sync_status")
+  @@schema("otaxdb")
+}
+
+
+model ETACredentials {
+  id               Int            @id @default(autoincrement())
+  userId           Int            @map("user_id")
+  environment      String?        @default("PreProd") @db.VarChar(20)
+  clientId         String?        @map("client_id")
+  clientSecret     String?        @map("client_secret")
+  taxId            String?        @map("tax_id") @db.VarChar(50)
+  isActive         Boolean?       @default(true) @map("is_active")
+  lastValidated    DateTime?      @map("last_validated") @db.Timestamp(6)
+  validationStatus String?        @map("validation_status") @db.VarChar(50)
+  createdAt        DateTime?      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt        DateTime?      @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  organization_id  Int?
+  organizations    organizations? @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([userId], map: "idx_eta_creds_user_id")
+  @@map("eta_credentials")
+  @@schema("otaxdb")
+}
+
+
+
+model organization_audit_logs {
+  id              Int           @id @default(autoincrement())
+  organization_id Int
+  user_id         BigInt?
+  action          String        @db.VarChar(255)
+  resource_type   String?       @db.VarChar(100)
+  resource_id     String?       @db.VarChar(100)
+  details         String?
+  ip_address      String?       @db.VarChar(50)
+  user_agent      String?
+  created_at      DateTime?     @default(now()) @db.Timestamp(6)
+  organizations   organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  credentials     Credential?   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([created_at], map: "idx_org_audit_created")
+  @@index([organization_id], map: "idx_org_audit_org")
+  @@index([user_id], map: "idx_org_audit_user")
+  @@schema("otaxdb")
+}
+
+model organization_invitations {
+  id                                                            Int           @id @default(autoincrement())
+  organization_id                                               Int
+  email                                                         String        @db.VarChar(255)
+  role_id                                                       Int?
+  role_name                                                     String?       @db.VarChar(100)
+  role_ids                                                      String?
+  permission_ids                                                String?
+  token                                                         String        @unique @db.VarChar(255)
+  status                                                        String?       @default("pending") @db.VarChar(50)
+  invited_by                                                    BigInt?
+  accepted_by                                                   BigInt?
+  expires_at                                                    DateTime?     @db.Timestamp(6)
+  created_at                                                    DateTime?     @default(now()) @db.Timestamp(6)
+  accepted_at                                                   DateTime?     @db.Timestamp(6)
+  credentials_organization_invitations_accepted_byTocredentials Credential?   @relation("organization_invitations_accepted_byTocredentials", fields: [accepted_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  credentials_organization_invitations_invited_byTocredentials  Credential?   @relation("organization_invitations_invited_byTocredentials", fields: [invited_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  organizations                                                 organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  roles                                                         Role?         @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([organization_id], map: "idx_org_inv_org")
+  @@index([token], map: "idx_org_inv_token")
+  @@schema("otaxdb")
+}
+
+model Lead {
+  id          Int      @id @default(autoincrement())
+  email       String   @unique @db.VarChar(255)
+  name        String   @db.VarChar(255)
+  phone       String?  @db.VarChar(50)
+  companyName String?  @map("company_name") @db.VarChar(255)
+  taxId       String?  @map("tax_id") @db.VarChar(50)
+  plan        String?  @db.VarChar(50)
+  status      String   @default("NEW") @db.VarChar(50)
+  step        Int?     @default(1)
+  details     String?  
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("leads")
+  @@schema("otaxdb")
+}
+
+model OtpCode {
+  id        Int       @id @default(autoincrement())
+  email     String    @db.VarChar(255)
+  code      String    @db.VarChar(10)
+  type      String    @db.VarChar(50) // signup_verify, password_reset, invitation
+  used      Boolean?  @default(false)
+  expiresAt DateTime  @map("expires_at") @db.Timestamp(6)
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+
+  @@index([email, code], map: "idx_otp_email_code")
+  @@index([expiresAt], map: "idx_otp_expires")
+  @@map("otp_codes")
+  @@schema("otaxdb")
+}
+
+model organization_settings {
+  id                        Int           @id @default(autoincrement())
+  organization_id           Int           @unique
+  eta_environment           String?       @default("PreProd") @db.VarChar(20)
+  eta_client_id             String?
+  eta_client_secret         String?
+  eta_preprod_client_id     String?       @db.VarChar(255)
+  eta_preprod_client_secret String?       @db.VarChar(255)
+  eta_prod_client_id        String?       @db.VarChar(255)
+  eta_prod_client_secret    String?       @db.VarChar(255)
+  eta_tax_id                String?       @db.VarChar(50)
+  eta_last_sync_at          DateTime?     @db.Timestamp(6)
+  eta_sync_status           String?       @default("never") @db.VarChar(20)
+  eta_auto_sync             Boolean?      @default(true)
+  eta_sync_interval         Int?          @default(300)
+  eta_submit_format         String?       @default("JSON") @db.VarChar(8)  // "JSON" or "XML"
+  eta_sync_mode             String?       @default("off") @db.VarChar(16)  // "off" | "interval" | "times"
+  eta_sync_times            String[]      @default([])                       // ["09:00", "12:00", ...]
+  eta_last_auto_sync_at     DateTime?     @db.Timestamp(6)
+
+  // ── Signing Configuration ──
+  signing_method            String?       @default("agent") @db.VarChar(20)  // "pfx" or "agent"
+
+  // PFX Certificate (Option 1)
+  certificate_pfx           Bytes?                                           // .pfx file binary
+  certificate_password      String?       @db.VarChar(255)                   // password for .pfx
+  certificate_issuer        String?       @db.VarChar(255)                   // e.g. "MCDR CA 2022"
+  certificate_subject       String?       @db.VarChar(255)                   // e.g. "Ahmed & Sons"
+  certificate_thumbprint    String?       @db.VarChar(100)                   // SHA1 thumbprint
+  certificate_expires_at    DateTime?     @db.Timestamp(6)                   // expiry date
+  certificate_uploaded_at   DateTime?     @db.Timestamp(6)                   // when uploaded
+
+  // Agent Signing (Option 2)
+  agent_company_id          String?       @db.VarChar(100)                   // company ID for bridge
+  agent_node_id             String?       @db.VarChar(100)                   // registered node
+  agent_last_seen           DateTime?     @db.Timestamp(6)                   // last heartbeat
+
+  invoice_prefix            String?       @db.VarChar(20)
+  invoice_start_number      Int?          @default(1)
+  default_payment_terms     Int?          @default(30)
+  email_notifications       Boolean?      @default(true)
+  sms_notifications         Boolean?      @default(false)
+  webhook_url               String?
+  custom_settings           String?
+  created_at                DateTime?     @default(now()) @db.Timestamp(6)
+  updated_at                DateTime?     @default(now()) @db.Timestamp(6)
+  organizations             organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@schema("otaxdb")
+}
+
+model organization_subscriptions {
+  id                     Int           @id @default(autoincrement())
+  organization_id        Int
+  plan                   String        @db.VarChar(50)
+  status                 String?       @default("active") @db.VarChar(50)
+  max_users              Int?          @default(5)
+  max_invoices_per_month Int?          @default(100)
+  max_storage_gb         Int?          @default(5)
+  price_per_month        Decimal?      @db.Decimal(10, 2)
+  billing_cycle          String?       @default("monthly") @db.VarChar(20)
+  starts_at              DateTime?     @default(now()) @db.Timestamp(6)
+  expires_at             DateTime?     @db.Timestamp(6)
+  cancelled_at           DateTime?     @db.Timestamp(6)
+  created_at             DateTime?     @default(now()) @db.Timestamp(6)
+  updated_at             DateTime?     @default(now()) @db.Timestamp(6)
+  organizations          organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([organization_id], map: "idx_org_sub_org")
+  @@index([status], map: "idx_org_sub_status")
+  @@schema("otaxdb")
+}
+
+model organizations {
+  id                         Int                          @id @default(autoincrement())
+  name                       String                       @db.VarChar(500)
+  tax_id                     String                       @unique @db.VarChar(50)
+  org_join_code              String?                      @unique @db.VarChar(20)
+  company_type               String?                      @db.VarChar(50)
+  email                      String?                      @db.VarChar(255)
+  phone                      String?                      @db.VarChar(50)
+  website                    String?                      @db.VarChar(255)
+  country                    String?                      @db.VarChar(100)
+  governorate                String?                      @db.VarChar(100)
+  city                       String?                      @db.VarChar(100)
+  street                     String?                      @db.VarChar(500)
+  building_number            String?                      @db.VarChar(50)
+  postal_code                String?                      @db.VarChar(20)
+  logo_url                   String?
+  primary_color              String?                      @default("#1e40af") @db.VarChar(20)
+  language                   String?                      @default("en") @db.VarChar(10)
+  timezone                   String?                      @default("Africa/Cairo") @db.VarChar(50)
+  currency                   String?                      @default("EGP") @db.VarChar(10)
+  is_active                  Boolean?                     @default(true)
+  subscription_plan          String?                      @default("free") @db.VarChar(50)
+  subscription_expires_at    DateTime?                    @db.Timestamp(6)
+  created_at                 DateTime?                    @default(now()) @db.Timestamp(6)
+  updated_at                 DateTime?                    @default(now()) @db.Timestamp(6)
+  created_by                 Int?
+  credentials                Credential[]
+  eta_credentials            ETACredentials[]
+  eta_sync_status            ETASyncStatus[]
+  organization_audit_logs    organization_audit_logs[]
+  organization_invitations   organization_invitations[]
+  organization_settings      organization_settings?
+  organization_subscriptions organization_subscriptions[]
+  portalUsers                PortalUser[]
+
+  @@index([is_active], map: "idx_org_active")
+  @@index([tax_id], map: "idx_org_tax_id")
+  @@schema("otaxdb")
+}
+
+// ============================================
+// PORTAL USERS — New signup users (separate from legacy credentials)
+// ============================================
+
+model PortalUser {
+  id                    BigInt                 @id @default(autoincrement())
+  email                 String                 @unique @db.VarChar(255)
+  username              String?                @db.VarChar(255)
+  password              String                 @db.VarChar(255)
+  full_name             String?                @db.VarChar(255)
+  phone                 String?                @db.VarChar(50)
+  is_active             Boolean                @default(true)
+  email_verified        Boolean                @default(false)
+  organization_id       Int?
+  created_at            DateTime?              @default(now()) @db.Timestamp(6)
+  updated_at            DateTime?              @default(now()) @db.Timestamp(6)
+  last_login_at         DateTime?              @db.Timestamp(6)
+  organizations         organizations?         @relation(fields: [organization_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  portalUserRoles       PortalUserRole[]
+  portalUserPermissions PortalUserPermission[]
+
+  @@index([organization_id], map: "idx_portal_users_org")
+  @@index([email], map: "idx_portal_users_email")
+  @@map("portal_users")
+  @@schema("otaxdb")
+}
+
+model PortalUserRole {
+  id         Int        @id @default(autoincrement())
+  userId     BigInt     @map("user_id")
+  roleId     Int        @map("role_id")
+  assignedAt DateTime?  @default(now()) @map("assigned_at") @db.Timestamp(6)
+  assignedBy BigInt?    @map("assigned_by")
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user       PortalUser @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([userId, roleId])
+  @@map("portal_user_roles")
+  @@schema("otaxdb")
+}
+
+// Per-user permission overrides for portal users. When any rows exist for a user,
+// they REPLACE the role-derived permission set at login resolution time.
+model PortalUserPermission {
+  id           Int        @id @default(autoincrement())
+  userId       BigInt     @map("user_id")
+  permissionId Int        @map("permission_id")
+  grantedAt    DateTime?  @default(now()) @map("granted_at") @db.Timestamp(6)
+  grantedBy    BigInt?    @map("granted_by")
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user         PortalUser @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([userId, permissionId])
+  @@map("portal_user_permissions")
+  @@schema("otaxdb")
+}
+
+// Per-user permission overrides for legacy credential users. Same semantics as portal_user_permissions.
+model UserPermission {
+  id           Int        @id @default(autoincrement())
+  userId       BigInt     @map("user_id")
+  permissionId Int        @map("permission_id")
+  grantedAt    DateTime?  @default(now()) @map("granted_at") @db.Timestamp(6)
+  grantedBy    BigInt?    @map("granted_by")
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user         Credential @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([userId, permissionId])
+  @@map("user_permissions")
+  @@schema("otaxdb")
+}
+
+
+
+
+
+// ============================================
+// SIGNING NODES (Bridge Agent Registration)
+// ============================================
+
+model SigningNode {
+  id               Int       @id @default(autoincrement())
+  company_id       String    @unique @db.VarChar(100)
+  node_id          String    @db.VarChar(100)
+  agent_name       String?   @db.VarChar(255)
+  cert_thumbprint  String?   @db.VarChar(100)
+  cert_pin         String?   @db.VarChar(50)
+  cert_subject     String?   @db.VarChar(500)
+  last_seen        DateTime? @db.Timestamp(6)
+  created_at       DateTime? @default(now()) @db.Timestamp(6)
+
+  @@map("signing_nodes")
+  @@schema("otaxdb")
+}
+
+// ============================================
+// SUPER ADMINS (Platform-Level — No Org)
+// ============================================
+
+model SuperAdmin {
+  id            Int       @id @default(autoincrement())
+  username      String    @unique @db.VarChar(255)
+  email         String    @unique @db.VarChar(255)
+  password      String    @db.VarChar(255)
+  full_name     String?   @db.VarChar(255)
+  is_active     Boolean   @default(true)
+  last_login_at DateTime? @db.Timestamp(6)
+  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  updated_at    DateTime? @default(now()) @db.Timestamp(6)
+
+  @@map("super_admins")
+  @@schema("otaxdb")
+}

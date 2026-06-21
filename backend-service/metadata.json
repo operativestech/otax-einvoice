@@ -1,0 +1,6 @@
+
+{
+  "name": "Smart E-Invoicing Middleware",
+  "description": "A comprehensive enterprise-grade middleware connecting ERP systems with the Egyptian Tax Authority (ETA) portal, featuring automated signing, real-time logging, and intelligent error interpretation.",
+  "requestFramePermissions": ["geolocation"]
+}

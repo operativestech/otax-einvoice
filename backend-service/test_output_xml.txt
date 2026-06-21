@@ -1,0 +1,110 @@
+<document>
+<issuer>
+  <type>B</type>
+  <id>562067566</id>
+  <name>اوبراتفزلحلولتكنولوجياالمعلومات</name>
+  <address>
+    <buildingNumber>22</buildingNumber>
+    <room>0</room>
+    <floor>0</floor>
+    <street>البرجالشمالى-ابراجالنايلسيتى-كورنيشالنيلالساحل,</street>
+    <landmark>0</landmark>
+    <additionalInformation>0</additionalInformation>
+    <governate>Cairo</governate>
+    <regionCity>0</regionCity>
+    <postalCode>0</postalCode>
+    <country>EG</country>
+    <branchID>0</branchID>
+  </address>
+</issuer>
+<receiver>
+  <type>P</type>
+  <id>29909041402358</id>
+  <name>essam</name>
+  <address>
+    <buildingNumber>1</buildingNumber>
+    <room>1</room>
+    <floor>1</floor>
+    <street>Egypt</street>
+    <landmark>1</landmark>
+    <additionalInformation/>
+    <governate>Egypt</governate>
+    <regionCity>Egypt</regionCity>
+    <postalCode>0</postalCode>
+    <country>EG</country>
+  </address>
+</receiver>
+<documentType>I</documentType>
+<documentTypeVersion>1.0</documentTypeVersion>
+<dateTimeIssued>2026-01-06T00:00:00Z</dateTimeIssued>
+<taxpayerActivityCode>6209</taxpayerActivityCode>
+<internalID>test-001</internalID>
+<purchaseOrderReference/>
+<purchaseOrderDescription/>
+<salesOrderReference>101</salesOrderReference>
+<salesOrderDescription>101</salesOrderDescription>
+<proformaInvoiceNumber/>
+<payment>
+  <bankName/>
+  <bankAddress/>
+  <bankAccountNo/>
+  <bankAccountIBAN/>
+  <swiftCode/>
+  <terms/>
+</payment>
+<delivery>
+  <approach/>
+  <packaging/>
+  <exportPort/>
+  <countryOfOrigin/>
+  <grossWeight>1</grossWeight>
+  <netWeight>1</netWeight>
+  <terms/>
+</delivery>
+<invoiceLines>
+  <invoiceLine>
+    <description>Support for one legal entity</description>
+    <itemType>GS1</itemType>
+    <itemCode>99999999</itemCode>
+    <unitType>EA</unitType>
+    <quantity>1</quantity>
+    <unitValue>
+      <currencySold>EGP</currencySold>
+      <amountSold>0</amountSold>
+      <amountEGP>100</amountEGP>
+      <currencyExchangeRate>0</currencyExchangeRate>
+    </unitValue>
+    <salesTotal>100</salesTotal>
+    <discount>
+      <rate>0</rate>
+      <amount>0</amount>
+    </discount>
+    <taxableItems>
+      <taxableItem>
+        <taxType>T1</taxType>
+        <amount>14</amount>
+        <subType>V009</subType>
+        <rate>14</rate>
+      </taxableItem>
+    </taxableItems>
+    <internalCode>Techsupport</internalCode>
+    <itemsDiscount>0</itemsDiscount>
+    <netTotal>100</netTotal>
+    <totalTaxableFees>0</totalTaxableFees>
+    <valueDifference>0</valueDifference>
+    <total>114</total>
+  </invoiceLine>
+</invoiceLines>
+<totalSalesAmount>100</totalSalesAmount>
+<totalDiscountAmount>0</totalDiscountAmount>
+<netAmount>100</netAmount>
+<taxTotals>
+  <taxTotal>
+    <taxType>T1</taxType>
+    <amount>14</amount>
+  </taxTotal>
+</taxTotals>
+<totalAmount>114</totalAmount>
+<totalItemsDiscountAmount>0</totalItemsDiscountAmount>
+<extraDiscountAmount>0</extraDiscountAmount>
+</document>

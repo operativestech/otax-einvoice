@@ -1,0 +1,66 @@
+<document><uuid>XFDMV1XTHRW8Q5ZJ0B0XTHEK10</uuid>
+<submissionUUID>HWGBC9AS665EPE4V0B0XTHEK10</submissionUUID>
+<longId>HSB9CV1Z0CR5R0NJ0B0XTHEK10N30ojf1767977681</longId>
+<internalId>642</internalId>
+<typeName>I</typeName>
+<typeVersionName>1.0</typeVersionName>
+<issuerId>562067566</issuerId>
+<issuerName>اوبراتفز لحلول تكنولوجيا المعلومات</issuerName>
+<receiverId>706861183</receiverId>
+<receiverName>البيان للصناعات الغذائية</receiverName>
+<dateTimeIssued>2026-01-09T06:00:00</dateTimeIssued>
+<dateTimeReceived>2026-01-09T16:54:41</dateTimeReceived>
+<totalSales>12280</totalSales>
+<totalDiscount>0</totalDiscount>
+<netAmount>12280</netAmount>
+<total>13630.8</total>
+<status>Valid</status>
+<document>&lt;document&gt;&lt;issuer&gt;&lt;type&gt;B&lt;/type&gt;&lt;id&gt;562067566&lt;/id&gt;&lt;name&gt;اوبراتفز لحلول تكنولوجيا المعلومات&lt;/name&gt;&lt;address&gt;&lt;buildingNumber&gt;22&lt;/buildingNumber&gt;&lt;room&gt;0&lt;/room&gt;&lt;floor&gt;0&lt;/floor&gt;&lt;street&gt;البرج الشمالى -ابراج النايل سيتى -كورنيش النيل الساحل ,&lt;/street&gt;&lt;landmark&gt;0&lt;/landmark&gt;&lt;additionalInformation&gt;0&lt;/additionalInformation&gt;&lt;governate&gt;Cairo&lt;/governate&gt;&lt;regionCity&gt;0&lt;/regionCity&gt;&lt;postalCode&gt;0&lt;/postalCode&gt;&lt;country&gt;EG&lt;/country&gt;&lt;branchID&gt;0&lt;/branchID&gt;&lt;/address&gt;&lt;/issuer&gt;&lt;receiver&gt;&lt;type&gt;B&lt;/type&gt;&lt;id&gt;706861183&lt;/id&gt;&lt;name&gt;البيان للصناعات الغذائية&lt;/name&gt;&lt;address&gt;&lt;buildingNumber&gt;1&lt;/buildingNumber&gt;&lt;room&gt;1&lt;/room&gt;&lt;floor&gt;1&lt;/floor&gt;&lt;street&gt;Cairo&lt;/street&gt;&lt;landmark /&gt;&lt;additionalInformation /&gt;&lt;governate&gt;Cairo&lt;/governate&gt;&lt;regionCity&gt;Cairo&lt;/regionCity&gt;&lt;postalCode&gt;11311&lt;/postalCode&gt;&lt;country&gt;EG&lt;/country&gt;&lt;/address&gt;&lt;/receiver&gt;&lt;documentType&gt;I&lt;/documentType&gt;&lt;documentTypeVersion&gt;1.0&lt;/documentTypeVersion&gt;&lt;dateTimeIssued&gt;2026-01-09T06:00:00Z&lt;/dateTimeIssued&gt;&lt;taxpayerActivityCode&gt;6209&lt;/taxpayerActivityCode&gt;&lt;internalID&gt;642&lt;/internalID&gt;&lt;purchaseOrderReference /&gt;&lt;purchaseOrderDescription /&gt;&lt;salesOrderReference&gt;642&lt;/salesOrderReference&gt;&lt;salesOrderDescription /&gt;&lt;proformaInvoiceNumber /&gt;&lt;payment&gt;&lt;bankName /&gt;&lt;bankAddress /&gt;&lt;bankAccountNo /&gt;&lt;bankAccountIBAN /&gt;&lt;swiftCode /&gt;&lt;terms /&gt;&lt;/payment&gt;&lt;delivery&gt;&lt;approach /&gt;&lt;packaging /&gt;&lt;dateValidity&gt;2026-01-09T06:00:00Z&lt;/dateValidity&gt;&lt;exportPort /&gt;&lt;countryOfOrigin /&gt;&lt;grossWeight&gt;1&lt;/grossWeight&gt;&lt;netWeight&gt;1&lt;/netWeight&gt;&lt;terms /&gt;&lt;/delivery&gt;&lt;invoiceLines&gt;&lt;invoiceLine&gt;&lt;description&gt;.Support for one legal entity of OTax solution From 01-1-2026 To 31- 12-2026&lt;/description&gt;&lt;itemType&gt;GS1&lt;/itemType&gt;&lt;itemCode&gt;99999999&lt;/itemCode&gt;&lt;unitType&gt;EA&lt;/unitType&gt;&lt;quantity&gt;1&lt;/quantity&gt;&lt;unitValue&gt;&lt;currencySold&gt;EGP&lt;/currencySold&gt;&lt;amountSold&gt;0&lt;/amountSold&gt;&lt;amountEGP&gt;12280&lt;/amountEGP&gt;&lt;currencyExchangeRate&gt;0&lt;/currencyExchangeRate&gt;&lt;/unitValue&gt;&lt;salesTotal&gt;12280&lt;/salesTotal&gt;&lt;discount&gt;&lt;rate&gt;0&lt;/rate&gt;&lt;amount&gt;0&lt;/amount&gt;&lt;/discount&gt;&lt;taxableItems&gt;&lt;taxableItem&gt;&lt;taxType&gt;T1&lt;/taxType&gt;&lt;amount&gt;1719.2&lt;/amount&gt;&lt;subType&gt;V009&lt;/subType&gt;&lt;rate&gt;14&lt;/rate&gt;&lt;/taxableItem&gt;&lt;taxableItem&gt;&lt;taxType&gt;T4&lt;/taxType&gt;&lt;amount&gt;368.4&lt;/amount&gt;&lt;subType&gt;W004&lt;/subType&gt;&lt;rate&gt;3&lt;/rate&gt;&lt;/taxableItem&gt;&lt;/taxableItems&gt;&lt;internalCode&gt;Tech support&lt;/internalCode&gt;&lt;itemsDiscount&gt;0&lt;/itemsDiscount&gt;&lt;netTotal&gt;12280&lt;/netTotal&gt;&lt;totalTaxableFees&gt;0&lt;/totalTaxableFees&gt;&lt;valueDifference&gt;0&lt;/valueDifference&gt;&lt;total&gt;13630.8&lt;/total&gt;&lt;/invoiceLine&gt;&lt;/invoiceLines&gt;&lt;totalSalesAmount&gt;12280&lt;/totalSalesAmount&gt;&lt;totalDiscountAmount&gt;0&lt;/totalDiscountAmount&gt;&lt;netAmount&gt;12280&lt;/netAmount&gt;&lt;taxTotals&gt;&lt;taxTotal&gt;&lt;taxType&gt;T1&lt;/taxType&gt;&lt;amount&gt;1719.2&lt;/amount&gt;&lt;/taxTotal&gt;&lt;taxTotal&gt;&lt;taxType&gt;T4&lt;/taxType&gt;&lt;amount&gt;368.4&lt;/amount&gt;&lt;/taxTotal&gt;&lt;/taxTotals&gt;&lt;totalAmount&gt;13630.8&lt;/totalAmount&gt;&lt;totalItemsDiscountAmount&gt;0&lt;/totalItemsDiscountAmount&gt;&lt;extraDiscountAmount&gt;0&lt;/extraDiscountAmount&gt;&lt;signatures&gt;&lt;signature&gt;&lt;signatureType&gt;I&lt;/signatureType&gt;&lt;value&gt;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&lt;/value&gt;&lt;/signature&gt;&lt;/signatures&gt;&lt;/document&gt;</document>
+<transformationStatus>original</transformationStatus>
+<validationResults>
+  <status>Valid</status>
+  <validationSteps>
+    <name>Step-03.ITIDA Signature Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-04.NationalID Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-05.TaxpayerProfile Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-06.Simple Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-07.Code Field Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-08. Duplicate Submission Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+</validationResults>
+<maxPercision>2</maxPercision>
+<invoiceLineItemCodes>
+  <codeTypeId>2</codeTypeId>
+  <codeTypeNamePrimaryLang>GS1</codeTypeNamePrimaryLang>
+  <codeTypeNameSecondaryLang>GS1</codeTypeNameSecondaryLang>
+  <itemCode>99999999</itemCode>
+  <codeNamePrimaryLang>Temporary Classification</codeNamePrimaryLang>
+  <codeNameSecondaryLang>التصنيف المؤقت</codeNameSecondaryLang>
+</invoiceLineItemCodes>
+<documentLinesTotalCount />
+<additionalMetadata />
+<lateSubmissionRequestNumber />
+<serviceDeliveryDate />
+</document>

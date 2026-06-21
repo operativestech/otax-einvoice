@@ -1,0 +1,10 @@
+{
+  "issuer": { "type": "B", "id": "123", "name": "Test" },
+  "receiver": { "type": "B", "id": "456", "name": "Test Rec" },
+  "documentType": "I",
+  "documentTypeVersion": "1.0",
+  "dateTimeIssued": "2023-10-10T00:00:00Z",
+  "taxpayerActivityCode": "1234",
+  "internalID": "12345",
+  "invoiceLines": []
+}

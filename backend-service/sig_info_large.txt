@@ -1,0 +1,4 @@
+﻿Signer Info Details:
+ - Digest Algorithm:  ()
+ - Signed Attributes Count: 0
+
