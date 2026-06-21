@@ -6367,17 +6367,52 @@ app.post('/api/excel/batch-submit', async (req, res) => {
                 } catch (e) { /* ignore */ }
             }
 
-            const env = getProp('signer_environment_type') || 'PreProd';
-            const clientId = env === 'Prod' ? getProp('signer_prodClientId') : getProp('signer_preProdClientId');
-            const clientSecret = env === 'Prod' ? getProp('signer_prodClientSecret') : getProp('signer_preProdClientSecret');
-            const certificateThumbprint = getProp('signer_CurrentCertName');
-            const certificatePIN = getProp('signer_CurrentCertPIN');
+            // ── Load ETA credentials from organization_settings (primary source) ──
+            let clientId = '';
+            let clientSecret = '';
+            let env = 'PreProd';
+            let certificatePIN = getProp('signer_CurrentCertPIN') || '';
 
-            if (!clientId || !clientSecret || !certificateThumbprint) {
+            if (orgData?.id) {
+                try {
+                    const etaCredRes = await client.query(
+                        `SELECT eta_environment, eta_prod_client_id, eta_prod_client_secret,
+                                eta_preprod_client_id, eta_preprod_client_secret
+                         FROM "otaxdb".organization_settings WHERE organization_id = $1 LIMIT 1`,
+                        [orgData.id]
+                    );
+                    const etaCreds = etaCredRes.rows[0];
+                    if (etaCreds) {
+                        env = etaCreds.eta_environment || 'PreProd';
+                        if (env === 'Prod') {
+                            clientId = etaCreds.eta_prod_client_id || '';
+                            clientSecret = etaCreds.eta_prod_client_secret || '';
+                        } else {
+                            clientId = etaCreds.eta_preprod_client_id || '';
+                            clientSecret = etaCreds.eta_preprod_client_secret || '';
+                        }
+                    }
+                } catch (e: any) {
+                    console.warn('[Batch] Could not load ETA credentials from org settings:', e.message);
+                }
+            }
+
+            // Fallback to legacy getProp if org settings creds are still empty
+            if (!clientId) {
+                const legacyEnv = getProp('signer_environment_type') || 'PreProd';
+                env = legacyEnv;
+                clientId = env === 'Prod' ? getProp('signer_prodClientId') : getProp('signer_preProdClientId');
+                clientSecret = env === 'Prod' ? getProp('signer_prodClientSecret') : getProp('signer_preProdClientSecret');
+            }
+
+            // For agent signing, thumbprint is NOT required on backend (signing on user's PC)
+            // Only require clientId + clientSecret
+            if (!clientId || !clientSecret) {
                 job.status = 'failed';
-                job.error = 'Signer configuration missing. Please run Setup Wizard.';
+                job.error = `ETA API credentials missing (environment: ${env}). Please configure Client ID and Client Secret in Settings > ETA Connection.`;
                 return;
             }
+            console.log(`[Batch] ETA credentials loaded. Env: ${env}, ClientId: ${clientId.substring(0, 8)}...`);
 
             // 2. Authenticate ETA
             const accessToken = await getETAToken(clientId, clientSecret, env);
@@ -6723,15 +6758,49 @@ app.post('/api/excel/submit', async (req, res) => {
             } catch (e) { /* ignore */ }
         }
 
-        const env = getProp('signer_environment_type') || 'PreProd';
-        const clientId = env === 'Prod' ? getProp('signer_prodClientId') : getProp('signer_preProdClientId');
-        const clientSecret = env === 'Prod' ? getProp('signer_prodClientSecret') : getProp('signer_preProdClientSecret');
-        const certificateThumbprint = getProp('signer_CurrentCertName');
-        const certificatePIN = getProp('signer_CurrentCertPIN');
+        // ── Load ETA credentials from organization_settings (primary source) ──
+        let clientId = '';
+        let clientSecret = '';
+        let env = 'PreProd';
+        const certificatePIN = getProp('signer_CurrentCertPIN') || '';
 
-        if (!clientId || !clientSecret || !certificateThumbprint) {
-            throw new Error('Signer configuration missing. Please run Setup Wizard.');
+        if (orgData?.id) {
+            try {
+                const etaCredRes = await client.query(
+                    `SELECT eta_environment, eta_prod_client_id, eta_prod_client_secret,
+                            eta_preprod_client_id, eta_preprod_client_secret
+                     FROM "otaxdb".organization_settings WHERE organization_id = $1 LIMIT 1`,
+                    [orgData.id]
+                );
+                const etaCreds = etaCredRes.rows[0];
+                if (etaCreds) {
+                    env = etaCreds.eta_environment || 'PreProd';
+                    if (env === 'Prod') {
+                        clientId = etaCreds.eta_prod_client_id || '';
+                        clientSecret = etaCreds.eta_prod_client_secret || '';
+                    } else {
+                        clientId = etaCreds.eta_preprod_client_id || '';
+                        clientSecret = etaCreds.eta_preprod_client_secret || '';
+                    }
+                }
+            } catch (e: any) {
+                console.warn('[Submit] Could not load ETA credentials from org settings:', e.message);
+            }
         }
+
+        // Fallback to legacy getProp if org settings creds are still empty
+        if (!clientId) {
+            const legacyEnv = getProp('signer_environment_type') || 'PreProd';
+            env = legacyEnv;
+            clientId = env === 'Prod' ? getProp('signer_prodClientId') : getProp('signer_preProdClientId');
+            clientSecret = env === 'Prod' ? getProp('signer_prodClientSecret') : getProp('signer_preProdClientSecret');
+        }
+
+        // For agent signing, thumbprint is NOT required on backend
+        if (!clientId || !clientSecret) {
+            throw new Error(`ETA API credentials missing (environment: ${env}). Please configure Client ID and Client Secret in Settings > ETA Connection.`);
+        }
+        console.log(`[Submit] ETA credentials loaded. Env: ${env}, ClientId: ${clientId.substring(0, 8)}...`);
 
         // 2. Authenticate ETA (Batch Session)
         console.log('[DEBUG STEP] 1. Authenticating with ETA...');
