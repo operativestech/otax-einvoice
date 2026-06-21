@@ -348,6 +348,58 @@ router.put('/agent-config', authenticate, blockDemo, async (req, res) => {
 });
 
 // ============================================
+// PUT /api/signing/eta-credentials
+// Save ETA API credentials to organization_settings
+// ============================================
+router.put('/eta-credentials', authenticate, blockDemo, async (req, res) => {
+    try {
+        const orgId = await resolveOrgId(req);
+        if (!orgId) return res.status(400).json({ success: false, message: 'No organization context' });
+
+        const {
+            environment,         // 'PreProd' | 'Prod'
+            preprod_client_id,
+            preprod_client_secret,
+            prod_client_id,
+            prod_client_secret,
+        } = req.body;
+
+        if (!environment || !['PreProd', 'Prod'].includes(environment)) {
+            return res.status(400).json({ success: false, message: 'environment must be "PreProd" or "Prod"' });
+        }
+
+        // Build update data — only update fields that were actually sent
+        const updateData: any = {
+            eta_environment: environment,
+            updated_at: new Date(),
+        };
+        if (preprod_client_id !== undefined) updateData.eta_preprod_client_id = preprod_client_id || null;
+        if (preprod_client_secret !== undefined) updateData.eta_preprod_client_secret = preprod_client_secret || null;
+        if (prod_client_id !== undefined) updateData.eta_prod_client_id = prod_client_id || null;
+        if (prod_client_secret !== undefined) updateData.eta_prod_client_secret = prod_client_secret || null;
+
+        await prisma.organization_settings.update({
+            where: { organization_id: orgId },
+            data: updateData,
+        });
+
+        await logActivity(
+            req.user!.id, req.user!.username,
+            'eta_credentials_updated', 'admin', 'organization_settings',
+            orgId.toString(), { environment }, req
+        );
+
+        console.log(`[Signing] Org ${orgId}: ETA credentials updated for environment: ${environment}`);
+        res.json({ success: true, message: `ETA credentials saved for ${environment} environment` });
+    } catch (error: any) {
+        console.error('[Signing] ETA credentials error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+
+
+// ============================================
 // GET /api/signing/agent-status
 // Check if agent is online (any user can check)
 // ============================================
