@@ -1061,6 +1061,9 @@ function sendResponse(reqId: string, ok: boolean, payload: any, error: string | 
 }
 
 async function listCertificates() {
+    if (!utsAvailable) {
+        utsAvailable = await probeUTS();
+    }
     if (utsAvailable) {
         try {
             const certs = await utsRequest('GET', '/tokens') as any[];
@@ -1074,6 +1077,9 @@ async function listCertificates() {
 }
 
 async function signDocument(payload: any, reqId: string) {
+    if (!utsAvailable) {
+        utsAvailable = await probeUTS();
+    }
     if (utsAvailable) {
         try {
             const { document, serialized, pin } = payload;

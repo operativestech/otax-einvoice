@@ -366,6 +366,7 @@ public sealed class Pkcs11Signer
             {
                 using var chain = new X509Chain();
                 chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+                chain.ChainPolicy.UrlRetrievalTimeout = TimeSpan.FromSeconds(3);
                 if (chain.Build(x509))
                 {
                     foreach (var element in chain.ChainElements)

@@ -490,6 +490,9 @@ async function listCertificatesLegacy(): Promise<any[]> {
 
 async function listCertificates(): Promise<any[]> {
     // Try UTS first
+    if (!utsAvailable) {
+        utsAvailable = await probeUTS();
+    }
     if (utsAvailable) {
         try {
             const certs = await listCertificatesViaUTS();
@@ -651,6 +654,9 @@ async function signDocument(payload: any, reqId: string) {
     // UTS handles PKCS11 directly — NO system PIN dialog shown!
     // Fallback to legacy EInvoicingSigner.exe if UTS is unavailable
 
+    if (!utsAvailable) {
+        utsAvailable = await probeUTS();
+    }
     if (utsAvailable) {
         try {
             console.log('[Agent] Attempting UTS CAdES-BES signing (no PIN dialog)...');
