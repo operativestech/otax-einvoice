@@ -1078,9 +1078,11 @@ async function signDocument(payload: any, reqId: string) {
         try {
             const { document, serialized, pin } = payload;
             if (!serialized) throw new Error('No serialized data');
-            const r = await utsRequest('POST', '/sign-document', { serializedData: serialized, pin, certIdBase64: null });
+            console.log('[Agent] 📡 Requesting CAdES-BES signature from UTS...');
+            const r = await utsRequest('POST', '/sign-document-cades', { serializedData: serialized, pin, certIdBase64: null });
             const sig = r.signatureBase64 || r.SignatureBase64;
-            if (!sig || sig.length < 50) throw new Error('Invalid UTS signature');
+            if (!sig || sig.length < 500) throw new Error('Invalid UTS CAdES-BES signature');
+            console.log(`[Agent] UTS ✓ CAdES-BES signature received! Size: ${sig.length} chars (~${Math.round(sig.length * 0.75)} bytes)`);
             const doc = JSON.parse(JSON.stringify(document));
             if (!doc.signatures) doc.signatures = [];
             doc.signatures.push({ signatureType: 'I', value: sig });

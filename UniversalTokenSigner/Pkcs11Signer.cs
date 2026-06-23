@@ -386,31 +386,48 @@ public sealed class Pkcs11Signer
         
         var signedCms = new System.Security.Cryptography.Pkcs.SignedCms(contentInfo, true);
         
-        // Create a temporary RSA key to satisfy the CmsSigner requirement
+        // Create a temporary key of correct type to satisfy the CmsSigner requirement
         // We'll replace the signature value after
-        using var tempRsa = RSA.Create();
+        AsymmetricAlgorithm tempKey;
+        X509Certificate2 certWithKey;
+        if (keyType == "EC")
+        {
+            var tempEc = ECDsa.Create();
+            tempKey = tempEc;
+            certWithKey = x509.CopyWithPrivateKey(tempEc);
+        }
+        else
+        {
+            var tempRsa = RSA.Create();
+            tempKey = tempRsa;
+            certWithKey = x509.CopyWithPrivateKey(tempRsa);
+        }
         
-        // Import the certificate with the temp key
-        var certWithKey = x509.CopyWithPrivateKey(tempRsa);
-        
-        var cmsSigner = new System.Security.Cryptography.Pkcs.CmsSigner(
-            System.Security.Cryptography.Pkcs.SubjectIdentifierType.IssuerAndSerialNumber,
-            certWithKey
-        );
-        cmsSigner.DigestAlgorithm = new Oid("2.16.840.1.101.3.4.2.1"); // SHA-256
-        cmsSigner.IncludeOption = X509IncludeOption.EndCertOnly;
-        
-        // Sign with temp key (we'll inject the real signature)
-        signedCms.ComputeSignature(cmsSigner, false);
-        
-        // Get the CMS bytes and replace the temp signature with the real one
-        var cmsBytes = signedCms.Encode();
-        
-        // Find and replace the temp RSA signature with the real hardware token signature
-        var tempSig = signedCms.SignerInfos[0].GetSignature();
-        var finalCms = ReplaceSignatureInCms(cmsBytes, tempSig, rawSignature);
-        
-        return Convert.ToBase64String(finalCms);
+        try
+        {
+            var cmsSigner = new System.Security.Cryptography.Pkcs.CmsSigner(
+                System.Security.Cryptography.Pkcs.SubjectIdentifierType.IssuerAndSerialNumber,
+                certWithKey
+            );
+            cmsSigner.DigestAlgorithm = new Oid("2.16.840.1.101.3.4.2.1"); // SHA-256
+            cmsSigner.IncludeOption = X509IncludeOption.EndCertOnly;
+            
+            // Sign with temp key (we'll inject the real signature)
+            signedCms.ComputeSignature(cmsSigner, false);
+            
+            // Get the CMS bytes and replace the temp signature with the real one
+            var cmsBytes = signedCms.Encode();
+            
+            // Find and replace the temp RSA signature with the real hardware token signature
+            var tempSig = signedCms.SignerInfos[0].GetSignature();
+            var finalCms = ReplaceSignatureInCms(cmsBytes, tempSig, rawSignature);
+            
+            return Convert.ToBase64String(finalCms);
+        }
+        finally
+        {
+            tempKey.Dispose();
+        }
     }
     
     /// <summary>
