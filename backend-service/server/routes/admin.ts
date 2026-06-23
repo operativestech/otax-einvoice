@@ -840,15 +840,23 @@ router.put('/organization/eta-settings', authenticate, blockDemo, async (req, re
             notify_recipient_email,    // single override mailbox; empty/null falls back to all org users
         } = req.body;
 
+        const SECRET_PLACEHOLDER = '••••••••';
+
         // Build update data — only include fields that were actually sent
         const updateData: any = { updated_at: new Date() };
         if (eta_environment !== undefined) updateData.eta_environment = eta_environment;
         if (eta_preprod_client_id !== undefined) updateData.eta_preprod_client_id = eta_preprod_client_id;
-        if (eta_preprod_client_secret !== undefined) updateData.eta_preprod_client_secret = eta_preprod_client_secret;
+        if (eta_preprod_client_secret !== undefined && eta_preprod_client_secret !== SECRET_PLACEHOLDER) {
+            updateData.eta_preprod_client_secret = eta_preprod_client_secret;
+        }
         if (eta_prod_client_id !== undefined) updateData.eta_prod_client_id = eta_prod_client_id;
-        if (eta_prod_client_secret !== undefined) updateData.eta_prod_client_secret = eta_prod_client_secret;
+        if (eta_prod_client_secret !== undefined && eta_prod_client_secret !== SECRET_PLACEHOLDER) {
+            updateData.eta_prod_client_secret = eta_prod_client_secret;
+        }
         if (eta_client_id !== undefined) updateData.eta_client_id = eta_client_id;
-        if (eta_client_secret !== undefined) updateData.eta_client_secret = eta_client_secret;
+        if (eta_client_secret !== undefined && eta_client_secret !== SECRET_PLACEHOLDER) {
+            updateData.eta_client_secret = eta_client_secret;
+        }
         if (eta_tax_id !== undefined) updateData.eta_tax_id = eta_tax_id;
         if (eta_auto_sync !== undefined) updateData.eta_auto_sync = eta_auto_sync;
         if (eta_sync_interval !== undefined) updateData.eta_sync_interval = eta_sync_interval;

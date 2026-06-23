@@ -368,15 +368,21 @@ router.put('/eta-credentials', authenticate, blockDemo, async (req, res) => {
             return res.status(400).json({ success: false, message: 'environment must be "PreProd" or "Prod"' });
         }
 
+        const SECRET_PLACEHOLDER = '••••••••';
+
         // Build update data — only update fields that were actually sent
         const updateData: any = {
             eta_environment: environment,
             updated_at: new Date(),
         };
         if (preprod_client_id !== undefined) updateData.eta_preprod_client_id = preprod_client_id || null;
-        if (preprod_client_secret !== undefined) updateData.eta_preprod_client_secret = preprod_client_secret || null;
+        if (preprod_client_secret !== undefined && preprod_client_secret !== SECRET_PLACEHOLDER) {
+            updateData.eta_preprod_client_secret = preprod_client_secret || null;
+        }
         if (prod_client_id !== undefined) updateData.eta_prod_client_id = prod_client_id || null;
-        if (prod_client_secret !== undefined) updateData.eta_prod_client_secret = prod_client_secret || null;
+        if (prod_client_secret !== undefined && prod_client_secret !== SECRET_PLACEHOLDER) {
+            updateData.eta_prod_client_secret = prod_client_secret || null;
+        }
 
         await prisma.organization_settings.update({
             where: { organization_id: orgId },
