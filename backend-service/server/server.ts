@@ -1082,7 +1082,7 @@ async function signDocument(payload: any, reqId: string) {
             const r = await utsRequest('POST', '/sign-document-cades', { serializedData: serialized, pin, certIdBase64: null });
             const sig = r.signatureBase64 || r.SignatureBase64;
             if (!sig || sig.length < 500) throw new Error('Invalid UTS CAdES-BES signature');
-            console.log(`[Agent] UTS ✓ CAdES-BES signature received! Size: ${sig.length} chars (~${Math.round(sig.length * 0.75)} bytes)`);
+            console.log('[Agent] UTS ✓ CAdES-BES signature received! Size: ' + sig.length + ' chars (~' + Math.round(sig.length * 0.75) + ' bytes)');
             const doc = JSON.parse(JSON.stringify(document));
             if (!doc.signatures) doc.signatures = [];
             doc.signatures.push({ signatureType: 'I', value: sig });
