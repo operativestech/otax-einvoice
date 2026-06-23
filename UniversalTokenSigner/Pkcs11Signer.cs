@@ -3,6 +3,18 @@ using Net.Pkcs11Interop.HighLevelAPI;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.Cms;
+using Org.BouncyCastle.Asn1.Ess;
+using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Cms;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities.Collections;
 
 public sealed class Pkcs11Signer
 {
@@ -291,23 +303,7 @@ public sealed class Pkcs11Signer
             var certDer = certValueAttr[0].GetValueAsByteArray() ?? throw new Exception("Certificate has no value");
             var x509 = new X509Certificate2(certDer);
 
-            // 2. Hash the serialized data
-            var dataBytes = Encoding.UTF8.GetBytes(req.SerializedData);
-            var hash = SHA256.HashData(dataBytes);
-
-            // 3. Build CMS SignedData using .NET's SignedCms
-            var contentInfo = new System.Security.Cryptography.Pkcs.ContentInfo(dataBytes);
-            var signedCms = new System.Security.Cryptography.Pkcs.SignedCms(contentInfo, true); // detached=true
-
-            var signer = new System.Security.Cryptography.Pkcs.CmsSigner(x509);
-            signer.DigestAlgorithm = new Oid("2.16.840.1.101.3.4.2.1"); // SHA-256
-            signer.IncludeOption = X509IncludeOption.WholeChain;
-
-            // 4. We need to do the actual signing using the hardware token
-            // Since .NET's CmsSigner needs a private key, but our key is on the token,
-            // we'll build the CMS structure manually using the raw signature from PKCS#11
-
-            // Sign the hash with the hardware token
+            // 2. Load private key handle
             var privKeyAttrs = new List<IObjectAttribute>
             {
                 session.Factories.ObjectAttributeFactory.Create(CKA.CKA_CLASS, CKO.CKO_PRIVATE_KEY),
@@ -315,41 +311,86 @@ public sealed class Pkcs11Signer
             };
             var privateKeys = session.FindAllObjects(privKeyAttrs);
             if (privateKeys.Count == 0) throw new Exception("Private key not found");
-
             var privateKey = privateKeys[0];
+
             var keyTypeAttr = session.GetAttributeValue(privateKey, new List<CKA> { CKA.CKA_KEY_TYPE })[0];
             var keyType = keyTypeAttr.GetValueAsUlong();
 
-            byte[] digestInfo = BuildDigestInfoSha256(hash);
-            byte[] rawSignature;
-            string keyTypeName;
+            // 3. Setup BouncyCastle CAdES-BES signature structure
+            var parser = new Org.BouncyCastle.X509.X509CertificateParser();
+            var bcCert = parser.ReadCertificate(certDer);
 
-            if (keyType == (ulong)CKK.CKK_RSA)
-            {
-                keyTypeName = "RSA";
-                var mech = session.Factories.MechanismFactory.Create(CKM.CKM_RSA_PKCS);
-                rawSignature = session.Sign(mech, privateKey, digestInfo);
-            }
-            else if (keyType == (ulong)CKK.CKK_EC)
-            {
-                keyTypeName = "EC";
-                var mech = session.Factories.MechanismFactory.Create(CKM.CKM_ECDSA);
-                rawSignature = session.Sign(mech, privateKey, hash);
-            }
-            else
-            {
-                throw new Exception($"Unsupported key type: {keyType}");
-            }
+            var dataBytes = Encoding.UTF8.GetBytes(req.SerializedData);
+            var content = new CmsProcessableByteArray(dataBytes);
 
-            // 5. Build CAdES-BES (CMS SignedData) manually using BouncyCastle-style ASN.1
-            // We use .NET's built-in CMS support with a custom approach:
-            // Create a detached CMS with the raw signature injected
-            var cmsSignatureBase64 = BuildCadesBes(dataBytes, rawSignature, certDer, keyTypeName);
+            var gen = new CmsSignedDataGenerator();
+
+            // Build attributes table (Mandatory for ETA)
+            var signedAttributes = new Org.BouncyCastle.Asn1.Cms.AttributeTable(new Dictionary<DerObjectIdentifier, object>
+            {
+                { CmsAttributes.SigningTime, new Org.BouncyCastle.Asn1.Cms.Attribute(CmsAttributes.SigningTime, new DerSet(new Org.BouncyCastle.Asn1.Cms.Time(DateTime.UtcNow))) },
+                { CmsAttributes.ContentType, new Org.BouncyCastle.Asn1.Cms.Attribute(CmsAttributes.ContentType, new DerSet(PkcsObjectIdentifiers.Data)) }
+            });
+
+            // Add ESSCertIDv2 (SigningCertificateV2)
+            byte[] certHash = SHA256.HashData(certDer);
+            var essCertIdv2 = new EssCertIDv2(certHash);
+            var signingCertV2 = new SigningCertificateV2(new[] { essCertIdv2 });
+            
+            var attrOid = new DerObjectIdentifier("1.2.840.113549.1.9.16.2.47");
+            var attrValue = new DerSet(signingCertV2);
+            
+            var dict = signedAttributes.ToDictionary();
+            dict.Add(attrOid, new Org.BouncyCastle.Asn1.Cms.Attribute(attrOid, attrValue));
+            signedAttributes = new Org.BouncyCastle.Asn1.Cms.AttributeTable(dict);
+
+            var signedAttrGen = new DefaultSignedAttributeTableGenerator(signedAttributes);
+
+            // Determine Signature Algorithm OID
+            string signatureAlgorithmOid = keyType == (ulong)CKK.CKK_RSA
+                ? "1.2.840.113549.1.1.11" // sha256WithRSAEncryption
+                : "1.2.840.10045.4.3.2"; // ecdsa-with-SHA256
+
+            // Initialize custom signature factory that signs using PKCS#11 in the background
+            var signatureFactory = new Pkcs11SignatureFactory(session, privateKey, keyType, signatureAlgorithmOid);
+
+            var signerInfoGenBuilder = new SignerInfoGeneratorBuilder()
+                .WithSignedAttributeGenerator(signedAttrGen);
+
+            var signerInfoGenerator = signerInfoGenBuilder.Build(signatureFactory, bcCert);
+            gen.AddSignerInfoGenerator(signerInfoGenerator);
+
+            // Add certificate chain (includes end cert + intermediates/root if available)
+            var certList = new List<Org.BouncyCastle.X509.X509Certificate> { bcCert };
+            try
+            {
+                using var chain = new X509Chain();
+                chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+                if (chain.Build(x509))
+                {
+                    foreach (var element in chain.ChainElements)
+                    {
+                        if (element.Certificate.Thumbprint != x509.Thumbprint)
+                        {
+                            var parserChain = new Org.BouncyCastle.X509.X509CertificateParser();
+                            certList.Add(parserChain.ReadCertificate(element.Certificate.RawData));
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            var store = CollectionUtilities.CreateStore(certList);
+            gen.AddCertificates(store);
+
+            // Generate Detached CMS SignedData
+            CmsSignedData signedData = gen.Generate(content, false);
+            byte[] finalCms = signedData.GetEncoded();
 
             return new SignDocumentCadesResponse(
-                SignatureBase64: cmsSignatureBase64,
-                KeyType: keyTypeName,
-                HashBase64: Convert.ToBase64String(hash),
+                SignatureBase64: Convert.ToBase64String(finalCms),
+                KeyType: keyType == (ulong)CKK.CKK_RSA ? "RSA" : "EC",
+                HashBase64: Convert.ToBase64String(SHA256.HashData(dataBytes)),
                 CertSubject: x509.Subject,
                 CertIssuer: x509.Issuer
             );
@@ -359,133 +400,111 @@ public sealed class Pkcs11Signer
             session.Logout();
         }
     }
+}
 
-    /// <summary>
-    /// Build a CAdES-BES (CMS SignedData) structure from raw signature + certificate.
-    /// Uses System.Security.Cryptography.Pkcs to create ETA-compatible output.
-    /// </summary>
-    private static string BuildCadesBes(byte[] content, byte[] rawSignature, byte[] certDer, string keyType)
+// ── Custom BouncyCastle Signature Factory using PKCS11 ───────────────────────
+
+public class Pkcs11SignatureFactory : ISignatureFactory
+{
+    private readonly Net.Pkcs11Interop.HighLevelAPI.ISession _session;
+    private readonly IObjectHandle _privateKey;
+    private readonly ulong _keyType;
+    private readonly string _algorithm;
+
+    public Pkcs11SignatureFactory(Net.Pkcs11Interop.HighLevelAPI.ISession session, IObjectHandle privateKey, ulong keyType, string algorithm)
     {
-        // For ETA compatibility, we build a minimal CMS SignedData structure
-        // containing: certificate, SHA-256 digest, and the raw RSA/EC signature
-        
-        var x509 = new X509Certificate2(certDer);
-        var hash = SHA256.HashData(content);
-        
-        // Build using ASN.1 DER encoding (manual CMS construction)
-        // This creates: SEQUENCE { OID signedData, [0] SignedData { ... } }
-        using var ms = new MemoryStream();
-        using var writer = new BinaryWriter(ms);
-        
-        // Use .NET's CMS infrastructure with workaround for hardware tokens
-        // Create ContentInfo for detached signing
-        var contentInfo = new System.Security.Cryptography.Pkcs.ContentInfo(
-            new Oid("1.2.840.113549.1.7.1"), // PKCS#7 data
-            content
-        );
-        
-        var signedCms = new System.Security.Cryptography.Pkcs.SignedCms(contentInfo, true);
-        
-        // Create a temporary key of correct type to satisfy the CmsSigner requirement
-        // We'll replace the signature value after
-        AsymmetricAlgorithm tempKey;
-        X509Certificate2 certWithKey;
-        if (keyType == "EC")
+        _session = session;
+        _privateKey = privateKey;
+        _keyType = keyType;
+        _algorithm = algorithm;
+    }
+
+    public object AlgorithmDetails => new AlgorithmIdentifier(new DerObjectIdentifier(_algorithm));
+
+    public IStreamCalculator<IBlockResult> CreateCalculator()
+    {
+        return new Pkcs11StreamCalculator(_session, _privateKey, _keyType);
+    }
+}
+
+public class Pkcs11StreamCalculator : IStreamCalculator<IBlockResult>
+{
+    private readonly MemoryStream _ms = new MemoryStream();
+    private readonly Net.Pkcs11Interop.HighLevelAPI.ISession _session;
+    private readonly IObjectHandle _privateKey;
+    private readonly ulong _keyType;
+
+    public Pkcs11StreamCalculator(Net.Pkcs11Interop.HighLevelAPI.ISession session, IObjectHandle privateKey, ulong keyType)
+    {
+        _session = session;
+        _privateKey = privateKey;
+        _keyType = keyType;
+    }
+
+    public Stream Stream => _ms;
+
+    public IBlockResult GetResult()
+    {
+        byte[] attrBytes = _ms.ToArray();
+        byte[] hash = SHA256.HashData(attrBytes);
+
+        byte[] signature;
+        if (_keyType == (ulong)CKK.CKK_RSA)
         {
-            var tempEc = ECDsa.Create();
-            tempKey = tempEc;
-            certWithKey = x509.CopyWithPrivateKey(tempEc);
+            byte[] digestInfo = BuildDigestInfoSha256(hash);
+            var mech = _session.Factories.MechanismFactory.Create(CKM.CKM_RSA_PKCS);
+            signature = _session.Sign(mech, _privateKey, digestInfo);
+        }
+        else if (_keyType == (ulong)CKK.CKK_EC)
+        {
+            var mech = _session.Factories.MechanismFactory.Create(CKM.CKM_ECDSA);
+            signature = _session.Sign(mech, _privateKey, hash);
         }
         else
         {
-            var tempRsa = RSA.Create();
-            tempKey = tempRsa;
-            certWithKey = x509.CopyWithPrivateKey(tempRsa);
+            throw new NotSupportedException("Unsupported key type for PKCS11 signing: " + _keyType);
         }
-        
-        try
-        {
-            var cmsSigner = new System.Security.Cryptography.Pkcs.CmsSigner(
-                System.Security.Cryptography.Pkcs.SubjectIdentifierType.IssuerAndSerialNumber,
-                certWithKey
-            );
-            cmsSigner.DigestAlgorithm = new Oid("2.16.840.1.101.3.4.2.1"); // SHA-256
-            cmsSigner.IncludeOption = X509IncludeOption.EndCertOnly;
-            
-            // Sign with temp key (we'll inject the real signature)
-            signedCms.ComputeSignature(cmsSigner, false);
-            
-            // Get the CMS bytes and replace the temp signature with the real one
-            var cmsBytes = signedCms.Encode();
-            
-            // Find and replace the temp RSA signature with the real hardware token signature
-            var tempSig = signedCms.SignerInfos[0].GetSignature();
-            var finalCms = ReplaceSignatureInCms(cmsBytes, tempSig, rawSignature);
-            
-            return Convert.ToBase64String(finalCms);
-        }
-        finally
-        {
-            tempKey.Dispose();
-        }
+
+        return new SimpleBlockResult(signature);
     }
-    
-    /// <summary>
-    /// Replace the temporary signature bytes in the CMS DER with the real hardware token signature.
-    /// </summary>
-    private static byte[] ReplaceSignatureInCms(byte[] cmsBytes, byte[] tempSig, byte[] realSig)
+
+    private static byte[] BuildDigestInfoSha256(byte[] hash32)
     {
-        // If signatures are the same length, simple byte replacement
-        if (tempSig.Length == realSig.Length)
+        byte[] prefix = new byte[]
         {
-            var result = (byte[])cmsBytes.Clone();
-            int idx = FindSubArray(result, tempSig);
-            if (idx >= 0)
-            {
-                Buffer.BlockCopy(realSig, 0, result, idx, realSig.Length);
-                return result;
-            }
-        }
-        
-        // Different lengths: need to rebuild the TLV
-        // Find the OCTET STRING containing the signature and rebuild it
-        int pos = FindSubArray(cmsBytes, tempSig);
-        if (pos < 0)
-        {
-            // Fallback: return original CMS bytes (signature from temp key)
-            return cmsBytes;
-        }
-        
-        // Calculate offset differences and rebuild
-        using var output = new MemoryStream();
-        // Copy everything before the signature
-        output.Write(cmsBytes, 0, pos);
-        // Write the real signature
-        output.Write(realSig, 0, realSig.Length);
-        // Copy everything after the temp signature
-        int afterPos = pos + tempSig.Length;
-        output.Write(cmsBytes, afterPos, cmsBytes.Length - afterPos);
-        
-        return output.ToArray();
+            0x30, 0x31, 0x30, 0x0D, 0x06, 0x09,
+            0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01,
+            0x05, 0x00, 0x04, 0x20
+        };
+        var result = new byte[prefix.Length + hash32.Length];
+        Buffer.BlockCopy(prefix, 0, result, 0, prefix.Length);
+        Buffer.BlockCopy(hash32, 0, result, prefix.Length, hash32.Length);
+        return result;
     }
-    
-    private static int FindSubArray(byte[] source, byte[] pattern)
+}
+
+public class SimpleBlockResult : IBlockResult
+{
+    private readonly byte[] _result;
+
+    public SimpleBlockResult(byte[] result)
     {
-        if (pattern.Length == 0 || source.Length < pattern.Length) return -1;
-        
-        for (int i = 0; i <= source.Length - pattern.Length; i++)
-        {
-            bool found = true;
-            for (int j = 0; j < pattern.Length; j++)
-            {
-                if (source[i + j] != pattern[j])
-                {
-                    found = false;
-                    break;
-                }
-            }
-            if (found) return i;
-        }
-        return -1;
+        _result = result;
     }
+
+    public byte[] Collect() => _result;
+
+    public int Collect(byte[] destination, int offset)
+    {
+        Buffer.BlockCopy(_result, 0, destination, offset, _result.Length);
+        return _result.Length;
+    }
+
+    public int Collect(Span<byte> destination)
+    {
+        _result.CopyTo(destination);
+        return _result.Length;
+    }
+
+    public int GetMaxResultLength() => _result.Length;
 }
