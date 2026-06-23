@@ -6615,7 +6615,14 @@ app.post('/api/excel/batch-submit', async (req, res) => {
                     const acceptedDocs = responseData.acceptedDocuments || [];
                     const rejectedDocs = responseData.rejectedDocuments || [];
                     const rejection = rejectedDocs.find((r: any) => r.internalId === internalId);
-                    if (rejection) throw new Error(`ETA Rejected: ${rejection.error?.message || 'Unknown'}`);
+                    if (rejection) {
+                        let errMsg = rejection.error?.message || 'Validation Error';
+                        if (rejection.error?.details && Array.isArray(rejection.error.details)) {
+                            const errDetails = rejection.error.details.map((d: any) => `${d.propertyPath || d.target || ''}: ${d.message}`).join(', ');
+                            errMsg += ` - ${errDetails}`;
+                        }
+                        throw new Error(`ETA Rejected: ${errMsg}`);
+                    }
                     const accepted = acceptedDocs.find((a: any) => a.internalId === internalId);
                     if (!accepted) throw new Error('Not found in accepted/rejected');
 
