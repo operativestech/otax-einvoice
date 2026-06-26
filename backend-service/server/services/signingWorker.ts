@@ -132,7 +132,14 @@ async function processJob(pool: pg.Pool, prisma: PrismaClient, job: any): Promis
     const document: any = typeof job.document_body === 'string' ? JSON.parse(job.document_body) : job.document_body;
     if (!document) throw new Error('Empty document_body on job');
 
-    const settings = await prisma.organization_settings.findUnique({ where: { organization_id: orgId } });
+    const settings = await prisma.organization_settings.findUnique({
+        where: { organization_id: orgId },
+        include: {
+            organizations: {
+                select: { tax_id: true }
+            }
+        }
+    });
     if (!settings) throw new Error('No organization_settings configured for this org');
 
     const signingMethod = method === 'auto'
@@ -148,7 +155,7 @@ async function processJob(pool: pg.Pool, prisma: PrismaClient, job: any): Promis
         signedDoc = await signWithPFX(document, Buffer.from(pfx), pwd, issuer);
     } else if (signingMethod === 'agent') {
         if (!bridge) throw new Error('Agent-Bridge not available in this process');
-        const companyId = (settings as any).agent_company_id || String(orgId);
+        const companyId = (settings as any).agent_company_id || (settings as any).organizations?.tax_id || String(orgId);
         const issuer = (settings as any).certificate_issuer || 'MCDR CA 2022';
         const result = await bridge.signDocument(companyId, { document, certificateIssuer: issuer });
         // Bridge returns the signed document directly OR an object with `.document` wrapping it.

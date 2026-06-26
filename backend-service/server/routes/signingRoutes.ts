@@ -58,21 +58,36 @@ router.get('/method', authenticate, async (req, res) => {
                 agent_company_id: true,
                 agent_node_id: true,
                 agent_last_seen: true,
+                organizations: {
+                    select: { tax_id: true }
+                }
             },
         });
 
+        const activeAgents: Map<string, any> = req.app.get('activeAgents') || new Map();
+
         if (!settings) {
+            const org = await prisma.organizations.findUnique({
+                where: { id: orgId },
+                select: { tax_id: true }
+            });
+            const taxId = org?.tax_id;
+            const queryCompanyId = req.query.companyId as string;
+            const agentCompanyId = queryCompanyId || taxId || String(orgId);
+            const agentOnline = activeAgents.has(agentCompanyId);
+
             return res.json({
                 success: true,
                 method: 'agent',
                 pfx: { uploaded: false },
-                agent: { configured: false, online: false },
+                agent: { configured: false, online: agentOnline, companyId: agentCompanyId },
             });
         }
 
         // Check agent online status via the activeAgents map (accessed via app)
-        const activeAgents: Map<string, any> = req.app.get('activeAgents') || new Map();
-        const agentCompanyId = settings.agent_company_id || String(orgId);
+        const taxId = (settings as any).organizations?.tax_id;
+        const queryCompanyId = req.query.companyId as string;
+        const agentCompanyId = settings.agent_company_id || queryCompanyId || taxId || String(orgId);
         const agentOnline = activeAgents.has(agentCompanyId);
 
         res.json({
@@ -87,7 +102,7 @@ router.get('/method', authenticate, async (req, res) => {
                 uploadedAt: settings.certificate_uploaded_at,
             },
             agent: {
-                configured: !!settings.agent_company_id,
+                configured: !!settings.agent_company_id || !!taxId,
                 companyId: agentCompanyId,
                 nodeId: settings.agent_node_id,
                 lastSeen: settings.agent_last_seen,
@@ -248,6 +263,11 @@ router.post('/test', authenticate, async (req, res) => {
 
         const settings = await prisma.organization_settings.findUnique({
             where: { organization_id: orgId },
+            include: {
+                organizations: {
+                    select: { tax_id: true }
+                }
+            }
         });
 
         if (!settings) {
@@ -292,7 +312,9 @@ router.post('/test', authenticate, async (req, res) => {
         } else {
             // Test Agent connection
             const activeAgents: Map<string, any> = req.app.get('activeAgents') || new Map();
-            const agentCompanyId = settings.agent_company_id || String(orgId);
+            const taxId = (settings as any).organizations?.tax_id;
+            const queryCompanyId = req.query.companyId as string;
+            const agentCompanyId = settings.agent_company_id || queryCompanyId || taxId || String(orgId);
             const agentOnline = activeAgents.has(agentCompanyId);
 
             if (agentOnline) {
@@ -416,11 +438,21 @@ router.get('/agent-status', authenticate, async (req, res) => {
 
         const settings = await prisma.organization_settings.findUnique({
             where: { organization_id: orgId },
-            select: { agent_company_id: true, agent_node_id: true, agent_last_seen: true, signing_method: true },
+            select: {
+                agent_company_id: true,
+                agent_node_id: true,
+                agent_last_seen: true,
+                signing_method: true,
+                organizations: {
+                    select: { tax_id: true }
+                }
+            },
         });
 
         const activeAgents: Map<string, any> = req.app.get('activeAgents') || new Map();
-        const agentCompanyId = settings?.agent_company_id || String(orgId);
+        const taxId = (settings as any)?.organizations?.tax_id;
+        const queryCompanyId = req.query.companyId as string;
+        const agentCompanyId = settings?.agent_company_id || queryCompanyId || taxId || String(orgId);
         const online = activeAgents.has(agentCompanyId);
 
         res.json({

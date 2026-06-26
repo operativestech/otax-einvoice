@@ -148,6 +148,19 @@ wss.on('connection', (ws) => {
                             await client.query('INSERT INTO otaxdb.signing_nodes (company_id, node_id, agent_name, last_seen) VALUES ($1, $2, $3, NOW())', [companyId, nodeId, agentName]);
                             console.log(`[Bridge] New Signing Node registered for ${companyId}: ${nodeId}`);
                         }
+
+                        // Automatically link to organization settings by tax_id (companyId is tax ID)
+                        const orgRes = await client.query('SELECT id FROM otaxdb.organizations WHERE tax_id = $1', [companyId]);
+                        if (orgRes.rows.length > 0) {
+                            const orgId = orgRes.rows[0].id;
+                            await client.query(`
+                                INSERT INTO otaxdb.organization_settings (organization_id, agent_company_id, agent_node_id, agent_last_seen)
+                                VALUES ($1, $2, $3, NOW())
+                                ON CONFLICT (organization_id)
+                                DO UPDATE SET agent_company_id = EXCLUDED.agent_company_id, agent_node_id = EXCLUDED.agent_node_id, agent_last_seen = EXCLUDED.agent_last_seen
+                            `, [orgId, companyId, nodeId]);
+                            console.log(`[Bridge] Linked Agent to Organization Settings for Org ${orgId}`);
+                        }
                     } finally {
                         client.release();
                     }
