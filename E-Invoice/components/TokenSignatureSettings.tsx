@@ -258,12 +258,12 @@ const TokenSignatureSettings: React.FC<TokenSignatureSettingsProps> = ({ propert
 
                         <div className="pt-2 flex flex-col md:flex-row gap-3 justify-center md:justify-start">
                             <a
-                                href={`${DEFAULT_API_URL}/bridge/download-setup?companyId=${taxId}`}
-                                download={`OTax-Agent-Setup-${taxId}.zip`}
+                                href={`${DEFAULT_API_URL}/bridge/download-installer?companyId=${taxId}`}
+                                download={`OTax-Agent-Setup-${taxId}.exe`}
                                 className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition-all shadow-md active:scale-95"
                             >
                                 <Download size={16} />
-                                تحميل OTax Agent (الـ Installer)
+                                تحميل OTax Agent Installer (.exe)
                             </a>
                             {agentInfo && (
                                 <button
@@ -278,9 +278,9 @@ const TokenSignatureSettings: React.FC<TokenSignatureSettingsProps> = ({ propert
                         <div className="border-t border-slate-200/60 pt-4 mt-2 text-right">
                             <h5 className="text-xs font-bold text-slate-700 mb-2">📋 خطوات التشغيل البسيطة:</h5>
                             <ol className="list-decimal list-inside space-y-1 text-[11px] text-slate-500">
-                                <li>قم بتحميل ملف OTax Setup أعلاه وفك الضغط عنه (Extract).</li>
+                                <li>قم بتحميل ملف التثبيت أعلاه (.exe).</li>
                                 <li>قم بتوصيل فلاشة التوكن (USB) بالكمبيوتر.</li>
-                                <li>اضغط بزر الفأرة الأيمن على ملف <b className="text-slate-700">setup_agent.bat</b> واختر <b className="text-slate-700">Run as Administrator</b>.</li>
+                                <li>افتح برنامج التثبيت واضغط على زر **"بدء التثبيت التلقائي"**.</li>
                                 <li>سيقوم البرنامج بتنزيل وتثبيت كافة البرامج والمتطلبات تلقائياً وتشغيل الخدمة بالخلفية.</li>
                             </ol>
                         </div>

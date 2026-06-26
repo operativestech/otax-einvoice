@@ -1696,6 +1696,131 @@ app.get('/api/bridge/download-setup', async (req, res) => {
 });
 
 
+// 0.055c Download Generic Agent Files ZIP (without config) for C# Installer
+app.get('/api/bridge/download-setup-files', async (req, res) => {
+    try {
+        const archiver = await import('archiver');
+        const companyId = 'default';
+        const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+        const host = req.headers.host;
+        const wsProtocol = protocol === 'https' ? 'wss' : 'ws';
+        const CLOUD_URL = `${wsProtocol}://${host}`;
+
+        res.setHeader('Content-Type', 'application/zip');
+        res.setHeader('Content-Disposition', `attachment; filename=OTax-Agent-Setup-Files.zip`);
+
+        const archive = archiver.default('zip', { zlib: { level: 9 } });
+        archive.on('error', (err: any) => { throw err; });
+        archive.pipe(res);
+
+        // 1. README.txt
+        const readme = [
+            'OTax Signing Agent Files',
+            '========================',
+            'This zip package contains files extracted by OTaxInstaller.exe.'
+        ].join('\r\n');
+        archive.append(readme, { name: 'README.txt' });
+
+        // 2. package.json
+        const packageJson = JSON.stringify({
+            private: true,
+            type: 'module',
+            dependencies: { ws: '^8.18.0', tsx: '^4.21.0' }
+        }, null, 4);
+        archive.append(packageJson, { name: 'package.json' });
+
+        // 3. agent.ts (embedded code with correct cloud URL)
+        let agentCode = AGENT_CODE_EMBEDDED;
+        agentCode = agentCode.replace(/const DEFAULT_CLOUD_URL = '.*?';/, `const DEFAULT_CLOUD_URL = '${CLOUD_URL}';`);
+        archive.append(agentCode, { name: 'agent.ts' });
+
+        // 4. run_agent.bat
+        const runBat = [
+            '@echo off', 'setlocal enabledelayedexpansion', 'chcp 65001 >nul',
+            'set "AGENT_DIR=%~dp0"', 'cd /d "%AGENT_DIR%"', '',
+            'where node >nul 2>&1',
+            'if errorlevel 1 ( echo ERROR: Node.js not found! & pause & exit /b 1 )', '',
+            'if not exist "node_modules\\ws" ( call npm install --no-audit --no-fund --loglevel=error )', '',
+            'echo ===================================================',
+            `echo   OTax Signing Agent`,
+            'echo   Close this window to stop.', 'echo ===================================================', '',
+            ':loop', 'echo [%date% %time%] Starting agent...', 'npx -y tsx agent.ts',
+            'echo [%date% %time%] Restarting in 5s...', 'timeout /t 5 /nobreak >nul', 'goto loop'
+        ].join('\r\n');
+        archive.append(runBat, { name: 'run_agent.bat' });
+
+        // 5. EInvoicingSigner binaries
+        const signerFiles = [
+            'EInvoicingSigner.exe', 'EInvoicingSigner.dll', 'EInvoicingSigner.deps.json',
+            'EInvoicingSigner.runtimeconfig.json', 'BouncyCastle.Crypto.dll',
+            'Newtonsoft.Json.dll', 'Pkcs11Interop.dll', 'System.Security.Cryptography.Pkcs.dll'
+        ];
+        const signerSearchPaths = [
+            path.join(process.cwd(), 'EInvoicingSigner'),
+            path.join(process.cwd(), 'agent', 'EInvoicingSigner'),
+        ];
+        let signerDir = '';
+        for (const p of signerSearchPaths) {
+            if (fs.existsSync(path.join(p, 'EInvoicingSigner.exe'))) { signerDir = p; break; }
+        }
+        if (signerDir) {
+            for (const file of signerFiles) {
+                const fp = path.join(signerDir, file);
+                if (fs.existsSync(fp)) archive.file(fp, { name: `EInvoicingSigner/${file}` });
+            }
+            const runtimeDll = path.join(signerDir, 'runtimes', 'win', 'lib', 'netcoreapp3.0', 'System.Security.Cryptography.Pkcs.dll');
+            if (fs.existsSync(runtimeDll)) archive.file(runtimeDll, { name: 'EInvoicingSigner/runtimes/win/lib/netcoreapp3.0/System.Security.Cryptography.Pkcs.dll' });
+        }
+
+        // 6. UTS (UniversalTokenSigner) binaries
+        const utsSearchPaths = [
+            path.join(process.cwd(), 'uts-release'),
+            path.join(process.cwd(), '..', 'UniversalTokenSigner', 'bin', 'Release', 'net8.0-windows'),
+        ];
+        let utsDir = '';
+        for (const p of utsSearchPaths) {
+            if (fs.existsSync(p) && fs.existsSync(path.join(p, 'UniversalTokenSigner.exe'))) { utsDir = p; break; }
+        }
+        if (utsDir) {
+            const utsFiles = fs.readdirSync(utsDir);
+            for (const file of utsFiles) {
+                const fp = path.join(utsDir, file);
+                if (fs.statSync(fp).isFile() && !file.endsWith('.pdb')) {
+                    archive.file(fp, { name: `UniversalTokenSigner/${file}` });
+                }
+            }
+        }
+
+        await archive.finalize();
+        console.log(`[Setup] Generic Files ZIP created successfully`);
+    } catch (err: any) {
+        console.error('[Setup Files Download] Error:', err.message);
+        if (!res.headersSent) {
+            res.status(500).json({ success: false, message: 'Failed to create files setup: ' + err.message });
+        }
+    }
+});
+
+// 0.055d Download Precompiled OTax Agent EXE Installer (custom filename)
+app.get('/api/bridge/download-installer', (req, res) => {
+    try {
+        const companyId = (req.query.companyId as string) || 'default';
+        const installerPath = path.join(__dirname, '..', 'installer', 'OTaxInstaller.exe');
+        if (!fs.existsSync(installerPath)) {
+            return res.status(404).send('Installer executable not found on server.');
+        }
+        res.setHeader('Content-Type', 'application/octet-stream');
+        res.setHeader('Content-Disposition', `attachment; filename=OTax-Agent-Setup-${companyId}.exe`);
+        fs.createReadStream(installerPath).pipe(res);
+    } catch (err: any) {
+        console.error('[Installer Download] Error:', err.message);
+        if (!res.headersSent) {
+            res.status(500).json({ success: false, message: 'Failed to download installer: ' + err.message });
+        }
+    }
+});
+
+
 app.get('/api/bridge/status', async (req, res) => {
     const companyId = req.query.companyId as string || 'default';
     const isOnline = activeAgents.has(companyId);
