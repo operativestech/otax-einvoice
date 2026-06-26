@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
     Key, Eye, EyeOff, CheckCircle2, AlertCircle, ShieldCheck,
-    Wifi, WifiOff, RefreshCw, Download, Cpu, XCircle, Loader2
+    Wifi, WifiOff, RefreshCw, Download, Cpu, XCircle, Loader2, RotateCcw
 } from 'lucide-react';
 import { API_URL as DEFAULT_API_URL } from '../services/apiService';
 import { confirmDialog } from './ConfirmDialog';
@@ -46,6 +46,7 @@ const TokenSignatureSettings: React.FC<TokenSignatureSettingsProps> = ({ propert
     const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
     const [isTesting, setIsTesting] = useState(false);
     const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const [isRestarting, setIsRestarting] = useState(false);
 
     // Hidden inputs values
     const [savedThumbprint, setSavedThumbprint] = useState(getProp('signer_CurrentCertName', ''));
@@ -207,6 +208,37 @@ const TokenSignatureSettings: React.FC<TokenSignatureSettingsProps> = ({ propert
             }
         } catch (e: any) {
             setStatusMessage({ type: 'error', text: 'Reset failed: ' + e.message });
+        }
+    };
+
+    const handleRestartAgent = async () => {
+        const ok = await confirmDialog({
+            title: 'Restart Agent',
+            message: 'This will restart the OTax Agent on the signing computer. The agent will disconnect briefly and reconnect automatically. Use this after reinstalling or updating the agent.',
+            confirmLabel: 'Restart',
+            tone: 'warning',
+        });
+        if (!ok) return;
+        setIsRestarting(true);
+        setStatusMessage(null);
+        try {
+            const res = await fetch(`${DEFAULT_API_URL}/bridge/restart-agent`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ companyId: taxId }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                setStatusMessage({ type: 'success', text: 'Restart command sent! The agent will reconnect in a few seconds...' });
+                // Re-check agent status after a delay to let it reconnect
+                setTimeout(() => checkAgentStatus(), 8000);
+            } else {
+                setStatusMessage({ type: 'error', text: data.message || 'Failed to restart agent.' });
+            }
+        } catch (e: any) {
+            setStatusMessage({ type: 'error', text: 'Restart failed: ' + e.message });
+        } finally {
+            setIsRestarting(false);
         }
     };
 
@@ -446,6 +478,24 @@ const TokenSignatureSettings: React.FC<TokenSignatureSettingsProps> = ({ propert
                                         {isTesting ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <ShieldCheck size={16} />}
                                         Test Signature
                                     </button>
+
+                                    <button
+                                        onClick={handleRestartAgent}
+                                        disabled={isRestarting}
+                                        className="px-5 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold text-sm rounded-xl transition-all border border-amber-200 hover:border-amber-300 flex items-center gap-2 disabled:opacity-50"
+                                    >
+                                        {isRestarting ? <Loader2 size={14} className="animate-spin" /> : <RotateCcw size={14} />}
+                                        Restart Agent
+                                    </button>
+
+                                    <a
+                                        href={`${DEFAULT_API_URL}/bridge/download-installer?companyId=${taxId}`}
+                                        download={`OTax-Agent-Setup-${taxId}.exe`}
+                                        className="px-5 py-2.5 bg-slate-50 hover:bg-blue-50 text-slate-500 hover:text-blue-600 font-semibold text-sm rounded-xl transition-all border border-slate-200 hover:border-blue-200 flex items-center gap-2"
+                                    >
+                                        <Download size={14} />
+                                        Reinstall Agent
+                                    </a>
 
                                     <button
                                         onClick={handleResetNode}

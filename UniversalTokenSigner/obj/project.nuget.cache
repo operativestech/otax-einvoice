@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "VwknYW+YmSc=",
+  "dgSpecHash": "SOaxZ7TW4y4=",
   "success": true,
-  "projectFilePath": "e:\\app\\OTax New App\\UniversalTokenSigner\\UniversalTokenSigner.csproj",
+  "projectFilePath": "E:\\app\\OTax New App\\UniversalTokenSigner\\UniversalTokenSigner.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Combo\\.nuget\\packages\\bouncycastle.cryptography\\2.6.2\\bouncycastle.cryptography.2.6.2.nupkg.sha512",
     "C:\\Users\\Combo\\.nuget\\packages\\pkcs11interop\\5.1.2\\pkcs11interop.5.1.2.nupkg.sha512"
   ],
   "logs": []

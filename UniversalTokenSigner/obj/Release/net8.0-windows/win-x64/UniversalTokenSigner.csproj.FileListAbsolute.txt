@@ -23,3 +23,5 @@ e:\app\OTax New App\UniversalTokenSigner\obj\Release\net8.0-windows\win-x64\refi
 e:\app\OTax New App\UniversalTokenSigner\obj\Release\net8.0-windows\win-x64\UniversalTokenSigner.pdb
 e:\app\OTax New App\UniversalTokenSigner\obj\Release\net8.0-windows\win-x64\UniversalTokenSigner.genruntimeconfig.cache
 e:\app\OTax New App\UniversalTokenSigner\obj\Release\net8.0-windows\win-x64\ref\UniversalTokenSigner.dll
+E:\app\OTax New App\UniversalTokenSigner\bin\Release\net8.0-windows\win-x64\BouncyCastle.Cryptography.dll
+E:\app\OTax New App\UniversalTokenSigner\obj\Release\net8.0-windows\win-x64\UniversalTokenSigner.sourcelink.json

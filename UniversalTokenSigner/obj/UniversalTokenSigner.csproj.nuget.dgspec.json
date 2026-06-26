@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "e:\\app\\OTax New App\\UniversalTokenSigner\\UniversalTokenSigner.csproj": {}
+    "E:\\app\\OTax New App\\UniversalTokenSigner\\UniversalTokenSigner.csproj": {}
   },
   "projects": {
-    "e:\\app\\OTax New App\\UniversalTokenSigner\\UniversalTokenSigner.csproj": {
+    "E:\\app\\OTax New App\\UniversalTokenSigner\\UniversalTokenSigner.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "e:\\app\\OTax New App\\UniversalTokenSigner\\UniversalTokenSigner.csproj",
+        "projectUniqueName": "E:\\app\\OTax New App\\UniversalTokenSigner\\UniversalTokenSigner.csproj",
         "projectName": "UniversalTokenSigner",
-        "projectPath": "e:\\app\\OTax New App\\UniversalTokenSigner\\UniversalTokenSigner.csproj",
+        "projectPath": "E:\\app\\OTax New App\\UniversalTokenSigner\\UniversalTokenSigner.csproj",
         "packagesPath": "C:\\Users\\Combo\\.nuget\\packages\\",
-        "outputPath": "e:\\app\\OTax New App\\UniversalTokenSigner\\obj\\",
+        "outputPath": "E:\\app\\OTax New App\\UniversalTokenSigner\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Combo\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -43,6 +43,10 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "dependencies": {
+            "BouncyCastle.Cryptography": {
+              "target": "Package",
+              "version": "[2.6.2, )"
+            },
             "Pkcs11Interop": {
               "target": "Package",
               "version": "[5.1.2, )"

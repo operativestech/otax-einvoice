@@ -1904,6 +1904,36 @@ app.post('/api/bridge/reset-node', async (req, res) => {
     }
 });
 
+// 0.08 Restart Agent (send restart command via WebSocket)
+app.post('/api/bridge/restart-agent', async (req, res) => {
+    const { companyId } = req.body;
+    if (!companyId) return res.status(400).json({ success: false, message: 'Company ID is required' });
+
+    try {
+        const activeWs = activeAgents.get(companyId);
+        if (!activeWs) {
+            return res.json({ success: false, message: 'Agent is not currently connected. It may already be offline.' });
+        }
+
+        // Send restart command to the agent
+        activeWs.send(JSON.stringify({ type: 'restart', message: 'Restart requested by admin.' }));
+
+        // Close the WebSocket connection to force the agent's auto-restart loop
+        setTimeout(() => {
+            try {
+                activeWs.close();
+                activeAgents.delete(companyId);
+            } catch (e) { /* ignore */ }
+        }, 500);
+
+        console.log(`[Bridge] Restart command sent to agent for company: ${companyId}`);
+        res.json({ success: true, message: 'Restart command sent. The agent will reconnect shortly.' });
+    } catch (e: any) {
+        console.error('[Bridge] Restart Error:', e.message);
+        res.status(500).json({ success: false, message: e.message });
+    }
+});
+
 // ============================================
 // SIGNING STATUS ENDPOINTS (inline, no RBAC)
 // These mirror signingRoutes.ts but work without Prisma RBAC tables
