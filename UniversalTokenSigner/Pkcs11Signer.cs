@@ -388,6 +388,11 @@ public sealed class Pkcs11Signer
             CmsSignedData signedData = gen.Generate(content, false);
             byte[] finalCms = signedData.GetEncoded();
 
+            // CRITICAL: Ensure the CMS is truly detached by stripping any encapsulated content.
+            // Some implementations may still embed the content even with encapsulate=false.
+            // ETA error 4062 ("Attached digital signature is not supported") occurs when content is present.
+            finalCms = StripEncapsulatedContent(finalCms);
+
             return new SignDocumentCadesResponse(
                 SignatureBase64: Convert.ToBase64String(finalCms),
                 KeyType: keyType == (ulong)CKK.CKK_RSA ? "RSA" : "EC",
@@ -399,6 +404,54 @@ public sealed class Pkcs11Signer
         finally
         {
             session.Logout();
+        }
+    }
+
+    /// <summary>
+    /// Ensures the CMS SignedData is truly detached by removing any encapsulated content
+    /// from the EncapsulatedContentInfo structure. ETA requires a detached signature where
+    /// eContent is ABSENT. This method parses the DER-encoded CMS and removes the [0] EXPLICIT
+    /// tagged content after the data OID (1.2.840.113549.1.7.1) if present.
+    /// </summary>
+    private static byte[] StripEncapsulatedContent(byte[] cmsBytes)
+    {
+        try
+        {
+            // Parse the CMS structure using BouncyCastle ASN.1
+            var asn1 = Asn1Object.FromByteArray(cmsBytes);
+            var contentInfo = Org.BouncyCastle.Asn1.Cms.ContentInfo.GetInstance(asn1);
+            var signedData = Org.BouncyCastle.Asn1.Cms.SignedData.GetInstance(contentInfo.Content);
+
+            // Check if encapContentInfo has content (eContent present)
+            var encapContent = signedData.EncapContentInfo;
+            if (encapContent.Content != null)
+            {
+                // Rebuild with empty encapContentInfo (detached)
+                var detachedEncapContent = new Org.BouncyCastle.Asn1.Cms.ContentInfo(
+                    encapContent.ContentType, null);
+
+                var detachedSignedData = new Org.BouncyCastle.Asn1.Cms.SignedData(
+                    signedData.DigestAlgorithms,
+                    detachedEncapContent,
+                    signedData.Certificates,
+                    signedData.CRLs,
+                    signedData.SignerInfos);
+
+                var detachedContentInfo = new Org.BouncyCastle.Asn1.Cms.ContentInfo(
+                    contentInfo.ContentType, detachedSignedData);
+
+                byte[] result = detachedContentInfo.GetEncoded();
+                Console.WriteLine($"[UTS] Stripped {cmsBytes.Length - result.Length} bytes of encapsulated content. New size: {result.Length}");
+                return result;
+            }
+
+            // Already detached
+            return cmsBytes;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[UTS] Warning: Could not verify detached state: {ex.Message}. Using original.");
+            return cmsBytes;
         }
     }
 }
