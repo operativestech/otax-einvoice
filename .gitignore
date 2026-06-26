@@ -1,3 +1,10 @@
 # Local git backups
 E-Invoice/.git_backup
 backend-service/.git_backup
+
+# Installer binaries (too large for GitHub, build locally)
+backend-service/installer/*.exe
+backend-service/installer/*.pdb
+backend-service/installer/*.dll
+OTaxInstaller/bin/
+OTaxInstaller/obj/
