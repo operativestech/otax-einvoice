@@ -455,13 +455,19 @@ router.get('/agent-status', authenticate, async (req, res) => {
         const agentCompanyId = settings?.agent_company_id || queryCompanyId || taxId || String(orgId);
         const online = activeAgents.has(agentCompanyId);
 
+        // Fetch the corresponding signing node info
+        const node = await prisma.signingNode.findUnique({
+            where: { company_id: agentCompanyId }
+        });
+
         res.json({
             success: true,
             method: settings?.signing_method || 'agent',
             online,
             companyId: agentCompanyId,
-            nodeId: settings?.agent_node_id,
-            lastSeen: settings?.agent_last_seen,
+            nodeId: settings?.agent_node_id || node?.node_id,
+            lastSeen: settings?.agent_last_seen || node?.last_seen,
+            node,
         });
     } catch (error: any) {
         res.status(500).json({ success: false, message: error.message });
