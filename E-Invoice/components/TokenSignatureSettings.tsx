@@ -17,7 +17,19 @@ const TokenSignatureSettings: React.FC<TokenSignatureSettingsProps> = ({ propert
     };
 
     const taxId = getProp('issuer_id', 'default');
-    const token = localStorage.getItem('token');
+    
+    const getAuthToken = () => {
+        try {
+            const userStr = localStorage.getItem('invoice_user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                if (user.token) return user.token;
+            }
+        } catch (e) {}
+        return localStorage.getItem('token') || '';
+    };
+
+    const token = getAuthToken();
     const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
     // ── State ──
