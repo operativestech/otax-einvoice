@@ -1,20 +1,16 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-    Key, Search, Eye, EyeOff, X, CheckCircle2, AlertCircle, ShieldCheck, Shield,
-    Fingerprint, Wifi, WifiOff,
-    RefreshCw, Info, Download, Clock, Cpu
+    Key, Eye, EyeOff, CheckCircle2, AlertCircle, ShieldCheck,
+    Wifi, WifiOff, RefreshCw, Download, Cpu
 } from 'lucide-react';
 import { API_URL as DEFAULT_API_URL } from '../services/apiService';
-import { useTranslation } from '../i18n';
-import { confirmDialog, alertDialog } from './ConfirmDialog';
+import { confirmDialog } from './ConfirmDialog';
 
 interface TokenSignatureSettingsProps {
     properties: any[];
 }
 
 const TokenSignatureSettings: React.FC<TokenSignatureSettingsProps> = ({ properties }) => {
-    const { t } = useTranslation();
     const getProp = (name: string, fallback: string = '') => {
         const prop = properties.find(p => p.property_name.toLowerCase() === name.toLowerCase());
         return prop ? prop.property_value : fallback;
@@ -25,74 +21,42 @@ const TokenSignatureSettings: React.FC<TokenSignatureSettingsProps> = ({ propert
     const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
     // ── State ──
-    const [isLoading, setIsLoading] = useState(true);
-
-    // Agent state
     const [agentOnline, setAgentOnline] = useState<boolean | null>(null);
     const [agentInfo, setAgentInfo] = useState<any>(null);
     const [checkingAgent, setCheckingAgent] = useState(false);
-    const [resettingNode, setResettingNode] = useState(false);
-    const [lastChecked, setLastChecked] = useState<Date | null>(null);
-
-    // Certificate scan state
     const [loadingCerts, setLoadingCerts] = useState(false);
-    const [showCertModal, setShowCertModal] = useState(false);
-    const [availableCertificates, setAvailableCertificates] = useState<any[]>([]);
-    const [selectedCertIndex, setSelectedCertIndex] = useState<number | null>(null);
-    const [pinInput, setPinInput] = useState('');
-    const [showPinModal, setShowPinModal] = useState(false);
-    const [showModalPin, setShowModalPin] = useState(false);
-    const [registering, setRegistering] = useState(false);
-    const [scanError, setScanError] = useState('');
-
-    // Saved values
-    const savedThumbprint = getProp('signer_CurrentCertName', '');
-    const savedPin = getProp('signer_CurrentCertPIN', '');
-
-    // Test
-    const [isTesting, setIsTesting] = useState(false);
-    const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
-
-    // Notification
-    const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-
-    // PIN display
+    const [certificates, setCertificates] = useState<any[]>([]);
+    const [selectedCert, setSelectedCert] = useState<any>(null);
+    const [pin, setPin] = useState(getProp('signer_CurrentCertPIN', ''));
     const [showPin, setShowPin] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [scanError, setScanError] = useState('');
+    const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
+    const [isTesting, setIsTesting] = useState(false);
+    const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-    // ── Load initial data ──
-    useEffect(() => {
-        loadSigningMethod();
-    }, []);
+    // Hidden inputs values
+    const [savedThumbprint, setSavedThumbprint] = useState(getProp('signer_CurrentCertName', ''));
+    const [savedPin, setSavedPin] = useState(getProp('signer_CurrentCertPIN', ''));
 
-    const loadSigningMethod = async () => {
-        setIsLoading(true);
-        try {
-            const res = await fetch(`${DEFAULT_API_URL}/signing/method`, { headers: authHeaders });
-            if (res.ok) {
-                const data = await res.json();
-                if (data.success) {
-                    setAgentInfo(data.agent);
-                    setAgentOnline(data.agent?.online ?? null);
-                }
-            }
-        } catch (e) {
-            console.error('Failed to load signing method:', e);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    // ── Periodically check agent status (every 5s) ──
+    // Check Agent Status
     const checkAgentStatus = useCallback(async () => {
         setCheckingAgent(true);
         try {
             const res = await fetch(`${DEFAULT_API_URL}/signing/agent-status?companyId=${taxId}`, { headers: authHeaders });
             const data = await res.json();
-            setAgentOnline(data.success && data.online);
+            const online = data.success && data.online;
+            setAgentOnline(online);
             if (data.node) {
                 setAgentInfo(data.node);
+                if (data.node.cert_thumbprint) {
+                    setSavedThumbprint(data.node.cert_thumbprint);
+                }
+                if (data.node.cert_pin) {
+                    setSavedPin(data.node.cert_pin);
+                    setPin(data.node.cert_pin);
+                }
             }
-            setLastChecked(new Date());
         } catch {
             setAgentOnline(false);
         } finally {
@@ -100,104 +64,126 @@ const TokenSignatureSettings: React.FC<TokenSignatureSettingsProps> = ({ propert
         }
     }, [taxId]);
 
+    // Scan Certificates
+    const scanCertificates = useCallback(async () => {
+        if (agentOnline !== true) return;
+        setLoadingCerts(true);
+        setScanError('');
+        try {
+            const res = await fetch(`${DEFAULT_API_URL}/bridge/list-certs?companyId=${taxId}`);
+            if (!res.ok) throw new Error('Failed to connect to agent');
+            const data = await res.json();
+            if (data.success && Array.isArray(data.certificates)) {
+                setCertificates(data.certificates);
+                if (data.certificates.length > 0) {
+                    // Auto-select the first certificate
+                    const firstCert = data.certificates[0];
+                    setSelectedCert(firstCert);
+                    // Update current input fields if empty
+                    if (!savedThumbprint) {
+                        setSavedThumbprint(firstCert.Thumbprint);
+                    }
+                } else {
+                    setSelectedCert(null);
+                    setScanError('متصل بالـ Agent ولكن لم يتم العثور على توكن USB. يرجى إدخال التوكن في الجهاز.');
+                }
+            } else {
+                throw new Error(data.message || 'No certificates found');
+            }
+        } catch (e: any) {
+            setScanError('فشل الاتصال ببرنامج التوقيع لقراءة الشهادة. تأكد من إدخال التوكن.');
+            setSelectedCert(null);
+        } finally {
+            setLoadingCerts(false);
+        }
+    }, [agentOnline, taxId, savedThumbprint]);
+
+    // Initial check
     useEffect(() => {
         checkAgentStatus();
-        const interval = setInterval(checkAgentStatus, 5000); // 5 seconds
+        const interval = setInterval(checkAgentStatus, 6000);
         return () => clearInterval(interval);
     }, [checkAgentStatus]);
 
-    // ── Test signing ──
-    const handleTestSigning = async () => {
+    // Auto scan when Agent goes Online
+    useEffect(() => {
+        if (agentOnline === true) {
+            scanCertificates();
+        } else {
+            setCertificates([]);
+            setSelectedCert(null);
+        }
+    }, [agentOnline, scanCertificates]);
+
+    // Save PIN and Register Certificate
+    const handleSaveConfig = async () => {
+        const certToRegister = selectedCert || (savedThumbprint ? { Thumbprint: savedThumbprint, Subject: agentInfo?.cert_subject || 'Registered Cert' } : null);
+        if (!certToRegister) {
+            setStatusMessage({ type: 'error', text: 'الرجاء التأكد من توصيل التوكن بالكمبيوتر أولاً لكي يتم التعرف عليه.' });
+            return;
+        }
+        if (!pin.trim()) {
+            setStatusMessage({ type: 'error', text: 'الرجاء إدخال كود PIN الخاص بالتوكن.' });
+            return;
+        }
+
+        setSaving(true);
+        setStatusMessage(null);
+        try {
+            const res = await fetch(`${DEFAULT_API_URL}/bridge/register-cert`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    companyId: taxId,
+                    thumbprint: certToRegister.Thumbprint,
+                    subject: certToRegister.FriendlyName || certToRegister.Subject,
+                    pin: pin
+                }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                setSavedThumbprint(certToRegister.Thumbprint);
+                setSavedPin(pin);
+                setStatusMessage({ type: 'success', text: '✓ تم حفظ البيانات وتفعيل التوكن بنجاح! جاهز الآن لتوقيع الفواتير.' });
+                // Automatically run signature test
+                runSignatureTest();
+            } else {
+                throw new Error(data.message || 'Failed to register');
+            }
+        } catch (e: any) {
+            setStatusMessage({ type: 'error', text: 'فشل حفظ البيانات: ' + e.message });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    // Run Test
+    const runSignatureTest = async () => {
         setIsTesting(true);
         setTestResult(null);
         try {
-            const res = await fetch(`${DEFAULT_API_URL}/signing/test?companyId=${taxId}`, {
-                headers: authHeaders,
-            });
+            const res = await fetch(`${DEFAULT_API_URL}/signing/test?companyId=${taxId}`, { headers: authHeaders });
             const data = await res.json();
-            if (data.agentOnline) {
-                setTestResult({ success: true, message: '✅ Agent is connected and ready to sign invoices.' });
+            if (data.success) {
+                setTestResult({ success: true, message: '✓ التوصيل والتوقيع يعملان بنجاح! التوكن متصل وجاهز للعمل.' });
             } else {
-                setTestResult({ success: false, message: '❌ OTax Agent is NOT connected. Please make sure the agent is running on the Master PC.' });
+                setTestResult({ success: false, message: 'فشل اختبار التوقيع: تأكد من صحة كود الـ PIN ومن إدخال التوكن بالكمبيوتر.' });
             }
         } catch (e: any) {
-            setTestResult({ success: false, message: 'Connection error: ' + e.message });
+            setTestResult({ success: false, message: 'خطأ في الاتصال: ' + e.message });
         } finally {
             setIsTesting(false);
         }
     };
 
-    // ── Scan certificates (Agent mode) ──
-    const handleScanCerts = async () => {
-        setLoadingCerts(true);
-        setScanError('');
-        try {
-            const response = await fetch(`${DEFAULT_API_URL}/bridge/list-certs?companyId=${taxId}`);
-            if (!response.ok) {
-                const errResult = await response.json().catch(() => ({}));
-                throw new Error(errResult.message || 'Failed to connect to signing service');
-            }
-            const result = await response.json();
-            if (result.success && Array.isArray(result.certificates)) {
-                if (result.certificates.length === 0) {
-                    setScanError('Connected to agent but no certificates found. Please insert your USB token.');
-                } else {
-                    setAvailableCertificates(result.certificates);
-                    setShowCertModal(true);
-                }
-            } else {
-                throw new Error(result.message || 'Failed to list certificates');
-            }
-        } catch (e: any) {
-            setScanError(e.message || 'Could not reach signing service.');
-            setAgentOnline(false);
-        } finally {
-            setLoadingCerts(false);
-        }
-    };
-
-    const handleSelectCert = (index: number) => {
-        setSelectedCertIndex(index);
-        setPinInput('');
-        setShowPinModal(true);
-    };
-
-    const handleConfirmPin = async () => {
-        if (selectedCertIndex === null) return;
-        const cert = availableCertificates[selectedCertIndex];
-        if (!pinInput.trim()) { await alertDialog({ title: 'PIN required', message: 'Please enter your certificate PIN.', tone: 'warning' }); return; }
-
-        setRegistering(true);
-        try {
-            await fetch(`${DEFAULT_API_URL}/bridge/register-cert`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ companyId: taxId, thumbprint: cert.Thumbprint, subject: cert.FriendlyName || cert.Subject, pin: pinInput }),
-            });
-            const nameInput = document.getElementsByName('signer_CurrentCertName')[0] as HTMLInputElement;
-            const pinField = document.getElementsByName('signer_CurrentCertPIN')[0] as HTMLInputElement;
-            if (nameInput) nameInput.value = cert.Thumbprint;
-            if (pinField) pinField.value = pinInput;
-            setShowPinModal(false);
-            setShowCertModal(false);
-            setSelectedCertIndex(null);
-            showNotification('success', `Certificate registered! PIN saved securely. Thumbprint: ${cert.Thumbprint.substring(0, 16)}...`);
-        } catch (e: any) {
-            showNotification('error', 'Failed to register certificate: ' + e.message);
-        } finally {
-            setRegistering(false);
-        }
-    };
-
     const handleResetNode = async () => {
         const ok = await confirmDialog({
-            title: 'Reset signing PC',
-            message: 'This will disconnect the current signing PC and allow a new one to connect.',
-            confirmLabel: 'Reset',
+            title: 'إعادة ضبط جهاز التوقيع',
+            message: 'هل تريد فصل جهاز التوقيع الحالي وإتاحة ربط جهاز آخر؟',
+            confirmLabel: 'إعادة ضبط',
             tone: 'warning',
         });
         if (!ok) return;
-        setResettingNode(true);
         try {
             const res = await fetch(`${DEFAULT_API_URL}/bridge/reset-node`, {
                 method: 'POST',
@@ -206,395 +192,203 @@ const TokenSignatureSettings: React.FC<TokenSignatureSettingsProps> = ({ propert
             });
             const data = await res.json();
             if (data.success) {
-                showNotification('success', 'Node reset. Re-run the Agent on the new PC.');
+                setStatusMessage({ type: 'success', text: 'تمت إعادة الضبط بنجاح. يمكنك الآن تشغيل الـ Agent على الجهاز الجديد.' });
                 checkAgentStatus();
-            } else {
-                showNotification('error', 'Reset failed: ' + (data.message || 'Unknown error'));
             }
         } catch (e: any) {
-            showNotification('error', 'Reset failed: ' + e.message);
-        } finally {
-            setResettingNode(false);
+            setStatusMessage({ type: 'error', text: 'فشل إعادة الضبط: ' + e.message });
         }
     };
 
-    const showNotification = (type: 'success' | 'error', message: string) => {
-        setNotification({ type, message });
-        setTimeout(() => setNotification(null), 5000);
-    };
-
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center py-20">
-                <div className="w-8 h-8 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
-            </div>
-        );
-    }
-
     return (
-        <div className="space-y-6 animate-in fade-in duration-300">
-
-            {/* Hidden inputs for Settings.tsx form serialization.
-                `key` forces a remount whenever the DB-loaded value arrives async,
-                so the uncontrolled input picks up the new defaultValue. */}
+        <div className="space-y-6 animate-in fade-in duration-300" dir="rtl">
+            {/* Hidden Inputs for Form Sync */}
             <input type="hidden" name="signer_CurrentCertName" key={`thumb-${savedThumbprint}`} defaultValue={savedThumbprint} />
             <input type="hidden" name="signer_CurrentCertPIN" key={`pin-${savedPin}`} defaultValue={savedPin} />
 
-            {/* ── Notification Toast ── */}
-            {notification && (
-                <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl text-sm font-semibold animate-in slide-in-from-right duration-300 ${notification.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`}>
-                    {notification.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
-                    {notification.message}
-                    <button onClick={() => setNotification(null)} className="ml-2 opacity-70 hover:opacity-100"><X size={14} /></button>
-                </div>
-            )}
-
-            {/* ══════════════════════════════════════════════ */}
-            {/* ── AGENT STATUS (Live Sync) ──                 */}
-            {/* ══════════════════════════════════════════════ */}
-            <div className={`p-6 rounded-3xl border-2 transition-all ${agentOnline === true
-                ? 'bg-gradient-to-r from-emerald-50 to-green-50 border-emerald-200'
-                : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200'
-                }`}>
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg ${agentOnline === true
-                            ? 'bg-emerald-600 shadow-emerald-200'
-                            : 'bg-amber-500 shadow-amber-200'
-                            }`}>
-                            {agentOnline === true ? (
-                                <Wifi size={22} className="text-white" />
-                            ) : (
-                                <WifiOff size={22} className="text-white" />
-                            )}
-                        </div>
-                        <div>
-                            <div className="flex items-center gap-2">
-                                <p className={`text-base font-bold ${agentOnline === true ? 'text-emerald-800' : 'text-amber-800'}`}>
-                                    {checkingAgent ? 'Checking...' : agentOnline === true ? 'OTax Agent Connected ✓' : 'OTax Agent Offline'}
-                                </p>
-                                {agentOnline === true && (
-                                    <span className="relative flex h-2.5 w-2.5">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                                    </span>
-                                )}
-                            </div>
-                            <p className="text-[11px] text-slate-500">
-                                {agentOnline === true
-                                    ? t('tokensig.agentOnline')
-                                    : t('tokensig.agentOffline')}
-                            </p>
-                            {lastChecked && (
-                                <p className="text-[9px] text-slate-400 flex items-center gap-1 mt-0.5">
-                                    <Clock size={9} />
-                                    {t('tokensig.lastChecked')}: {lastChecked.toLocaleTimeString()}
-                                </p>
-                            )}
-                        </div>
+            <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-50">
+                    <div className="space-y-1">
+                        <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <Key className="text-blue-500" size={22} />
+                            توقيع فواتير الضرائب بالتوكن (USB Token Signature)
+                        </h3>
+                        <p className="text-xs text-slate-500">
+                            قم بتوصيل توكن التوقيع الإلكتروني (USB) بجهاز الكمبيوتر الرئيسي لتفعيل إرسال الفواتير.
+                        </p>
                     </div>
-                    <button
-                        onClick={checkAgentStatus}
-                        disabled={checkingAgent}
-                        className="text-xs font-bold text-slate-500 hover:text-slate-700 px-3 py-1.5 hover:bg-white/50 rounded-lg transition-colors"
-                    >
-                        <RefreshCw size={16} className={checkingAgent ? 'animate-spin' : ''} />
-                    </button>
+                    {/* Status Badge */}
+                    <div className="flex items-center gap-2">
+                        {agentOnline === true ? (
+                            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-100 shadow-sm animate-pulse">
+                                <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
+                                الـ Agent متصل ومستعد
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-700 rounded-full text-xs font-bold border border-amber-100">
+                                <span className="w-2 h-2 bg-amber-400 rounded-full"></span>
+                                الـ Agent غير متصل
+                            </div>
+                        )}
+                        <button
+                            onClick={checkAgentStatus}
+                            disabled={checkingAgent}
+                            className="p-2 hover:bg-slate-50 rounded-xl transition-all text-slate-400 hover:text-slate-600 disabled:opacity-50"
+                            title="تحديث الحالة"
+                        >
+                            <RefreshCw size={16} className={checkingAgent ? 'animate-spin' : ''} />
+                        </button>
+                    </div>
                 </div>
 
-                {/* Agent Info — when online */}
-                {agentOnline === true && agentInfo && (
-                    <div className="mt-4 pt-4 border-t border-emerald-200 grid grid-cols-2 md:grid-cols-4 gap-3">
-                        {agentInfo.agent_name && (
-                            <div>
-                                <p className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-1"><Cpu size={10} /> {t('tokensig.pcName')}</p>
-                                <p className="text-xs text-emerald-800 font-semibold">{agentInfo.agent_name}</p>
-                            </div>
-                        )}
-                        {agentInfo.node_id && (
-                            <div>
-                                <p className="text-[10px] font-bold text-emerald-500 uppercase">{t('tokensig.nodeId')}</p>
-                                <p className="text-xs text-emerald-800 font-mono">{agentInfo.node_id.substring(0, 16)}...</p>
-                            </div>
-                        )}
-                        {agentInfo.last_seen && (
-                            <div>
-                                <p className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-1"><Clock size={10} /> {t('tokensig.lastHeartbeat')}</p>
-                                <p className="text-xs text-emerald-800 font-semibold">{new Date(agentInfo.last_seen).toLocaleString()}</p>
-                            </div>
-                        )}
-                        {agentInfo.cert_subject && (
-                            <div>
-                                <p className="text-[10px] font-bold text-emerald-500 uppercase">{t('tokensig.certificate')}</p>
-                                <p className="text-xs text-emerald-800 font-semibold">{agentInfo.cert_subject}</p>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {/* Download Setup — when offline */}
+                {/* ── CASE 1: AGENT IS OFFLINE ── */}
                 {agentOnline === false && (
-                    <div className="mt-4 pt-4 border-t border-amber-200 space-y-3">
-                        <div className="flex flex-wrap gap-3">
+                    <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-4 text-center md:text-right">
+                        <div className="flex flex-col md:flex-row gap-4 items-center md:items-start">
+                            <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                <WifiOff size={24} />
+                            </div>
+                            <div className="space-y-1">
+                                <h4 className="font-bold text-slate-800 text-sm">برنامج OTax Agent لا يعمل على هذا الجهاز</h4>
+                                <p className="text-xs text-slate-500 leading-relaxed">
+                                    لتفعيل التوقيع بالتوكن، يرجى تحميل تطبيق OTax Agent وتشغيله على الكمبيوتر الرئيسي المتصل به الـ USB Token. بمجرد تشغيله، سيتمكن أي مستخدم في شركتك من إرسال الفواتير موقعة تلقائياً من أي مكان.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="pt-2 flex flex-col md:flex-row gap-3 justify-center md:justify-start">
                             <a
                                 href={`${DEFAULT_API_URL}/bridge/download-setup?companyId=${taxId}`}
-                                download="OTax-Agent-Setup.zip"
-                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 text-white font-bold text-sm rounded-xl hover:bg-amber-700 transition-all shadow-md active:scale-[0.97]"
+                                download={`OTax-Agent-Setup-${taxId}.zip`}
+                                className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition-all shadow-md active:scale-95"
                             >
                                 <Download size={16} />
-                                {t('tokensig.downloadSetup')}
+                                تحميل OTax Agent (الـ Installer)
                             </a>
-                            <button
-                                onClick={handleResetNode}
-                                disabled={resettingNode}
-                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-100 text-red-700 font-bold text-sm rounded-xl hover:bg-red-200 transition-all border border-red-200 disabled:opacity-50"
-                            >
-                                {resettingNode ? t('tokensig.resetting') : t('tokensig.resetNode')}
-                            </button>
+                            {agentInfo && (
+                                <button
+                                    onClick={handleResetNode}
+                                    className="px-5 py-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold text-sm rounded-xl transition-all"
+                                >
+                                    إعادة ضبط ربط الكمبيوتر
+                                </button>
+                            )}
                         </div>
-                        <div className="text-[11px] text-amber-700 space-y-2">
-                            <p className="font-bold">📋 Prerequisites (on the signing PC):</p>
-                            <ul className="list-disc list-inside space-y-0.5 text-amber-600">
-                                <li><b>Node.js v18+</b> — <a href="https://nodejs.org" target="_blank" rel="noopener" className="underline">nodejs.org</a></li>
-                                <li><b>USB Token driver</b> (ePass2003) installed</li>
-                                <li><b>.NET 8 Runtime</b> — <a href="https://dotnet.microsoft.com/download/dotnet/8.0" target="_blank" rel="noopener" className="underline">dotnet.microsoft.com</a></li>
-                            </ul>
-                            <p className="font-bold mt-2">🔧 Installation Steps:</p>
-                            <ol className="list-decimal list-inside space-y-0.5 text-amber-600">
-                                <li>Click <b>Reset Node</b> if locked to another PC</li>
-                                <li>Click <b>Download OTax Setup</b> — saves a ZIP file</li>
-                                <li>Extract the ZIP to any folder (e.g. C:\OTaxAgent)</li>
-                                <li>Open <b>README.txt</b> inside for detailed instructions</li>
-                                <li>Right-click <b>setup_agent.bat</b> → Run as Administrator</li>
-                                <li>Wait for "Setup Complete!" — agent runs in background ✓</li>
+
+                        <div className="border-t border-slate-200/60 pt-4 mt-2 text-right">
+                            <h5 className="text-xs font-bold text-slate-700 mb-2">📋 خطوات التشغيل البسيطة:</h5>
+                            <ol className="list-decimal list-inside space-y-1 text-[11px] text-slate-500">
+                                <li>قم بتحميل ملف OTax Setup أعلاه وفك الضغط عنه (Extract).</li>
+                                <li>قم بتوصيل فلاشة التوكن (USB) بالكمبيوتر.</li>
+                                <li>اضغط بزر الفأرة الأيمن على ملف <b className="text-slate-700">setup_agent.bat</b> واختر <b className="text-slate-700">Run as Administrator</b>.</li>
+                                <li>سيقوم البرنامج بتنزيل وتثبيت كافة البرامج والمتطلبات تلقائياً وتشغيل الخدمة بالخلفية.</li>
                             </ol>
                         </div>
                     </div>
                 )}
-            </div>
 
-            {/* ══════════════════════════════════════════════ */}
-            {/* ── CERTIFICATE CONFIGURATION (Agent mode) ──   */}
-            {/* ══════════════════════════════════════════════ */}
-            <div className="space-y-4">
-                {/* Scan for Certificates */}
-                <section className="p-6 bg-white border border-gray-100 rounded-3xl shadow-sm space-y-4">
-                    <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 font-bold text-xs">1</div>
-                        <h4 className="text-sm font-bold text-slate-800">{t('tokensig.detectToken')}</h4>
-                    </div>
-                    <p className="text-xs text-slate-500 pl-9">{t('tokensig.insertAndScan')}</p>
-                    <div className="pl-9">
-                        <button
-                            onClick={handleScanCerts}
-                            disabled={loadingCerts}
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-bold text-sm rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 disabled:opacity-60 active:scale-[0.97]"
-                        >
-                            {loadingCerts ? (
-                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            ) : (
-                                <Search size={16} />
-                            )}
-                            {loadingCerts ? t('tokensig.scanning') : t('tokensig.scan')}
-                        </button>
-                        {scanError && (
-                            <div className="mt-3 flex items-start gap-2 p-3 bg-red-50 border border-red-100 rounded-xl text-xs text-red-700">
-                                <AlertCircle size={14} className="mt-0.5 flex-shrink-0" />
-                                <div>
-                                    <p className="font-semibold">{scanError}</p>
-                                    {scanError.includes('Agent') && (
-                                        <p className="mt-1 text-red-500">{t('tokensig.agentNotRunning')}</p>
-                                    )}
+                {/* ── CASE 2: AGENT IS ONLINE ── */}
+                {agentOnline === true && (
+                    <div className="space-y-4">
+                        {/* Auto-scanning loader */}
+                        {loadingCerts && (
+                            <div className="p-8 text-center flex flex-col items-center justify-center gap-3">
+                                <div className="w-8 h-8 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                                <p className="text-xs text-slate-500 font-semibold">جاري البحث التلقائي عن توكن USB متصل بالكمبيوتر...</p>
+                            </div>
+                        )}
+
+                        {/* Scan Error or No Token Connected */}
+                        {!loadingCerts && scanError && (
+                            <div className="p-5 bg-amber-50/50 border border-amber-100 rounded-2xl flex items-start gap-3">
+                                <AlertCircle className="text-amber-500 mt-0.5 flex-shrink-0" size={18} />
+                                <div className="space-y-1">
+                                    <p className="text-xs font-bold text-amber-800">لم يتم اكتشاف توكن التوقيع الإلكتروني</p>
+                                    <p className="text-[11px] text-amber-700">{scanError}</p>
+                                    <button
+                                        onClick={scanCertificates}
+                                        className="mt-2 text-xs font-bold text-blue-600 hover:text-blue-700 underline"
+                                    >
+                                        إعادة فحص التوكن المتصل
+                                    </button>
                                 </div>
                             </div>
                         )}
-                    </div>
-                </section>
 
-                {/* Selected Certificate */}
-                <section className="p-6 bg-white border border-gray-100 rounded-3xl shadow-sm space-y-4">
-                    <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 font-bold text-xs">2</div>
-                        <h4 className="text-sm font-bold text-slate-800">{t('tokensig.selectedCert')}</h4>
-                    </div>
-                    <div className="pl-9 space-y-3">
-                        <div className="space-y-1">
-                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{t('tokensig.thumbprint')}</label>
-                            <div className="flex items-center gap-2">
-                                <Fingerprint size={14} className="text-slate-300" />
-                                <input type="text" readOnly value={savedThumbprint} placeholder={t('tokensig.noCertSelected')}
-                                    className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-mono text-slate-600 cursor-default" />
-                            </div>
-                        </div>
-                        {savedThumbprint && (
-                            <div className="flex items-center gap-2 text-xs text-emerald-600">
-                                <CheckCircle2 size={14} />
-                                <span className="font-semibold">{t('tokensig.certActive')}</span>
-                            </div>
-                        )}
-                    </div>
-                </section>
+                        {/* Certificate Detected & Configuration Form */}
+                        {!loadingCerts && !scanError && (selectedCert || savedThumbprint) && (
+                            <div className="space-y-4">
+                                <div className="p-4 bg-emerald-50/40 border border-emerald-100 rounded-2xl flex items-center gap-3">
+                                    <div className="w-8 h-8 bg-emerald-500 text-white rounded-xl flex items-center justify-center">
+                                        <Cpu size={16} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] text-slate-400 font-bold">توكن متصل ومكتشف</p>
+                                        <p className="text-xs font-bold text-slate-800">
+                                            {selectedCert?.FriendlyName || selectedCert?.Subject || agentInfo?.cert_subject || 'تم تسجيل الشهادة بنجاح'}
+                                        </p>
+                                    </div>
+                                </div>
 
-                {/* PIN — Auto-saved */}
-                <section className="p-6 bg-white border border-gray-100 rounded-3xl shadow-sm space-y-4">
-                    <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 font-bold text-xs">3</div>
-                        <h4 className="text-sm font-bold text-slate-800">{t('tokensig.pinTitle')}</h4>
-                    </div>
-                    <div className="pl-9 space-y-3">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{t('tokensig.tokenPin')}</label>
-                        <div className="relative mt-1 max-w-sm">
-                            <input
-                                name="signer_CurrentCertPIN_display"
-                                type={showPin ? 'text' : 'password'}
-                                key={`pin-display-${savedPin}`}
-                                defaultValue={savedPin}
-                                placeholder={t('tokensig.pinPlaceholder')}
-                                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 pr-12 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                onBlur={(e) => {
-                                    const hidden = document.getElementsByName('signer_CurrentCertPIN')[0] as HTMLInputElement;
-                                    if (hidden) hidden.value = e.target.value;
-                                }}
-                            />
-                            <button type="button" onClick={() => setShowPin(!showPin)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                                {showPin ? <EyeOff size={16} /> : <Eye size={16} />}
-                            </button>
-                        </div>
-                        {savedPin && (
-                            <div className="flex items-start gap-2 p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-xs text-emerald-700">
-                                <Info size={14} className="mt-0.5 flex-shrink-0" />
-                                <div>
-                                    <p className="font-semibold">{t('tokensig.pinSaved')}</p>
-                                    <p className="text-emerald-600">{t('tokensig.pinSavedHint')}</p>
+                                {/* PIN Input field */}
+                                <div className="space-y-2 max-w-md">
+                                    <label className="text-xs font-bold text-slate-600">أدخل كود PIN الخاص بالتوكن</label>
+                                    <div className="relative">
+                                        <input
+                                            type={showPin ? 'text' : 'password'}
+                                            value={pin}
+                                            onChange={(e) => setPin(e.target.value)}
+                                            placeholder="مثال: 12345678"
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 pl-12 text-sm text-right focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPin(!showPin)}
+                                            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                        >
+                                            {showPin ? <EyeOff size={16} /> : <Eye size={16} />}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-wrap gap-2 pt-2">
+                                    <button
+                                        onClick={handleSaveConfig}
+                                        disabled={saving || !pin}
+                                        className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-blue-100 flex items-center gap-2"
+                                    >
+                                        {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <CheckCircle2 size={16} />}
+                                        حفظ وتفعيل التوكن
+                                    </button>
+
+                                    <button
+                                        onClick={runSignatureTest}
+                                        disabled={isTesting || !savedThumbprint}
+                                        className="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-violet-100 flex items-center gap-2"
+                                    >
+                                        {isTesting ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <ShieldCheck size={16} />}
+                                        اختبار الاتصال بالتوكن
+                                    </button>
                                 </div>
                             </div>
                         )}
-                    </div>
-                </section>
-            </div>
-
-            {/* ══════════════════════════════════════════════ */}
-            {/* ── TEST SIGNING BUTTON ──                      */}
-            {/* ══════════════════════════════════════════════ */}
-            <section className="p-6 bg-white border border-gray-100 rounded-3xl shadow-sm">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-violet-100 rounded-xl flex items-center justify-center">
-                            <Shield size={20} className="text-violet-600" />
-                        </div>
-                        <div>
-                            <h4 className="text-sm font-bold text-slate-800">{t('tokensig.testSigning')}</h4>
-                            <p className="text-[10px] text-slate-500">{t('tokensig.testSigningDesc')}</p>
-                        </div>
-                    </div>
-                    <button
-                        onClick={handleTestSigning}
-                        disabled={isTesting}
-                        className="inline-flex items-center gap-2 px-6 py-2.5 bg-violet-600 text-white font-bold text-sm rounded-xl hover:bg-violet-700 transition-all shadow-lg shadow-violet-100 disabled:opacity-50"
-                    >
-                        {isTesting ? (
-                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        ) : (
-                            <Shield size={14} />
-                        )}
-                        {isTesting ? t('tokensig.testing') : t('tokensig.runTest')}
-                    </button>
-                </div>
-                {testResult && (
-                    <div className={`mt-4 p-3 rounded-xl text-sm ${testResult.success ? 'bg-emerald-50 border border-emerald-200 text-emerald-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
-                        <div className="flex items-start gap-2">
-                            {testResult.success ? <CheckCircle2 size={16} className="mt-0.5" /> : <AlertCircle size={16} className="mt-0.5" />}
-                            <span className="font-semibold">{testResult.message}</span>
-                        </div>
                     </div>
                 )}
-            </section>
 
-            {/* ═══════════════════════════════════════════════════ */}
-            {/* Certificate Selection Modal                        */}
-            {/* ═══════════════════════════════════════════════════ */}
-            {showCertModal && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-                    <div className="bg-white rounded-3xl shadow-2xl w-[520px] max-h-[80vh] overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="flex items-center justify-between p-5 border-b border-gray-100">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                                    <ShieldCheck size={20} className="text-blue-600" />
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-slate-800">{t('tokensig.selectCertModal')}</h3>
-                                    <p className="text-xs text-slate-500">{availableCertificates.length} certificate{availableCertificates.length !== 1 ? 's' : ''} found</p>
-                                </div>
-                            </div>
-                            <button onClick={() => setShowCertModal(false)} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-slate-400">
-                                <X size={18} />
-                            </button>
-                        </div>
-                        <div className="p-4 max-h-[50vh] overflow-y-auto space-y-2">
-                            {availableCertificates.map((cert, idx) => (
-                                <button key={idx} onClick={() => handleSelectCert(idx)}
-                                    className="w-full text-left p-4 rounded-2xl border border-gray-100 hover:border-blue-300 hover:bg-blue-50/50 transition-all group">
-                                    <div className="flex items-start justify-between">
-                                        <div className="space-y-1 flex-1 min-w-0">
-                                            <p className="text-sm font-bold text-slate-800 truncate">{cert.FriendlyName || cert.Subject || 'Unnamed'}</p>
-                                            <p className="text-[10px] font-mono text-slate-400 truncate">{cert.Thumbprint}</p>
-                                            {cert.NotAfter && <p className="text-[10px] text-slate-400">{t('tokensig.expires')}: {new Date(cert.NotAfter).toLocaleDateString()}</p>}
-                                        </div>
-                                        <span className="text-xs font-bold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity mt-1">{t('tokensig.select')}</span>
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
+                {/* ── Status Messages ── */}
+                {statusMessage && (
+                    <div className={`p-4 rounded-2xl text-xs font-semibold ${statusMessage.type === 'success' ? 'bg-emerald-50 text-emerald-800 border border-emerald-100' : 'bg-red-50 text-red-800 border border-red-100'}`}>
+                        {statusMessage.text}
                     </div>
-                </div>
-            )}
+                )}
 
-            {/* PIN Entry Modal */}
-            {showPinModal && selectedCertIndex !== null && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[60]">
-                    <div className="bg-white rounded-3xl shadow-2xl w-[420px] overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="p-6 space-y-5">
-                            <div className="text-center space-y-2">
-                                <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto">
-                                    <Key size={24} className="text-emerald-600" />
-                                </div>
-                                <h3 className="font-bold text-slate-800 text-lg">{t('tokensig.enterPin')}</h3>
-                                <p className="text-xs text-slate-500">
-                                    For: <span className="font-semibold text-slate-700">{availableCertificates[selectedCertIndex]?.FriendlyName || 'Selected Certificate'}</span>
-                                </p>
-                                <p className="text-[10px] text-emerald-600 font-semibold">PIN will be saved securely — you won't need to enter it again.</p>
-                            </div>
-                            <div className="relative">
-                                <input
-                                    type={showModalPin ? 'text' : 'password'}
-                                    value={pinInput}
-                                    onChange={(e) => setPinInput(e.target.value)}
-                                    placeholder="Enter PIN"
-                                    autoFocus
-                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 pr-12 text-center text-lg font-mono tracking-widest focus:ring-2 focus:ring-emerald-500 outline-none"
-                                    onKeyDown={(e) => e.key === 'Enter' && handleConfirmPin()}
-                                />
-                                <button type="button" onClick={() => setShowModalPin(!showModalPin)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                                    {showModalPin ? <EyeOff size={16} /> : <Eye size={16} />}
-                                </button>
-                            </div>
-                            <div className="flex gap-3">
-                                <button onClick={() => { setShowPinModal(false); setSelectedCertIndex(null); }}
-                                    className="flex-1 py-3 bg-gray-100 text-slate-600 font-bold text-sm rounded-xl hover:bg-gray-200 transition-colors">
-                                    Cancel
-                                </button>
-                                <button onClick={handleConfirmPin} disabled={registering || !pinInput.trim()}
-                                    className="flex-1 py-3 bg-emerald-600 text-white font-bold text-sm rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-100 disabled:opacity-50 flex items-center justify-center gap-2">
-                                    {registering ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <CheckCircle2 size={16} />}
-                                    {registering ? 'Saving...' : 'Confirm & Save'}
-                                </button>
-                            </div>
-                        </div>
+                {/* Test Result Indicator */}
+                {testResult && (
+                    <div className={`p-4 rounded-2xl text-xs font-semibold ${testResult.success ? 'bg-emerald-50 text-emerald-800 border border-emerald-100' : 'bg-red-50 text-red-800 border border-red-100'}`}>
+                        {testResult.message}
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 };
