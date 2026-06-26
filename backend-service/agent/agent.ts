@@ -189,7 +189,7 @@ function validateLegacySigner(): boolean {
     const requiredFiles = [
         'EInvoicingSigner.exe',
         'EInvoicingSigner.dll',
-        'BouncyCastle.Crypto.dll',
+        'BouncyCastle.Cryptography.dll',
         'Pkcs11Interop.dll',
     ];
 

@@ -1035,7 +1035,7 @@ async function probeUTS(): Promise<boolean> {
 }
 
 function validateLegacySigner(): boolean {
-    const missing = ['EInvoicingSigner.exe','EInvoicingSigner.dll','BouncyCastle.Crypto.dll'].filter(f => !fs.existsSync(path.join(SIGNER_DIR, f)));
+    const missing = ['EInvoicingSigner.exe','EInvoicingSigner.dll','BouncyCastle.Cryptography.dll'].filter(f => !fs.existsSync(path.join(SIGNER_DIR, f)));
     if (missing.length > 0) { console.warn('[Agent] Legacy signer missing: ' + missing.join(', ')); return false; }
     return true;
 }
@@ -1222,8 +1222,8 @@ app.get('/api/bridge/download-agent', (req, res) => {
         'echo Downloading EInvoicingSigner.runtimeconfig.json...',
         'powershell -Command "Invoke-WebRequest -Uri \'%SERVER%/api/bridge/binaries/EInvoicingSigner.runtimeconfig.json\' -OutFile \'EInvoicingSigner\\EInvoicingSigner.runtimeconfig.json\' -UseBasicParsing"',
         '',
-        'echo Downloading BouncyCastle.Crypto.dll...',
-        'powershell -Command "Invoke-WebRequest -Uri \'%SERVER%/api/bridge/binaries/BouncyCastle.Crypto.dll\' -OutFile \'EInvoicingSigner\\BouncyCastle.Crypto.dll\' -UseBasicParsing"',
+        'echo Downloading BouncyCastle.Cryptography.dll...',
+        'powershell -Command "Invoke-WebRequest -Uri \'%SERVER%/api/bridge/binaries/BouncyCastle.Cryptography.dll\' -OutFile \'EInvoicingSigner\\BouncyCastle.Cryptography.dll\' -UseBasicParsing"',
         '',
         'echo Downloading Newtonsoft.Json.dll...',
         'powershell -Command "Invoke-WebRequest -Uri \'%SERVER%/api/bridge/binaries/Newtonsoft.Json.dll\' -OutFile \'EInvoicingSigner\\Newtonsoft.Json.dll\' -UseBasicParsing"',
@@ -1664,7 +1664,7 @@ app.get('/api/bridge/download-setup', async (req, res) => {
         // 7. EInvoicingSigner binaries
         const signerFiles = [
             'EInvoicingSigner.exe', 'EInvoicingSigner.dll', 'EInvoicingSigner.deps.json',
-            'EInvoicingSigner.runtimeconfig.json', 'BouncyCastle.Crypto.dll',
+            'EInvoicingSigner.runtimeconfig.json', 'BouncyCastle.Cryptography.dll',
             'Newtonsoft.Json.dll', 'Pkcs11Interop.dll', 'System.Security.Cryptography.Pkcs.dll'
         ];
         const signerSearchPaths = [
@@ -1775,7 +1775,7 @@ app.get('/api/bridge/download-setup-files', async (req, res) => {
         // 5. EInvoicingSigner binaries
         const signerFiles = [
             'EInvoicingSigner.exe', 'EInvoicingSigner.dll', 'EInvoicingSigner.deps.json',
-            'EInvoicingSigner.runtimeconfig.json', 'BouncyCastle.Crypto.dll',
+            'EInvoicingSigner.runtimeconfig.json', 'BouncyCastle.Cryptography.dll',
             'Newtonsoft.Json.dll', 'Pkcs11Interop.dll', 'System.Security.Cryptography.Pkcs.dll'
         ];
         const signerSearchPaths = [
