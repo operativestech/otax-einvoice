@@ -1553,18 +1553,23 @@ app.get('/api/bridge/download-setup', async (req, res) => {
         archive.append(agentCode, { name: 'agent.ts' });
 
         // 5. run_agent.bat
-        const runBat = [
-            '@echo off', 'setlocal enabledelayedexpansion', 'chcp 65001 >nul',
-            'set "AGENT_DIR=%~dp0"', 'cd /d "%AGENT_DIR%"', '',
-            'where node >nul 2>&1',
-            'if errorlevel 1 ( echo ERROR: Node.js not found! & pause & exit /b 1 )', '',
-            'if not exist "node_modules\\ws" ( call npm install --no-audit --no-fund --loglevel=error )', '',
-            'echo ===================================================',
-            `echo   OTax Signing Agent - Company: ${companyId}`,
-            'echo   Close this window to stop.', 'echo ===================================================', '',
-            ':loop', 'echo [%date% %time%] Starting agent...', 'npx -y tsx agent.ts',
-            'echo [%date% %time%] Restarting in 5s...', 'timeout /t 5 /nobreak >nul', 'goto loop'
-        ].join('\r\n');
+        let runBat = '';
+        try {
+            runBat = fs.readFileSync(path.join(__dirname, '..', 'agent', 'run_agent.bat'), 'utf8');
+        } catch (e) {
+            runBat = [
+                '@echo off', 'setlocal enabledelayedexpansion', 'chcp 65001 >nul',
+                'set "AGENT_DIR=%~dp0"', 'cd /d "%AGENT_DIR%"', '',
+                'where node >nul 2>&1',
+                'if errorlevel 1 ( echo ERROR: Node.js not found! & pause & exit /b 1 )', '',
+                'if not exist "node_modules\\ws" ( call npm install --no-audit --no-fund --loglevel=error )', '',
+                'echo ===================================================',
+                `echo   OTax Signing Agent - Company: ${companyId}`,
+                'echo   Close this window to stop.', 'echo ===================================================', '',
+                ':loop', 'echo [%date% %time%] Starting agent...', 'npx -y tsx agent.ts',
+                'echo [%date% %time%] Restarting in 5s...', 'timeout /t 5 /nobreak >nul', 'goto loop'
+            ].join('\r\n');
+        }
         archive.append(runBat, { name: 'run_agent.bat' });
 
         // 6. setup_agent.bat (one-time auto-start installer with silent prerequisite installers)
@@ -1735,18 +1740,23 @@ app.get('/api/bridge/download-setup-files', async (req, res) => {
         archive.append(agentCode, { name: 'agent.ts' });
 
         // 4. run_agent.bat
-        const runBat = [
-            '@echo off', 'setlocal enabledelayedexpansion', 'chcp 65001 >nul',
-            'set "AGENT_DIR=%~dp0"', 'cd /d "%AGENT_DIR%"', '',
-            'where node >nul 2>&1',
-            'if errorlevel 1 ( echo ERROR: Node.js not found! & pause & exit /b 1 )', '',
-            'if not exist "node_modules\\ws" ( call npm install --no-audit --no-fund --loglevel=error )', '',
-            'echo ===================================================',
-            `echo   OTax Signing Agent`,
-            'echo   Close this window to stop.', 'echo ===================================================', '',
-            ':loop', 'echo [%date% %time%] Starting agent...', 'npx -y tsx agent.ts',
-            'echo [%date% %time%] Restarting in 5s...', 'timeout /t 5 /nobreak >nul', 'goto loop'
-        ].join('\r\n');
+        let runBat = '';
+        try {
+            runBat = fs.readFileSync(path.join(__dirname, '..', 'agent', 'run_agent.bat'), 'utf8');
+        } catch (e) {
+            runBat = [
+                '@echo off', 'setlocal enabledelayedexpansion', 'chcp 65001 >nul',
+                'set "AGENT_DIR=%~dp0"', 'cd /d "%AGENT_DIR%"', '',
+                'where node >nul 2>&1',
+                'if errorlevel 1 ( echo ERROR: Node.js not found! & pause & exit /b 1 )', '',
+                'if not exist "node_modules\\ws" ( call npm install --no-audit --no-fund --loglevel=error )', '',
+                'echo ===================================================',
+                `echo   OTax Signing Agent`,
+                'echo   Close this window to stop.', 'echo ===================================================', '',
+                ':loop', 'echo [%date% %time%] Starting agent...', 'npx -y tsx agent.ts',
+                'echo [%date% %time%] Restarting in 5s...', 'timeout /t 5 /nobreak >nul', 'goto loop'
+            ].join('\r\n');
+        }
         archive.append(runBat, { name: 'run_agent.bat' });
 
         // 5. EInvoicingSigner binaries
