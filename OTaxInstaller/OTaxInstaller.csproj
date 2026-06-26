@@ -8,7 +8,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
-    <SelfContained>true</SelfContained>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,4 +15,3 @@
   </ItemGroup>
 
 </Project>
-

@@ -424,5 +424,81 @@ namespace OTaxInstaller
                 Log("=================================================");
             }));
         }
+        /// <summary>
+        /// Kills all running processes that could lock files in C:\OTaxAgent
+        /// Uses taskkill commands for reliability
+        /// </summary>
+        private void StopRunningAgentProcesses()
+        {
+            Log("Stopping any running OTax Agent processes...");
+            int killed = 0;
+
+            killed += KillProcessByName("esbuild");
+            killed += KillProcessByName("UniversalTokenSigner");
+
+            try
+            {
+                var psi = new ProcessStartInfo("cmd.exe", "/c wmic process where \"name='node.exe' and commandline like '%OTaxAgent%'\" call terminate >nul 2>&1") { CreateNoWindow = true, UseShellExecute = false };
+                var proc = Process.Start(psi);
+                proc?.WaitForExit(10000);
+                if (proc?.ExitCode == 0) killed++;
+            }
+            catch { }
+
+            try
+            {
+                var psi = new ProcessStartInfo("cmd.exe", "/c wmic process where \"name='wscript.exe' and commandline like '%OTaxAgent%'\" call terminate >nul 2>&1") { CreateNoWindow = true, UseShellExecute = false };
+                var proc = Process.Start(psi);
+                proc?.WaitForExit(10000);
+            }
+            catch { }
+
+            if (killed > 0)
+            {
+                Log($"Stopped {killed} running process(es).");
+                System.Threading.Thread.Sleep(2000);
+            }
+        }
+
+        private int KillProcessByName(string processName)
+        {
+            int killed = 0;
+            try
+            {
+                foreach (var proc in Process.GetProcessesByName(processName))
+                {
+                    try { proc.Kill(); proc.WaitForExit(5000); killed++; } catch { }
+                }
+            }
+            catch { }
+            return killed;
+        }
+
+        /// <summary>
+        /// Safely deletes a directory with retry logic for locked files
+        /// </summary>
+        private void SafeDeleteDirectory(string dirPath, int maxRetries = 3)
+        {
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
+            {
+                try
+                {
+                    Directory.Delete(dirPath, true);
+                    return; // Success
+                }
+                catch (UnauthorizedAccessException) when (attempt < maxRetries)
+                {
+                    Log($"  Retry {attempt}/{maxRetries} — some files still locked, waiting...");
+                    System.Threading.Thread.Sleep(3000);
+                }
+                catch (IOException) when (attempt < maxRetries)
+                {
+                    Log($"  Retry {attempt}/{maxRetries} — file system busy, waiting...");
+                    System.Threading.Thread.Sleep(3000);
+                }
+            }
+            // Final attempt
+            Directory.Delete(dirPath, true);
+        }
     }
 }
