@@ -30,18 +30,18 @@ namespace OTaxInstaller
         private void InitializeComponentProgrammatic()
         {
             this.Size = new Size(520, 380);
-            this.Text = "تثبيت برنامج التوقيع الإلكتروني - OTax Agent";
+            this.Text = "OTax Agent - USB Token Signing Installer";
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = true;
-            this.RightToLeft = RightToLeft.Yes;
-            this.RightToLeftLayout = true;
+            this.RightToLeft = RightToLeft.No;
+            this.RightToLeftLayout = false;
             this.BackColor = Color.White;
 
             lblStatus = new Label
             {
-                Text = "جاري تهيئة معالج التثبيت...",
+                Text = "Preparing installation wizard...",
                 Font = new Font("Arial", 11, FontStyle.Bold),
                 Location = new Point(20, 20),
                 Size = new Size(460, 30),
@@ -73,7 +73,7 @@ namespace OTaxInstaller
             {
                 Location = new Point(20, 295),
                 Size = new Size(460, 35),
-                Text = "بدء التثبيت التلقائي",
+                Text = "Start Automatic Installation",
                 Font = new Font("Arial", 10, FontStyle.Bold),
                 BackColor = Color.FromArgb(37, 99, 235), // Blue 600
                 ForeColor = Color.White,
@@ -118,7 +118,7 @@ namespace OTaxInstaller
             }
 
             btnAction.Enabled = false;
-            btnAction.Text = "جاري التثبيت...";
+            btnAction.Text = "Installing...";
             btnAction.BackColor = Color.LightGray;
 
             try
@@ -127,43 +127,201 @@ namespace OTaxInstaller
             }
             catch (Exception ex)
             {
-                Log($"[خطأ فادح] حدث خطأ أثناء التثبيت: {ex.Message}");
-                SetStatus("فشل التثبيت. يرجى مراجعة سجل الأخطاء.", prgBar.Value);
+                Log($"[FATAL ERROR] Installation failed: {ex.Message}");
+                SetStatus("Installation failed. Please check the error log.", prgBar.Value);
                 btnAction.Enabled = true;
-                btnAction.Text = "إعادة المحاولة";
+                btnAction.Text = "Retry";
                 btnAction.BackColor = Color.FromArgb(220, 38, 38); // Red 600
             }
+        }
+
+        /// <summary>
+        /// Kills all running processes that could lock files in C:\OTaxAgent
+        /// </summary>
+        private void StopRunningAgentProcesses()
+        {
+            Log("Stopping any running OTax Agent processes...");
+            int killed = 0;
+
+            // Kill node.exe processes running from OTaxAgent directory
+            try
+            {
+                foreach (var proc in Process.GetProcessesByName("node"))
+                {
+                    try
+                    {
+                        string? cmdLine = GetProcessCommandLine(proc);
+                        if (cmdLine != null && cmdLine.IndexOf("OTaxAgent", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            proc.Kill();
+                            proc.WaitForExit(5000);
+                            killed++;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+
+            // Kill UniversalTokenSigner if running
+            try
+            {
+                foreach (var proc in Process.GetProcessesByName("UniversalTokenSigner"))
+                {
+                    try { proc.Kill(); proc.WaitForExit(5000); killed++; } catch { }
+                }
+            }
+            catch { }
+
+            // Kill any wscript running our VBS
+            try
+            {
+                foreach (var proc in Process.GetProcessesByName("wscript"))
+                {
+                    try
+                    {
+                        string? cmdLine = GetProcessCommandLine(proc);
+                        if (cmdLine != null && cmdLine.IndexOf("OTaxAgent", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            proc.Kill();
+                            proc.WaitForExit(5000);
+                            killed++;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+
+            // Also kill any cmd.exe spawned from OTaxAgent
+            try
+            {
+                foreach (var proc in Process.GetProcessesByName("cmd"))
+                {
+                    try
+                    {
+                        string? cmdLine = GetProcessCommandLine(proc);
+                        if (cmdLine != null && cmdLine.IndexOf("OTaxAgent", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            proc.Kill();
+                            proc.WaitForExit(5000);
+                            killed++;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+
+            // Kill any esbuild.exe that might be locked
+            try
+            {
+                foreach (var proc in Process.GetProcessesByName("esbuild"))
+                {
+                    try { proc.Kill(); proc.WaitForExit(5000); killed++; } catch { }
+                }
+            }
+            catch { }
+
+            if (killed > 0)
+            {
+                Log($"Stopped {killed} running process(es).");
+                // Give OS time to release file handles
+                System.Threading.Thread.Sleep(2000);
+            }
+            else
+            {
+                Log("No running agent processes found.");
+            }
+        }
+
+        /// <summary>
+        /// Tries to get the command line of a process via WMI query
+        /// </summary>
+        private string? GetProcessCommandLine(Process proc)
+        {
+            try
+            {
+                // Try to get the main module filename first (faster)
+                return proc.MainModule?.FileName;
+            }
+            catch
+            {
+                // If we can't access MainModule, try WMI
+                try
+                {
+                    using var searcher = new System.Management.ManagementObjectSearcher(
+                        $"SELECT CommandLine FROM Win32_Process WHERE ProcessId = {proc.Id}");
+                    foreach (var obj in searcher.Get())
+                    {
+                        return obj["CommandLine"]?.ToString();
+                    }
+                }
+                catch { }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Safely deletes a directory with retry logic for locked files
+        /// </summary>
+        private void SafeDeleteDirectory(string dirPath, int maxRetries = 3)
+        {
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
+            {
+                try
+                {
+                    Directory.Delete(dirPath, true);
+                    return; // Success
+                }
+                catch (UnauthorizedAccessException) when (attempt < maxRetries)
+                {
+                    Log($"  Retry {attempt}/{maxRetries} — some files still locked, waiting...");
+                    System.Threading.Thread.Sleep(3000);
+                }
+                catch (IOException) when (attempt < maxRetries)
+                {
+                    Log($"  Retry {attempt}/{maxRetries} — file in use, waiting...");
+                    System.Threading.Thread.Sleep(3000);
+                }
+            }
+            // Final attempt - let exception propagate
+            Directory.Delete(dirPath, true);
         }
 
         private async Task StartInstallationFlow()
         {
             // Step 1: Parse Company ID from filename
-            SetStatus("جاري استخراج كود الشركة من اسم الملف...", 5);
+            SetStatus("Extracting company code from filename...", 5);
             string exePath = Environment.ProcessPath ?? "";
             string exeName = Path.GetFileNameWithoutExtension(exePath);
             string companyId = "default";
 
-            Log($"مسار ملف التثبيت: {exePath}");
-            Log($"اسم الملف الحالي: {exeName}");
+            Log($"Installer path: {exePath}");
+            Log($"Filename: {exeName}");
 
             var match = Regex.Match(exeName, @"OTax-Agent-Setup-(.+)");
             if (match.Success)
             {
                 companyId = match.Groups[1].Value;
-                Log($"تم التعرف على كود الشركة: {companyId}");
+                Log($"Company code detected: {companyId}");
             }
             else
             {
-                Log("لم يتم العثور على كود الشركة في اسم الملف. سيتم استخدام القيمة الافتراضية.");
+                Log("Company code not found in filename. Using default value.");
             }
 
+            // Step 1.5: Stop any running agent processes BEFORE touching files
+            SetStatus("Stopping running agent processes...", 10);
+            StopRunningAgentProcesses();
+
             // Step 2: Download Agent ZIP
-            SetStatus("جاري تحميل ملفات OTax Agent...", 15);
+            SetStatus("Downloading OTax Agent files...", 15);
             string cloudUrl = DEFAULT_CLOUD_URL;
             string zipUrl = $"{cloudUrl}/api/bridge/download-setup-files";
             string tempZipPath = Path.Combine(Path.GetTempPath(), $"otax-setup-{companyId}.zip");
 
-            Log($"جاري الاتصال بالسيرفر: {zipUrl}");
+            Log($"Connecting to server: {zipUrl}");
             using (var httpClient = new HttpClient())
             {
                 httpClient.Timeout = TimeSpan.FromMinutes(5);
@@ -175,32 +333,32 @@ namespace OTaxInstaller
                     {
                         await response.Content.CopyToAsync(fs);
                     }
-                    Log("تم تحميل الملفات المضغوطة بنجاح.");
+                    Log("Files downloaded successfully.");
                 }
                 catch (Exception ex)
                 {
-                    Log($"فشل تحميل الملفات: {ex.Message}");
+                    Log($"Download failed: {ex.Message}");
                     throw;
                 }
             }
 
             // Step 3: Unpack ZIP to C:\OTaxAgent
-            SetStatus("جاري استخراج الملفات إلى جهازك...", 30);
-            Log($"المسار المستهدف: {AGENT_DIR}");
+            SetStatus("Extracting files to your computer...", 30);
+            Log($"Target path: {AGENT_DIR}");
             try
             {
                 if (Directory.Exists(AGENT_DIR))
                 {
-                    Log("المجلد موجود بالفعل. جاري مسح المحتويات القديمة...");
-                    Directory.Delete(AGENT_DIR, true);
+                    Log("Folder exists. Cleaning old files...");
+                    SafeDeleteDirectory(AGENT_DIR);
                 }
                 Directory.CreateDirectory(AGENT_DIR);
                 ZipFile.ExtractToDirectory(tempZipPath, AGENT_DIR);
-                Log("تم فك ضغط الملفات بنجاح.");
+                Log("Files extracted successfully.");
             }
             catch (Exception ex)
             {
-                Log($"فشل استخراج الملفات: {ex.Message}");
+                Log($"Extraction failed: {ex.Message}");
                 throw;
             }
             finally
@@ -209,7 +367,7 @@ namespace OTaxInstaller
             }
 
             // Step 4: Write agent_config.json
-            SetStatus("جاري كتابة ملفات الإعدادات...", 40);
+            SetStatus("Writing configuration files...", 40);
             string configFilePath = Path.Combine(AGENT_DIR, "agent_config.json");
             var config = new
             {
@@ -222,16 +380,16 @@ namespace OTaxInstaller
             {
                 string configJson = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(configFilePath, configJson);
-                Log("تم إنشاء ملف agent_config.json بنجاح.");
+                Log("agent_config.json created successfully.");
             }
             catch (Exception ex)
             {
-                Log($"فشل إنشاء ملف الإعدادات: {ex.Message}");
+                Log($"Failed to create config file: {ex.Message}");
                 throw;
             }
 
             // Step 5: Check and install Node.js
-            SetStatus("جاري فحص وتثبيت Node.js...", 55);
+            SetStatus("Checking Node.js installation...", 55);
             bool hasNode = false;
             try
             {
@@ -251,11 +409,11 @@ namespace OTaxInstaller
 
             if (hasNode)
             {
-                Log("Node.js مثبت بالفعل على الجهاز.");
+                Log("Node.js is already installed.");
             }
             else
             {
-                Log("Node.js غير موجود. جاري تحميل وتثبيت Node.js v20 LTS صامتاً...");
+                Log("Node.js not found. Downloading Node.js v20 LTS silently...");
                 string nodeMsiUrl = "https://nodejs.org/dist/v20.11.0/node-v20.11.0-x64.msi";
                 string msiPath = Path.Combine(Path.GetTempPath(), "node-setup.msi");
                 using (var client = new HttpClient())
@@ -264,7 +422,7 @@ namespace OTaxInstaller
                     File.WriteAllBytes(msiPath, data);
                 }
 
-                Log("جاري تشغيل مثبت Node.js بالخلفية...");
+                Log("Running Node.js installer in background...");
                 var procInfo = new ProcessStartInfo("msiexec", $"/i \"{msiPath}\" /qn /norestart")
                 {
                     UseShellExecute = true,
@@ -273,11 +431,11 @@ namespace OTaxInstaller
                 };
                 var installProc = Process.Start(procInfo);
                 installProc?.WaitForExit();
-                Log("تم تثبيت Node.js بنجاح.");
+                Log("Node.js installed successfully.");
             }
 
             // Step 6: Check .NET 8 Runtime
-            SetStatus("جاري فحص .NET 8 Desktop Runtime...", 70);
+            SetStatus("Checking .NET 8 Desktop Runtime...", 70);
             bool hasDotnet = false;
             try
             {
@@ -298,11 +456,11 @@ namespace OTaxInstaller
 
             if (hasDotnet)
             {
-                Log(".NET 8 Desktop Runtime مثبت بالفعل.");
+                Log(".NET 8 Desktop Runtime is already installed.");
             }
             else
             {
-                Log(".NET 8 Desktop Runtime غير موجود. جاري التحميل صامتاً...");
+                Log(".NET 8 Desktop Runtime not found. Downloading silently...");
                 string dotnetUrl = "https://dotnetcli.azureedge.net/dotnet/WindowsDesktop/8.0.11/windowsdesktop-runtime-8.0.11-win-x64.exe";
                 string dotnetInstallerPath = Path.Combine(Path.GetTempPath(), "dotnet-desktop-runtime.exe");
                 using (var client = new HttpClient())
@@ -311,7 +469,7 @@ namespace OTaxInstaller
                     File.WriteAllBytes(dotnetInstallerPath, data);
                 }
 
-                Log("جاري تثبيت .NET 8 صامتاً بالخلفية...");
+                Log("Installing .NET 8 silently in background...");
                 var dotnetProcInfo = new ProcessStartInfo(dotnetInstallerPath, "/install /quiet /norestart")
                 {
                     UseShellExecute = true,
@@ -320,12 +478,12 @@ namespace OTaxInstaller
                 };
                 var dotnetProc = Process.Start(dotnetProcInfo);
                 dotnetProc?.WaitForExit();
-                Log("تم تثبيت .NET 8 Runtime بنجاح.");
+                Log(".NET 8 Runtime installed successfully.");
             }
 
             // Step 7: npm install dependencies
-            SetStatus("جاري تنزيل مكتبات التشغيل (npm install)...", 85);
-            Log("جاري تشغيل npm install...");
+            SetStatus("Installing dependencies (npm install)...", 85);
+            Log("Running npm install...");
             var npmPsi = new ProcessStartInfo("cmd.exe", "/c npm install --no-audit --no-fund --loglevel=error")
             {
                 WorkingDirectory = AGENT_DIR,
@@ -336,11 +494,11 @@ namespace OTaxInstaller
             using (var proc = Process.Start(npmPsi))
             {
                 proc?.WaitForExit();
-                Log("اكتمل تثبيت مكتبات التشغيل.");
+                Log("Dependencies installed.");
             }
 
             // Step 8: Configuring PKCS11 driver for UTS
-            SetStatus("جاري إعداد محرك التوكن للبرنامج...", 90);
+            SetStatus("Configuring token driver...", 90);
             string pkcs11Dll = "";
             if (File.Exists(@"C:\Windows\System32\eps2003csp11.dll"))
                 pkcs11Dll = @"C:\Windows\System32\eps2003csp11.dll";
@@ -361,16 +519,16 @@ namespace OTaxInstaller
                 };
                 string utsSettingsJson = JsonSerializer.Serialize(utsSettings, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(settingsJsonPath, utsSettingsJson);
-                Log("تم إعداد UniversalTokenSigner بمحرك PKCS#11.");
+                Log("UniversalTokenSigner configured with PKCS#11 driver.");
             }
             else
             {
-                Log("تحذير: لم يتم العثور على محرك التوكن eps2003csp11.dll. يرجى تثبيت تعريف فلاشة التوكن.");
+                Log("Warning: Token driver eps2003csp11.dll not found. Please install the USB token driver.");
             }
 
             // Step 9: Register Auto-start Scheduled Task
-            SetStatus("جاري تسجيل الخدمة التلقائية...", 95);
-            Log("جاري تسجيل مهمة مجدولة لتشغيل الـ Agent مع إقلاع ويندوز...");
+            SetStatus("Registering auto-start service...", 95);
+            Log("Registering scheduled task for Windows startup...");
 
             // Create silent runner VBS
             string vbsPath = Path.Combine(AGENT_DIR, "run_agent_silent.vbs");
@@ -391,32 +549,32 @@ namespace OTaxInstaller
 
             if (createProc?.ExitCode == 0)
             {
-                Log("تم تسجيل الخدمة التلقائية بنجاح.");
+                Log("Auto-start service registered successfully.");
             }
             else
             {
-                Log("لم نتمكن من استخدام schtasks، جاري نسخ السكربت مجلد بدء التشغيل كبديل...");
+                Log("schtasks failed. Copying script to Startup folder as fallback...");
                 string startupPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Microsoft\Windows\Start Menu\Programs\Startup");
                 File.Copy(vbsPath, Path.Combine(startupPath, "OTaxAgent.vbs"), true);
             }
 
             // Step 10: Run the agent
-            SetStatus("جاري تشغيل الـ Agent الآن...", 99);
+            SetStatus("Starting the Agent now...", 99);
             var startAgentPsi = new ProcessStartInfo("wscript.exe", $"\"{vbsPath}\"") { UseShellExecute = true };
             Process.Start(startAgentPsi);
-            Log("تم تشغيل الـ Agent بنجاح بالخلفية!");
+            Log("Agent started successfully in background!");
 
             // Complete!
             this.Invoke(new Action(() =>
             {
-                SetStatus("✓ اكتمل التثبيت والتشغيل بنجاح!", 100);
+                SetStatus("✓ Installation completed successfully!", 100);
                 isFinished = true;
                 btnAction.Enabled = true;
-                btnAction.Text = "إنهاء المعالج";
+                btnAction.Text = "Close Installer";
                 btnAction.BackColor = Color.FromArgb(16, 185, 129); // Emerald 500
                 Log("=================================================");
-                Log("  تم تفعيل التوقيع بالتوكن بنجاح!");
-                Log("  يمكنك الآن العودة للمتصفح واستكمال رفع الفواتير.");
+                Log("  Token signing activated successfully!");
+                Log("  You can now return to the browser to upload invoices.");
                 Log("=================================================");
             }));
         }
