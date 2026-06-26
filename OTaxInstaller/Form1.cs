@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Management;
 
 namespace OTaxInstaller
 {
@@ -191,6 +192,31 @@ namespace OTaxInstaller
             // Step 3: Unpack ZIP to C:\OTaxAgent
             SetStatus("Extracting files to your computer...", 30);
             Log($"Target path: {AGENT_DIR}");
+            string existingNodeId = "";
+            try
+            {
+                string oldConfigPath = Path.Combine(AGENT_DIR, "agent_config.json");
+                if (File.Exists(oldConfigPath))
+                {
+                    string oldConfigText = File.ReadAllText(oldConfigPath);
+                    using (JsonDocument doc = JsonDocument.Parse(oldConfigText))
+                    {
+                        if (doc.RootElement.TryGetProperty("nodeId", out JsonElement val))
+                        {
+                            existingNodeId = val.GetString() ?? "";
+                            if (!string.IsNullOrEmpty(existingNodeId))
+                            {
+                                Log($"Found existing nodeId to preserve: {existingNodeId}");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log($"Could not read existing nodeId (will generate new one): {ex.Message}");
+            }
+
             try
             {
                 if (Directory.Exists(AGENT_DIR))
@@ -215,9 +241,13 @@ namespace OTaxInstaller
             // Step 4: Write agent_config.json
             SetStatus("Writing configuration files...", 40);
             string configFilePath = Path.Combine(AGENT_DIR, "agent_config.json");
+            string activeNodeId = !string.IsNullOrEmpty(existingNodeId)
+                ? existingNodeId
+                : $"otax-{companyId}-{Guid.NewGuid().ToString().Substring(0, 8)}";
+
             var config = new
             {
-                nodeId = $"otax-{companyId}-{Guid.NewGuid().ToString().Substring(0, 8)}",
+                nodeId = activeNodeId,
                 companyId = companyId,
                 cloudUrl = cloudUrl.Replace("https://", "wss://").Replace("http://", "ws://"),
                 agentName = Environment.MachineName
@@ -426,52 +456,93 @@ namespace OTaxInstaller
         }
         /// <summary>
         /// Kills all running processes that could lock files in C:\OTaxAgent
-        /// Uses taskkill commands for reliability
+        /// Uses System.Management to inspect command lines and paths precisely
         /// </summary>
         private void StopRunningAgentProcesses()
         {
             Log("Stopping any running OTax Agent processes...");
             int killed = 0;
 
-            killed += KillProcessByName("esbuild");
-            killed += KillProcessByName("UniversalTokenSigner");
-
             try
             {
-                var psi = new ProcessStartInfo("cmd.exe", "/c wmic process where \"name='node.exe' and commandline like '%OTaxAgent%'\" call terminate >nul 2>&1") { CreateNoWindow = true, UseShellExecute = false };
-                var proc = Process.Start(psi);
-                proc?.WaitForExit(10000);
-                if (proc?.ExitCode == 0) killed++;
-            }
-            catch { }
+                using (var searcher = new ManagementObjectSearcher("SELECT ProcessId, Name, CommandLine, ExecutablePath FROM Win32_Process"))
+                using (var results = searcher.Get())
+                {
+                    foreach (var obj in results)
+                    {
+                        try
+                        {
+                            uint pid = (uint)obj["ProcessId"];
+                            string name = obj["Name"]?.ToString() ?? "";
+                            string cmdLine = obj["CommandLine"]?.ToString() ?? "";
+                            string execPath = obj["ExecutablePath"]?.ToString() ?? "";
 
-            try
-            {
-                var psi = new ProcessStartInfo("cmd.exe", "/c wmic process where \"name='wscript.exe' and commandline like '%OTaxAgent%'\" call terminate >nul 2>&1") { CreateNoWindow = true, UseShellExecute = false };
-                var proc = Process.Start(psi);
-                proc?.WaitForExit(10000);
+                            bool shouldKill = false;
+
+                            if (name.Equals("UniversalTokenSigner.exe", StringComparison.OrdinalIgnoreCase))
+                            {
+                                shouldKill = true;
+                            }
+                            else if (name.Equals("node.exe", StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (cmdLine.Contains("agent.ts", StringComparison.OrdinalIgnoreCase) || 
+                                    cmdLine.Contains("OTaxAgent", StringComparison.OrdinalIgnoreCase) ||
+                                    execPath.StartsWith(AGENT_DIR, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    shouldKill = true;
+                                }
+                            }
+                            else if (name.Equals("cmd.exe", StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (cmdLine.Contains("run_agent.bat", StringComparison.OrdinalIgnoreCase) ||
+                                    cmdLine.Contains("OTaxAgent", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    shouldKill = true;
+                                }
+                            }
+                            else if (name.Equals("wscript.exe", StringComparison.OrdinalIgnoreCase) || 
+                                     name.Equals("cscript.exe", StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (cmdLine.Contains("run_agent_silent.vbs", StringComparison.OrdinalIgnoreCase) ||
+                                    cmdLine.Contains("OTaxAgent", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    shouldKill = true;
+                                }
+                            }
+                            else if (name.Equals("esbuild.exe", StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (execPath.StartsWith(AGENT_DIR, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    shouldKill = true;
+                                }
+                            }
+
+                            if (shouldKill)
+                            {
+                                try
+                                {
+                                    var proc = Process.GetProcessById((int)pid);
+                                    proc.Kill(true); // Kill entire process tree
+                                    proc.WaitForExit(5000);
+                                    killed++;
+                                }
+                                catch { }
+                            }
+                        }
+                        catch { }
+                    }
+                }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Log($"Process termination search error: {ex.Message}");
+            }
 
             if (killed > 0)
             {
                 Log($"Stopped {killed} running process(es).");
                 System.Threading.Thread.Sleep(2000);
             }
-        }
-
-        private int KillProcessByName(string processName)
-        {
-            int killed = 0;
-            try
-            {
-                foreach (var proc in Process.GetProcessesByName(processName))
-                {
-                    try { proc.Kill(); proc.WaitForExit(5000); killed++; } catch { }
-                }
-            }
-            catch { }
-            return killed;
         }
 
         /// <summary>
