@@ -329,7 +329,7 @@ public sealed class Pkcs11Signer
             var signedAttributes = new Org.BouncyCastle.Asn1.Cms.AttributeTable(new Dictionary<DerObjectIdentifier, object>
             {
                 { CmsAttributes.SigningTime, new Org.BouncyCastle.Asn1.Cms.Attribute(CmsAttributes.SigningTime, new DerSet(new Org.BouncyCastle.Asn1.Cms.Time(DateTime.UtcNow))) },
-                { CmsAttributes.ContentType, new Org.BouncyCastle.Asn1.Cms.Attribute(CmsAttributes.ContentType, new DerSet(new DerObjectIdentifier("1.2.840.113549.1.7.5"))) }
+                { CmsAttributes.ContentType, new Org.BouncyCastle.Asn1.Cms.Attribute(CmsAttributes.ContentType, new DerSet(new DerObjectIdentifier("1.2.840.113549.1.7.1"))) }
             });
 
             // Add ESSCertIDv2 (SigningCertificateV2)
