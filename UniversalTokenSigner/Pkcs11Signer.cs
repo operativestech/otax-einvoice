@@ -367,19 +367,80 @@ public sealed class Pkcs11Signer
                 using var chain = new X509Chain();
                 chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
                 chain.ChainPolicy.UrlRetrievalTimeout = TimeSpan.FromSeconds(3);
-                if (chain.Build(x509))
+                
+                // Call Build but ignore the return value (which is false if Root CA is not locally trusted/installed).
+                // We still want to extract whatever intermediate CA certificates were found in the chain!
+                chain.Build(x509);
+                
+                foreach (var element in chain.ChainElements)
                 {
-                    foreach (var element in chain.ChainElements)
+                    if (element.Certificate.Thumbprint != x509.Thumbprint)
                     {
-                        if (element.Certificate.Thumbprint != x509.Thumbprint)
+                        var parserChain = new Org.BouncyCastle.X509.X509CertificateParser();
+                        var bcChainCert = parserChain.ReadCertificate(element.Certificate.RawData);
+                        if (!certList.Contains(bcChainCert))
                         {
-                            var parserChain = new Org.BouncyCastle.X509.X509CertificateParser();
-                            certList.Add(parserChain.ReadCertificate(element.Certificate.RawData));
+                            certList.Add(bcChainCert);
                         }
                     }
                 }
             }
             catch { }
+
+            // Hardcoded fallback for intermediate CAs (e.g. MCDR) if chain building completely fails
+            // and only the leaf certificate is present in the list.
+            if (certList.Count == 1)
+            {
+                string issuerDN = x509.Issuer;
+                if (issuerDN.Contains("MCDR CA 2022"))
+                {
+                    try
+                    {
+                        string mcdrCertBase64 = "MIIHITCCBQmgAwIBAgIIK7BWlZZ5WhIwDQYJKoZIhvcNAQELBQAwSDELMAkGA1UEBhMCRUcx" +
+                            "DjAMBgNVBAoMBUlUSURBMQ8wDQYDVQQLDAZSb290Q0ExGDAWBgNVBAMMD0VneXB0X1Jvb3RD" +
+                            "QV9HMTAeFw0yMiA5MDcxMDQyMTFaFw0yODA5MDUxMDQyMTFaMIGAMQswCQYDVQQGEwJFRzE7" +
+                            "MDkGA1UEChMyTWlzciBmb3IgQ2VudHJhbCBDbGVhcmluZywgRGVwb3NpdG9yeSBhbmQgUmVn" +
+                            "aXN0cnkxHTAbBgNVBAsTFENlcnRpZnlpbmcgQXV0aG9yaXR5MRUwEwYDVQQDEwxNQ0RSIENB" +
+                            "IDIwMjIwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDBhCrA/UTuQCwIhDMz/ZAX" +
+                            "37RD+UBClRrRGrhuRNMiUjlHo4nC8oUscxd5c/O7lbqDvIPOyy/i8uMGsZMLx1I1mSFSn4ts" +
+                            "cY8bZMMajrJzELWgChiI1/qZL89mBEyh1MOZ3Ns7djU/fBvLFq0e82KRqyqP78kAe4DB2Mzf" +
+                            "tNdNaStVOLT0ztqnLGAcwEw++SjeQre5DNpkYUS+bIpaFXPY2iDyL69ULQepYCnoEPUA86UT" +
+                            "WT8gXF04QgNrc5iJXBDJQOtIguFR8wopjlAvNhVD5CaV6Tihmi/8dUpdtM4Yqy2bnJNCAZ6n" +
+                            "XT04xq5bvBr9yMvpd3phcstk3boo0QbgaAmXS1d2odhrexbjkyfR9oQODwX6dh6qvKho/R8d" +
+                            "6D2J+WU5H0LoBbW1OjuZWHsDGKtORazwB35SgS1zrTMGbx7D5eEuktT1i7Q5I4Watnn4tVFw" +
+                            "c8lFGZEie4LJBbX+Zwx0fwutyVUrr16FlbFWH/T1RvyxFIdV9leY1TZov+TDRJ4niJO/UEys" +
+                            "wUFoWG7rJMGqxusvoNPhefsUlJ8+gBTtwc2LINXPL8Vy37r+OAGmJ22dADSzSDDEEOXEFvpQ" +
+                            "LDEfXATrtxGMUiw8hQSh9UhmqwRTLjs+LNJbeQGImU6eeXd1LRx+OW+UKrNaKnfziGEb8lEu" +
+                            "rnfbgFn96/7a5kQIDAQABo4IB1DCCAdAwDwYDVR0TAQH/BAUwAwEB/zAfBgNVHSMEGDAWgBRs" +
+                            "DB6ujozsrNqT09gxXK3zEETTMzA8BggrBgEFBQcBAQQwMC4wLAYIKwYBBQUHMAGGIGh0dHA6" +
+                            "Ly93d3cucm9vdGNhLmdvdi5lZy9vY3NwLUcxMFQGA1UdIARNMEswSQYKKwYBBAGChHcBAjA7" +
+                            "MDkGCCsGAQUFBwIBFi1odHRwOi8vcm9vdGNhLml0aWRhLmdvdi5lZy9ob21lX2ZpbGVzL0NQ" +
+                            "Uy5wZGYwgdgGA1UdHwSB0DCBzTApoCegJYYjaHR0cDovL3d3dy5yb290Y2EuZ292LmVnL0NS" +
+                            "TC1HMS5jcmwwL6AtoCuGKWh0dHA6Ly93d3cucm9vdGNhLml0aWRhLmdvdi5lZy9DUkwtRzEu" +
+                            "Y3JsMG+gbaBrhmlsZGFwOi8vbGRhcC5yb290Y2EuZ292LmVnL2NuPUVneXB0X1Jvb3RDQV9H" +
+                            "MTAsb3U9Um9vdENBLG89SVRJREEsYz1FRz9DZXJ0aWZpY2F0ZVJldm9jYXRpb25MaXN0O2Jp" +
+                            "bmFyeT9iYXNlMB0GA1UdDgQWBBSRgjJZjYA8+vBVaz00CNvjFTuIZzAOBgNVHQ8BAf8EBAMC" +
+                            "AYYwDQYJKoZIhvcNAQELBQADggIBALuA0ucmJ5xVfR5QsoY0ScrJWPWJvkD8zDAV9PmY9mhN" +
+                            "9mWSFGE03FTBDnWFVc111+h+w4RcJkdDw/QAwSEMpDTFOevuWDA4fNEhr79dD5HESlAIhJXx" +
+                            "0dMr6ymyCAS8QG0H3Tb7XodPYdPDjAFjHDyTONzj8NU1qn2dfYgSaFObFW7npQQoULjErz9t" +
+                            "17feBIxKX5AolO4S3REPOg+UlClC+6VEIcBkMhntkye8UFNFpUL9aB965nbsmkA3NBqHR015" +
+                            "qCMISKqdCb1NrjV3HCUA3ytoOki1AT+GmaNbaXZG50S4KqZlw4Ftu4n2r70zyiD7RraP5mqu" +
+                            "atwG2WXrUXHz2uzNV/MP39Tf1h4LuGjYjM0QOVlzwkcei3Je0OcQbzrSRAoOEYjq4zQDln5V" +
+                            "VfT0XQKO8GNCfeB+epnAuKsYfQ3kHSf3KUj3X2e1HgmiAMIuch+dtqswvb39qSN+sds2Knvl" +
+                            "Lv0+5USyXUFkJstAGOkQe5nrZ1NAidVO+xpNJ7TVfVBiT0kTG92WPTOXLTDdNG+HpQruvVnH" +
+                            "Gr97qQXVWuTjqw+AhrzxykjllFbeIq3qViUXYOORihnimgzbG99x/zw9UdZsg5SsdbnWrVtC" +
+                            "GovOejE8H92ZbP6h6RIzmrb4GYEUWL0B1LiN9uDAuIsHjfwHI7OEKX4Qj57WxNTUMYIBwTCC";
+                        var parserChain = new Org.BouncyCastle.X509.X509CertificateParser();
+                        byte[] mcdrDer = Convert.FromBase64String(mcdrCertBase64);
+                        certList.Add(parserChain.ReadCertificate(mcdrDer));
+                        Console.WriteLine("[UTS] Incomplete chain detected. Manually appended MCDR CA 2022 intermediate certificate.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("[UTS] Failed to append manual MCDR CA certificate: " + ex.Message);
+                    }
+                }
+            }
 
             var store = CollectionUtilities.CreateStore(certList);
             gen.AddCertificates(store);

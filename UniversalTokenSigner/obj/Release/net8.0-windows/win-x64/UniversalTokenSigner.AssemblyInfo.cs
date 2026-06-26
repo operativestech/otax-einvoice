@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("UniversalTokenSigner")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a5a204a2ad41cd40127ed13a885eb33bdf27945e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+57bea64126b950b0153294c475c189dcebcdcb53")]
 [assembly: System.Reflection.AssemblyProductAttribute("UniversalTokenSigner")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UniversalTokenSigner")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
