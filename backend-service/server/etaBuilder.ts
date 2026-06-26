@@ -18,11 +18,27 @@ export function buildETADocument(calculated: any, issuerData: any): any {
         return 'B';
     };
 
+    const normalizeCountryCode = (countryInput: any, defaultVal: string = 'EG'): string => {
+        const c = toStr(countryInput).trim().toUpperCase();
+        if (!c) return defaultVal;
+        if (c === 'EGYPT' || c === 'مصر' || c === 'EGPT' || c === 'EG_') return 'EG';
+        if (c === 'UNITED STATES' || c === 'USA' || c === 'US') return 'US';
+        if (c === 'SAUDI ARABIA' || c === 'SAUDI' || c === 'SA') return 'SA';
+        if (c === 'UNITED ARAB EMIRATES' || c === 'UAE' || c === 'AE') return 'AE';
+        if (c.length === 2) return c;
+        if (c === 'EGY') return 'EG';
+        if (c === 'USA') return 'US';
+        if (c === 'ARE') return 'AE';
+        if (c === 'SAU') return 'SA';
+        if (c.startsWith('EG')) return 'EG';
+        return c.length > 2 ? c.substring(0, 2) : defaultVal;
+    };
+
     // CRITICAL: Property order MUST match mrkindy/EgyptianEInvoice exactly for the hash to match
     const doc: any = {
         issuer: {
             address: {
-                country: toStr(issuerData.country || "EG"),
+                country: normalizeCountryCode(issuerData.country || "EG"),
                 governate: toStr(issuerData.governate || ""),
                 regionCity: toStr(issuerData.regionCity || ""),
                 street: toStr(issuerData.street || ""),
@@ -40,7 +56,7 @@ export function buildETADocument(calculated: any, issuerData: any): any {
         },
         receiver: {
             address: {
-                country: toStr(calculated.header.receiverCountry || "EG"),
+                country: normalizeCountryCode(calculated.header.receiverCountry || "EG"),
                 governate: toStr(calculated.header.receiverGovernate || ""),
                 regionCity: toStr(calculated.header.receiverRegionCity || ""),
                 street: toStr(calculated.header.receiverStreet || ""),
@@ -133,7 +149,7 @@ export function buildETADocument(calculated: any, issuerData: any): any {
                 packaging:       toStr(calculated.header.deliveryPackaging       || ''),
                 dateValidity:    toStr(calculated.header.deliveryDateValidity    || ''),
                 exportPort:      toStr(calculated.header.deliveryExportPort      || ''),
-                countryOfOrigin: toStr(calculated.header.deliveryCountryOfOrigin || ''),
+                countryOfOrigin: normalizeCountryCode(calculated.header.deliveryCountryOfOrigin || '', ''),
                 grossWeight:     num(calculated.header.deliveryGrossWeight),
                 netWeight:       num(calculated.header.deliveryNetWeight),
                 terms:           toStr(calculated.header.deliveryTerms           || ''),
