@@ -12,6 +12,25 @@ import { apiService, API_URL } from '../services/apiService';
 import { useTranslation } from '../i18n';
 import { confirmDialog } from '../components/ConfirmDialog';
 
+const Sparkline = ({ trend, color }: { trend: number; color: string }) => {
+  // simple pre-determined paths depending on positive/negative trends
+  const points = trend >= 0 
+    ? [20, 18, 22, 14, 25, 10, 15, 8, 20, 5] 
+    : [5, 8, 12, 10, 18, 22, 15, 25, 20, 28];
+  const pathData = `M 0 ${points[0]} ` + points.map((p, i) => `L ${(i + 1) * 8} ${p}`).join(' ');
+  return (
+    <svg className="w-14 h-6 overflow-visible" viewBox="0 0 80 30" fill="none">
+      <path
+        d={pathData}
+        stroke={color}
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
 // ── Helper used by the small widgets below. Kept here rather than a new util
 //    because this is literal fire-and-forget fetching.
 const getAuthHeaders = (): Record<string, string> => {
@@ -759,6 +778,34 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
+      {/* OTax Dashboard Premium Banner */}
+      {!editMode && (
+        <div className="relative rounded-[24px] overflow-hidden p-6 md:p-8 text-white shadow-lg bg-gradient-to-r from-blue-700 via-indigo-950 to-slate-900 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all duration-300">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-blue-500/20 to-transparent blur-2xl pointer-events-none" />
+          
+          <div className="space-y-3 relative z-10">
+            <h2 className="text-2xl font-extrabold tracking-tight">OTax Dashboard</h2>
+            <p className="text-slate-300 text-sm font-medium">Real-time visibility into your e-invoicing and tax operations.</p>
+            <div className="flex gap-2 pt-2 flex-wrap">
+              {['Compliant', 'Secure', 'Real-time', 'Insightful'].map(badge => (
+                <span key={badge} className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-white/10 border border-white/15 text-slate-200">
+                  {badge}
+                </span>
+              ))}
+            </div>
+          </div>
+          
+          {/* Abstract geometric graphic on the right */}
+          <div className="relative w-48 h-20 hidden md:flex items-center justify-center overflow-hidden">
+            <svg viewBox="0 0 200 100" fill="none" className="w-full h-full opacity-40">
+              <path d="M10 80 Q 50 10, 100 80 T 190 20" stroke="#60a5fa" strokeWidth="4" strokeLinecap="round" />
+              <path d="M10 90 Q 60 30, 110 90 T 190 30" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeDasharray="5 5" />
+            </svg>
+          </div>
+        </div>
+      )}
+
       {error && (
         <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl text-rose-600 text-sm font-bold flex flex-col gap-2 animate-in fade-in slide-in-from-top-2">
           <div className="flex items-center gap-3">
@@ -790,19 +837,24 @@ const Dashboard: React.FC = () => {
         const renderBody = (id: string): React.ReactNode | null => {
           if (id === 'kpis') {
             return (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4 h-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 h-full">
                 {kpis.map((kpi, i) => (
-                  <div key={i} className="soft-card p-5 flex flex-col gap-3 group">
-                    <div className="flex items-center justify-between">
-                      <div className="p-2.5 bg-gray-50 rounded-2xl group-hover:scale-110 transition-transform">{getIcon(kpi.icon)}</div>
-                      <div className={`flex items-center gap-1 text-[10px] font-black ${kpi.trend > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                        {kpi.trend > 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                        {Math.abs(kpi.trend)}%
+                  <div key={i} className="soft-card p-5 flex flex-col justify-between min-h-[130px] relative hover:-translate-y-1 hover:shadow-md transition-all duration-300 group">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="p-2 bg-slate-50 rounded-xl group-hover:scale-110 transition-transform duration-300">{getIcon(kpi.icon)}</div>
+                      <div className={`flex items-center gap-0.5 text-[10px] font-bold px-2 py-0.5 rounded-full ${kpi.trend >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                        {kpi.trend >= 0 ? '↑' : '↓'} {Math.abs(kpi.trend)}%
                       </div>
                     </div>
-                    <div>
-                      <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest leading-none mb-1">{kpi.label}</p>
-                      <h3 className="text-2xl font-black text-slate-800">{kpi.value}</h3>
+                    
+                    <div className="flex items-end justify-between mt-2">
+                      <div>
+                        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1 leading-none">{kpi.label}</p>
+                        <h3 className="text-lg font-extrabold text-slate-800 tracking-tight">{kpi.value}</h3>
+                      </div>
+                      <div className="opacity-80 group-hover:opacity-100 transition-opacity">
+                        <Sparkline trend={kpi.trend} color={kpi.trend >= 0 ? '#10b981' : '#f43f5e'} />
+                      </div>
                     </div>
                   </div>
                 ))}
