@@ -327,13 +327,13 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               <div className="flex-grow border-t border-slate-200"></div>
             </div>
 
-            {/* SSO / Microsoft login */}
+            {/* Create Account button replacing Microsoft login */}
             <button
               type="button"
-              className="w-full py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-sm shadow-sm transition-all flex items-center justify-center active:scale-[0.98]"
+              onClick={() => navigate('/signup')}
+              className="w-full py-2.5 rounded-xl border border-blue-200 bg-blue-50/50 hover:bg-blue-100/60 text-blue-700 font-bold text-sm shadow-sm transition-all flex items-center justify-center active:scale-[0.98]"
             >
-              <MicrosoftIcon />
-              Sign in with Microsoft
+              Create Account
             </button>
 
           </div>
@@ -347,10 +347,6 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               <a href="mailto:support@operativestech.com" className="hover:underline flex items-center gap-1">
                 Need help? Contact support
               </a>
-              <span>•</span>
-              <button onClick={() => navigate('/signup')} className="hover:underline font-bold text-blue-600">
-                {t('login.createAccount') || 'Create account'}
-              </button>
             </div>
           </div>
 
