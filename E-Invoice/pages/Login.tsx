@@ -9,29 +9,13 @@ interface LoginProps {
   onLogin: (user: User) => void;
 }
 
-const OTaxLogo: React.FC = () => (
-  <div className="flex items-center gap-3 select-none py-1">
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]">
-      <path d="M16 2L28.1244 9V23L16 30L3.87564 23V9L16 2Z" fill="url(#logo-grad)" />
-      <path d="M16 2L28.1244 9L16 16L3.87564 9L16 2Z" fill="#3b82f6" fillOpacity="0.3" />
-      <path d="M16 16V30L3.87564 23V9L16 16Z" fill="#1d4ed8" fillOpacity="0.4" />
-      <path d="M28.1244 9V23L16 30V16L28.1244 9Z" fill="#1e40af" fillOpacity="0.6" />
-      {/* Inner isometric cube */}
-      <path d="M16 10L22.0622 13.5V20.5L16 24L9.93782 20.5V13.5L16 10Z" fill="url(#inner-grad)" />
-      <defs>
-        <linearGradient id="logo-grad" x1="16" y1="2" x2="16" y2="30" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#60a5fa" />
-          <stop offset="1" stopColor="#1d4ed8" />
-        </linearGradient>
-        <linearGradient id="inner-grad" x1="16" y1="10" x2="16" y2="24" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#93c5fd" />
-          <stop offset="1" stopColor="#3b82f6" />
-        </linearGradient>
-      </defs>
-    </svg>
-    <span className="text-2xl font-extrabold tracking-tight text-white font-sans">
-      O<span className="text-blue-500">Tax</span>
-    </span>
+const OTaxLogo: React.FC<{ className?: string }> = ({ className }) => (
+  <div className={`flex items-center select-none py-1 ${className || ''}`}>
+    <img 
+      src="/logo.png" 
+      alt="OTax Logo" 
+      className="h-8 w-auto object-contain" 
+    />
   </div>
 );
 
@@ -266,153 +250,156 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
         </div>
 
-        {/* RIGHT PANEL (Sign-In Form Card) */}
-        <div className="w-full lg:w-[460px] bg-[#0b1329]/65 border border-blue-500/20 backdrop-blur-xl p-8 lg:p-10 rounded-[32px] shadow-[0_20px_50px_rgba(59,130,246,0.12)] flex flex-col gap-6 relative">
+        {/* RIGHT PANEL (Sign-In Form Card with Rotating Neon Border) */}
+        <div className="w-full lg:w-[460px] relative p-[1.5px] rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgba(59,130,246,0.15)] flex flex-col justify-center">
           
-          {/* Subtle border outline */}
-          <div className="absolute inset-0 rounded-[32px] border border-blue-400/20 pointer-events-none" />
+          {/* Rotating border light layer */}
+          <div className="absolute inset-[-200%] bg-[conic-gradient(from_0deg,transparent_30%,#3b82f6_45%,#6366f1_55%,transparent_70%)] animate-[spin_4s_linear_infinite] pointer-events-none" />
+          
+          {/* Main Card Content (Solid dark background inside to overlay the gradient) */}
+          <div className="relative w-full h-full bg-[#0b1329] backdrop-blur-xl p-8 lg:p-10 rounded-[31.5px] flex flex-col gap-6">
 
-          <div className="text-center space-y-2">
-            <div className="flex justify-center mb-3">
-              <OTaxLogo />
-            </div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">{t('login.welcome') || 'Welcome back'}</h2>
-            <p className="text-slate-400 text-xs leading-relaxed px-4">
-              {t('login.subtitle') || 'Sign in to access your OTax dashboard, invoices, and ETA export operations.'}
-            </p>
-          </div>
-
-          {error && (
-            <div className="p-3.5 bg-rose-950/40 border border-rose-500/30 rounded-xl text-rose-400 text-xs font-bold flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            
-            {/* Email field */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
-                {t('login.email') || 'Email address'}
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-                <input
-                  type="text"
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder={t('login.emailPh') || 'you@company.com'}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-blue-900/50 bg-[#0d172e]/80 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-[#0d172e] transition-all text-white font-medium placeholder-slate-600"
-                />
+            <div className="text-center space-y-2">
+              <div className="flex justify-center mb-3">
+                <OTaxLogo />
               </div>
+              <h2 className="text-2xl font-bold text-white tracking-tight">{t('login.welcome') || 'Welcome back'}</h2>
+              <p className="text-slate-400 text-xs leading-relaxed px-4">
+                {t('login.subtitle') || 'Sign in to access your OTax dashboard, invoices, and ETA export operations.'}
+              </p>
             </div>
 
-            {/* Password field */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
-                {t('login.password') || 'Password'}
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-blue-900/50 bg-[#0d172e]/80 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-[#0d172e] transition-all text-white placeholder-slate-600"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            {/* 2FA Field */}
-            {twoFaRequired && (
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
-                  {t('login.tfaLabel') || '2FA Authentication Code'}
-                </label>
-                <input
-                  type="text"
-                  maxLength={12}
-                  value={totpCode}
-                  onChange={(e) => setTotpCode(e.target.value.replace(/[^0-9A-Za-z\-]/g, '').toUpperCase())}
-                  placeholder={t('login.tfaPh') || '000000'}
-                  autoFocus
-                  className="w-full py-2.5 rounded-xl border border-blue-900/50 bg-[#0d172e]/80 text-center text-lg font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-white placeholder-slate-600"
-                />
-                <p className="text-[10px] text-slate-500 mt-1">
-                  {t('login.tfaHint') || 'Enter the code from your authenticator application'}
-                </p>
+            {error && (
+              <div className="p-3.5 bg-rose-950/40 border border-rose-500/30 rounded-xl text-rose-400 text-xs font-bold flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+                {error}
               </div>
             )}
 
-            {/* Checkbox and Forgot Password */}
-            <div className="flex items-center justify-between pt-1">
-              <label className="flex items-center gap-2 cursor-pointer select-none">
-                <input 
-                  type="checkbox" 
-                  id="remember" 
-                  className="w-4 h-4 rounded border-blue-900/50 bg-[#0d172e] text-blue-600 focus:ring-blue-500/20 focus:ring-offset-0 transition-all" 
-                />
-                <span className="text-xs font-semibold text-slate-400">{t('login.remember') || 'Remember me'}</span>
-              </label>
-              <Link to="/forgot-password" className="text-xs font-bold text-blue-500 hover:text-blue-400 hover:underline">
-                {t('login.forgot') || 'Forgot password?'}
-              </Link>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              
+              {/* Email field */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
+                  {t('login.email') || 'Email address'}
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                  <input
+                    type="text"
+                    required
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder={t('login.emailPh') || 'you@company.com'}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-blue-900/50 bg-[#0d172e]/80 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-[#0d172e] transition-all text-white font-medium placeholder-slate-600"
+                  />
+                </div>
+              </div>
+
+              {/* Password field */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
+                  {t('login.password') || 'Password'}
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-blue-900/50 bg-[#0d172e]/80 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-[#0d172e] transition-all text-white placeholder-slate-600"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* 2FA Field */}
+              {twoFaRequired && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
+                    {t('login.tfaLabel') || '2FA Authentication Code'}
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={12}
+                    value={totpCode}
+                    onChange={(e) => setTotpCode(e.target.value.replace(/[^0-9A-Za-z\-]/g, '').toUpperCase())}
+                    placeholder={t('login.tfaPh') || '000000'}
+                    autoFocus
+                    className="w-full py-2.5 rounded-xl border border-blue-900/50 bg-[#0d172e]/80 text-center text-lg font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-white placeholder-slate-600"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    {t('login.tfaHint') || 'Enter the code from your authenticator application'}
+                  </p>
+                </div>
+              )}
+
+              {/* Checkbox and Forgot Password */}
+              <div className="flex items-center justify-between pt-1">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input 
+                    type="checkbox" 
+                    id="remember" 
+                    className="w-4 h-4 rounded border-blue-900/50 bg-[#0d172e] text-blue-600 focus:ring-blue-500/20 focus:ring-offset-0 transition-all" 
+                  />
+                  <span className="text-xs font-semibold text-slate-400">{t('login.remember') || 'Remember me'}</span>
+                </label>
+                <Link to="/forgot-password" className="text-xs font-bold text-blue-500 hover:text-blue-400 hover:underline">
+                  {t('login.forgot') || 'Forgot password?'}
+                </Link>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={isLoading || (twoFaRequired && totpCode.length < 6)}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-[0_4px_25px_rgba(37,99,235,0.4)] transition-all flex items-center justify-center gap-2 disabled:opacity-70 active:scale-[0.98] cursor-pointer"
+                >
+                  <LogIn size={16} />
+                  {isLoading ? (t('login.signing') || 'Signing in...') : (t('login.signIn') || 'Sign In')}
+                </button>
+              </div>
+
+            </form>
+
+            {/* Separator */}
+            <div className="relative flex py-1 items-center">
+              <div className="flex-grow border-t border-blue-950/60"></div>
+              <span className="flex-shrink mx-4 text-xs font-semibold text-slate-500 uppercase">or</span>
+              <div className="flex-grow border-t border-blue-950/60"></div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="pt-2">
-              <button
-                type="submit"
-                disabled={isLoading || (twoFaRequired && totpCode.length < 6)}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-[0_4px_25px_rgba(37,99,235,0.4)] transition-all flex items-center justify-center gap-2 disabled:opacity-70 active:scale-[0.98] cursor-pointer"
-              >
-                <LogIn size={16} />
-                {isLoading ? (t('login.signing') || 'Signing in...') : (t('login.signIn') || 'Sign In')}
-              </button>
+            {/* Create Account button replacing Microsoft login */}
+            <button
+              type="button"
+              onClick={() => navigate('/signup')}
+              className="w-full py-3 rounded-xl border border-blue-500/30 bg-blue-955/20 hover:bg-blue-900/30 text-blue-400 hover:text-blue-300 font-bold text-sm transition-all flex items-center justify-center active:scale-[0.98] cursor-pointer"
+            >
+              {t('login.createAccount') || 'Create Account'}
+            </button>
+
+            {/* Footer information */}
+            <div className="mt-2 text-center space-y-3">
+              <p className="text-[11px] font-semibold text-slate-500">
+                Secure access for finance, tax, and operations teams.
+              </p>
+              <div className="flex items-center justify-center text-xs font-medium">
+                <a href="mailto:support@operativestech.com" className="text-slate-400 hover:text-white transition-colors flex items-center gap-1">
+                  Need help? <span className="text-blue-500 font-bold hover:underline">Contact support</span>
+                </a>
+              </div>
             </div>
 
-          </form>
-
-          {/* Separator */}
-          <div className="relative flex py-1 items-center">
-            <div className="flex-grow border-t border-blue-950/60"></div>
-            <span className="flex-shrink mx-4 text-xs font-semibold text-slate-500 uppercase">or</span>
-            <div className="flex-grow border-t border-blue-950/60"></div>
           </div>
-
-          {/* Create Account button replacing Microsoft login */}
-          <button
-            type="button"
-            onClick={() => navigate('/signup')}
-            className="w-full py-3 rounded-xl border border-blue-500/30 bg-blue-950/20 hover:bg-blue-900/30 text-blue-400 hover:text-blue-300 font-bold text-sm transition-all flex items-center justify-center active:scale-[0.98] cursor-pointer"
-          >
-            {t('login.createAccount') || 'Create Account'}
-          </button>
-
-          {/* Footer information */}
-          <div className="mt-2 text-center space-y-3">
-            <p className="text-[11px] font-semibold text-slate-500">
-              Secure access for finance, tax, and operations teams.
-            </p>
-            <div className="flex items-center justify-center text-xs font-medium">
-              <a href="mailto:support@operativestech.com" className="text-slate-400 hover:text-white transition-colors flex items-center gap-1">
-                Need help? <span className="text-blue-500 font-bold hover:underline">Contact support</span>
-              </a>
-            </div>
-          </div>
-
-        </div>
 
       </div>
     </div>
