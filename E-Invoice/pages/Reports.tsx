@@ -111,6 +111,78 @@ const TAX_TYPE_LABELS: Record<string, string> = {
   T12: 'Other / ضرائب أخرى',
 };
 
+const getBgLightClass = (color: string) => {
+  switch (color) {
+    case 'blue': return 'bg-blue-50';
+    case 'emerald': return 'bg-emerald-50';
+    case 'amber': return 'bg-amber-50';
+    case 'violet': return 'bg-violet-50';
+    case 'indigo': return 'bg-indigo-50';
+    case 'cyan': return 'bg-cyan-50';
+    case 'fuchsia': return 'bg-fuchsia-50';
+    case 'rose': return 'bg-rose-50';
+    case 'orange': return 'bg-orange-50';
+    case 'purple': return 'bg-purple-50';
+    case 'red': return 'bg-red-50';
+    case 'slate': return 'bg-slate-50';
+    default: return 'bg-blue-50';
+  }
+};
+
+const getBgHoverLightClass = (color: string) => {
+  switch (color) {
+    case 'blue': return 'group-hover:bg-blue-100';
+    case 'emerald': return 'group-hover:bg-emerald-100';
+    case 'amber': return 'group-hover:bg-amber-100';
+    case 'violet': return 'group-hover:bg-violet-100';
+    case 'indigo': return 'group-hover:bg-indigo-100';
+    case 'cyan': return 'group-hover:bg-cyan-100';
+    case 'fuchsia': return 'group-hover:bg-fuchsia-100';
+    case 'rose': return 'group-hover:bg-rose-100';
+    case 'orange': return 'group-hover:bg-orange-100';
+    case 'purple': return 'group-hover:bg-purple-100';
+    case 'red': return 'group-hover:bg-red-100';
+    case 'slate': return 'group-hover:bg-slate-100';
+    default: return 'group-hover:bg-blue-100';
+  }
+};
+
+const getBgSolidClass = (color: string) => {
+  switch (color) {
+    case 'blue': return 'bg-blue-600 hover:bg-blue-700';
+    case 'emerald': return 'bg-emerald-600 hover:bg-emerald-700';
+    case 'amber': return 'bg-amber-600 hover:bg-amber-700';
+    case 'violet': return 'bg-violet-600 hover:bg-violet-700';
+    case 'indigo': return 'bg-indigo-600 hover:bg-indigo-700';
+    case 'cyan': return 'bg-cyan-600 hover:bg-cyan-700';
+    case 'fuchsia': return 'bg-fuchsia-600 hover:bg-fuchsia-700';
+    case 'rose': return 'bg-rose-600 hover:bg-rose-700';
+    case 'orange': return 'bg-orange-600 hover:bg-orange-700';
+    case 'purple': return 'bg-purple-600 hover:bg-purple-700';
+    case 'red': return 'bg-red-600 hover:bg-red-700';
+    case 'slate': return 'bg-slate-800 hover:bg-slate-900';
+    default: return 'bg-blue-600 hover:bg-blue-700';
+  }
+};
+
+const getTextColorClass = (color: string) => {
+  switch (color) {
+    case 'blue': return 'text-blue-600';
+    case 'emerald': return 'text-emerald-600';
+    case 'amber': return 'text-amber-600';
+    case 'violet': return 'text-violet-600';
+    case 'indigo': return 'text-indigo-600';
+    case 'cyan': return 'text-cyan-600';
+    case 'fuchsia': return 'text-fuchsia-600';
+    case 'rose': return 'text-rose-600';
+    case 'orange': return 'text-orange-600';
+    case 'purple': return 'text-purple-600';
+    case 'red': return 'text-red-600';
+    case 'slate': return 'text-slate-600';
+    default: return 'text-blue-600';
+  }
+};
+
 const Reports: React.FC = () => {
   const { t } = useTranslation();
   // Filter state
@@ -703,7 +775,7 @@ const Reports: React.FC = () => {
       <button onClick={() => setReportView(view)}
         className="text-left glass-panel p-5 hover:-translate-y-0.5 transition-all group">
         <div className="flex items-start justify-between mb-3">
-          <div className={`p-2.5 bg-${color}-50 rounded-xl group-hover:bg-${color}-100 transition-colors`}>
+          <div className={`p-2.5 ${getBgLightClass(color)} ${getBgHoverLightClass(color)} rounded-xl transition-colors`}>
             {icon}
           </div>
           {badge}
@@ -819,7 +891,7 @@ const Reports: React.FC = () => {
         <button onClick={() => setReportView('menu')} className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
           <ArrowLeft size={18} className="text-slate-600" />
         </button>
-        <div className={`p-2 bg-${color}-50 rounded-xl`}>{icon}</div>
+        <div className={`p-2 ${getBgLightClass(color)} rounded-xl`}>{icon}</div>
         <div>
           <h1 className="text-xl font-bold text-slate-800">{title}</h1>
           {subtitle && <p className="text-slate-500 text-xs">{subtitle}</p>}
@@ -838,7 +910,7 @@ const Reports: React.FC = () => {
           </div>
           {extraFilters}
           <button onClick={onGenerate} disabled={loadingReport === loadingKey}
-            className={`flex items-center gap-2 bg-${color}-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-${color}-700 disabled:opacity-50`}>
+            className={`flex items-center gap-2 ${getBgSolidClass(color)} text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50`}>
             {loadingReport === loadingKey ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
             {t('reports.generate')}
           </button>
