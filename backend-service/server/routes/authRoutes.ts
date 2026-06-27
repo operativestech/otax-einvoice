@@ -946,6 +946,11 @@ router.get('/org-info/:joinCode', async (req: Request, res: Response) => {
         });
         if (!org) return res.status(404).json({ success: false, message: 'Organization not found' });
         res.json({ success: true, org: { name: org.name, id: org.id } });
+    } catch (err: any) {
+        res.status(500).json({ success: false, message: 'Failed to load organization info' });
+    }
+});
+
 // ─────────────────────────────────────────────────────────────
 // PUT /change-password — Update password for currently logged-in user
 // ─────────────────────────────────────────────────────────────
