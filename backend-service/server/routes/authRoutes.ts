@@ -946,8 +946,41 @@ router.get('/org-info/:joinCode', async (req: Request, res: Response) => {
         });
         if (!org) return res.status(404).json({ success: false, message: 'Organization not found' });
         res.json({ success: true, org: { name: org.name, id: org.id } });
+// ─────────────────────────────────────────────────────────────
+// PUT /change-password — Update password for currently logged-in user
+// ─────────────────────────────────────────────────────────────
+router.put('/change-password', authenticate, async (req: Request, res: Response) => {
+    try {
+        const { password } = req.body;
+        if (!password) {
+            return res.status(400).json({ success: false, message: 'Password is required' });
+        }
+
+        const userId = Number(req.user!.id);
+
+        const cred = await prisma.credential.findUnique({
+            where: { id: userId },
+        });
+
+        if (!cred) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        if (cred.isDemo) {
+            return res.status(403).json({ success: false, message: 'Demo users cannot change passwords' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await prisma.credential.update({
+            where: { id: userId },
+            data: { password: hashedPassword },
+        });
+
+        res.json({ success: true, message: 'Password updated successfully' });
     } catch (err: any) {
-        res.status(500).json({ success: false, message: 'Failed to load organization info' });
+        console.error('[Change Password Error]', err);
+        res.status(500).json({ success: false, message: 'Failed to update password' });
     }
 });
 

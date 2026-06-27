@@ -592,16 +592,16 @@ const UserManagement: React.FC = () => {
             )}
 
             {/* Tabs */}
-            <div className="flex gap-1 mb-4 bg-slate-100 p-1 rounded-xl w-fit">
+            <div className="flex gap-1 mb-4 bg-slate-200/50 p-1.5 rounded-2xl w-fit backdrop-blur-sm">
                 <button
                     onClick={() => setActiveTab('users')}
-                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${activeTab === 'users' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 ${activeTab === 'users' ? 'bg-white text-blue-600 shadow-[0_4px_12px_rgba(0,0,0,0.05)]' : 'text-slate-500 hover:text-slate-700 hover:bg-white/30'}`}
                 >
                     <Users size={14} className="inline mr-1.5" />Users ({users.length})
                 </button>
                 <button
                     onClick={() => setActiveTab('invitations')}
-                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${activeTab === 'invitations' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 ${activeTab === 'invitations' ? 'bg-white text-blue-600 shadow-[0_4px_12px_rgba(0,0,0,0.05)]' : 'text-slate-500 hover:text-slate-700 hover:bg-white/30'}`}
                 >
                     <Mail size={14} className="inline mr-1.5" />Invitations ({invitations.length})
                 </button>
@@ -609,13 +609,13 @@ const UserManagement: React.FC = () => {
 
             {/* Search */}
             <div className="relative mb-4">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                     type="text"
                     placeholder={activeTab === 'users' ? "Search users..." : "Search invitations..."}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                    className="w-full pl-10 pr-4 py-2.5 border border-slate-200/80 rounded-xl bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 text-slate-700"
                 />
             </div>
 
@@ -633,19 +633,19 @@ const UserManagement: React.FC = () => {
                         </div>
                     ) : (
                         <table className="w-full">
-                            <thead className="bg-slate-50 border-b border-gray-100">
+                            <thead className="bg-slate-50/40 border-b border-slate-200/50 backdrop-blur-sm">
                                 <tr>
-                                    <th className="text-left py-2.5 px-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">User</th>
-                                    <th className="text-left py-2.5 px-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Email</th>
-                                    <th className="text-left py-2.5 px-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Roles</th>
-                                    <th className="text-center py-2.5 px-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                                    <th className="text-left py-2.5 px-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Registered</th>
-                                    <th className="text-right py-2.5 px-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Actions</th>
+                                    <th className="text-left py-3 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">User</th>
+                                    <th className="text-left py-3 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Email</th>
+                                    <th className="text-left py-3 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Roles</th>
+                                    <th className="text-center py-3 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                                    <th className="text-left py-3 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Registered</th>
+                                    <th className="text-right py-3 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-50">
+                            <tbody className="divide-y divide-slate-100/40">
                                 {filteredUsers.map((u) => (
-                                    <tr key={u.id} className="hover:bg-blue-50/30 transition-colors">
+                                    <tr key={u.id} className="hover:bg-slate-100/40 transition-colors">
                                         <td className="py-2.5 px-4">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-7 h-7 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xs">
@@ -718,18 +718,18 @@ const UserManagement: React.FC = () => {
                         </div>
                     ) : (
                         <table className="w-full">
-                            <thead className="bg-slate-50 border-b border-gray-100">
+                            <thead className="bg-slate-50/40 border-b border-slate-200/50 backdrop-blur-sm">
                                 <tr>
-                                    <th className="text-left py-2.5 px-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Email</th>
-                                    <th className="text-left py-2.5 px-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Role</th>
-                                    <th className="text-center py-2.5 px-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                                    <th className="text-left py-2.5 px-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sent</th>
-                                    <th className="text-left py-2.5 px-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Expires</th>
+                                    <th className="text-left py-3 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Email</th>
+                                    <th className="text-left py-3 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Role</th>
+                                    <th className="text-center py-3 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                                    <th className="text-left py-3 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sent</th>
+                                    <th className="text-left py-3 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Expires</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-50">
+                            <tbody className="divide-y divide-slate-100/40">
                                 {invitations.map((inv) => (
-                                    <tr key={inv.id} className="hover:bg-blue-50/30 transition-colors">
+                                    <tr key={inv.id} className="hover:bg-slate-100/40 transition-colors">
                                         <td className="py-2.5 px-4">
                                             <div className="flex items-center gap-2">
                                                 <Mail size={14} className="text-slate-400" />
@@ -766,40 +766,40 @@ const UserManagement: React.FC = () => {
 
             {/* Create User Modal */}
             {showCreateModal && (
-                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4 overflow-y-auto" onClick={() => setShowCreateModal(false)}>
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 my-8" onClick={e => e.stopPropagation()}>
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto" onClick={() => setShowCreateModal(false)}>
+                    <div className="bg-white/95 backdrop-blur-md border border-slate-100 rounded-2xl shadow-2xl w-full max-w-lg p-6 my-8" onClick={e => e.stopPropagation()}>
                         <h2 className="text-lg font-bold text-slate-800 mb-1 flex items-center gap-2">
                             <Plus size={20} className="text-blue-600" /> Create New User
                         </h2>
                         <p className="text-xs text-slate-500 mb-4">Create a user account directly with a chosen access level</p>
 
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                             <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase block mb-1">Username</label>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Username</label>
                                 <input
                                     type="text"
                                     value={newUsername}
                                     onChange={e => setNewUsername(e.target.value)}
-                                    className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-700"
                                     placeholder="Enter username (optional if email provided)"
                                 />
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase block mb-1">Email</label>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Email</label>
                                 <input
                                     type="email"
                                     value={newEmail}
                                     onChange={e => setNewEmail(e.target.value)}
-                                    className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-700"
                                     placeholder="user@company.com"
                                 />
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase block mb-1">Password</label>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Password</label>
                                 <PasswordInput
                                     value={newPassword}
                                     onChange={e => setNewPassword(e.target.value)}
-                                    className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-700"
                                     placeholder="Enter password"
                                 />
                             </div>
@@ -848,24 +848,23 @@ const UserManagement: React.FC = () => {
                     </div>
                 </div>
             )}
-
             {/* Invite User Modal */}
             {showInviteModal && (
-                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4 overflow-y-auto" onClick={() => setShowInviteModal(false)}>
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 my-8" onClick={e => e.stopPropagation()}>
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto" onClick={() => setShowInviteModal(false)}>
+                    <div className="bg-white/95 backdrop-blur-md border border-slate-100 rounded-2xl shadow-2xl w-full max-w-lg p-6 my-8" onClick={e => e.stopPropagation()}>
                         <h2 className="text-lg font-bold text-slate-800 mb-1 flex items-center gap-2">
                             <Mail size={20} className="text-emerald-600" /> Invite User by Email
                         </h2>
                         <p className="text-xs text-slate-500 mb-4">They'll receive an email with a link to join your organization. Pick what they can access.</p>
-
-                        <div className="space-y-3">
+ 
+                        <div className="space-y-4">
                             <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase block mb-1">Email Address</label>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Email Address</label>
                                 <input
                                     type="email"
                                     value={inviteEmail}
                                     onChange={e => setInviteEmail(e.target.value)}
-                                    className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-slate-700"
                                     placeholder="employee@company.com"
                                 />
                             </div>
