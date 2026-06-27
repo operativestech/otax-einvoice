@@ -1,0 +1,7 @@
+e:\app\OTax New App\backend-service\uts-release\UniversalTokenSigner.exe
+e:\app\OTax New App\backend-service\uts-release\UniversalTokenSigner.dll
+e:\app\OTax New App\backend-service\uts-release\UniversalTokenSigner.deps.json
+e:\app\OTax New App\backend-service\uts-release\UniversalTokenSigner.runtimeconfig.json
+e:\app\OTax New App\backend-service\uts-release\UniversalTokenSigner.pdb
+e:\app\OTax New App\backend-service\uts-release\BouncyCastle.Cryptography.dll
+e:\app\OTax New App\backend-service\uts-release\Pkcs11Interop.dll

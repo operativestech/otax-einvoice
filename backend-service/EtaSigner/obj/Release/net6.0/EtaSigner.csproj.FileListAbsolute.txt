@@ -17,3 +17,24 @@ E:\E-Invoice\E-Invoice\EtaSigner\obj\Release\net6.0\EtaSigner.genruntimeconfig.c
 E:\E-Invoice\E-Invoice\EtaSigner\obj\Release\net6.0\ref\EtaSigner.dll
 E:\E-Invoice\E-Invoice\EtaSigner\bin\Release\net6.0\System.Security.Cryptography.Pkcs.dll
 E:\E-Invoice\E-Invoice\EtaSigner\bin\Release\net6.0\runtimes\win\lib\net6.0\System.Security.Cryptography.Pkcs.dll
+E:\app\OTax New App\backend-service\EtaSigner\bin\Release\net6.0\EInvoicingSigner.exe
+E:\app\OTax New App\backend-service\EtaSigner\bin\Release\net6.0\EInvoicingSigner.deps.json
+E:\app\OTax New App\backend-service\EtaSigner\bin\Release\net6.0\EInvoicingSigner.runtimeconfig.json
+E:\app\OTax New App\backend-service\EtaSigner\bin\Release\net6.0\EInvoicingSigner.dll
+E:\app\OTax New App\backend-service\EtaSigner\bin\Release\net6.0\EInvoicingSigner.pdb
+E:\app\OTax New App\backend-service\EtaSigner\bin\Release\net6.0\BouncyCastle.Cryptography.dll
+E:\app\OTax New App\backend-service\EtaSigner\bin\Release\net6.0\Newtonsoft.Json.dll
+E:\app\OTax New App\backend-service\EtaSigner\bin\Release\net6.0\System.Security.Cryptography.Pkcs.dll
+E:\app\OTax New App\backend-service\EtaSigner\bin\Release\net6.0\runtimes\win\lib\net6.0\System.Security.Cryptography.Pkcs.dll
+E:\app\OTax New App\backend-service\EtaSigner\obj\Release\net6.0\EtaSigner.csproj.AssemblyReference.cache
+E:\app\OTax New App\backend-service\EtaSigner\obj\Release\net6.0\EtaSigner.GeneratedMSBuildEditorConfig.editorconfig
+E:\app\OTax New App\backend-service\EtaSigner\obj\Release\net6.0\EtaSigner.AssemblyInfoInputs.cache
+E:\app\OTax New App\backend-service\EtaSigner\obj\Release\net6.0\EtaSigner.AssemblyInfo.cs
+E:\app\OTax New App\backend-service\EtaSigner\obj\Release\net6.0\EtaSigner.csproj.CoreCompileInputs.cache
+E:\app\OTax New App\backend-service\EtaSigner\obj\Release\net6.0\EtaSigner.sourcelink.json
+E:\app\OTax New App\backend-service\EtaSigner\obj\Release\net6.0\EtaSigner.csproj.Up2Date
+E:\app\OTax New App\backend-service\EtaSigner\obj\Release\net6.0\EInvoicingSigner.dll
+E:\app\OTax New App\backend-service\EtaSigner\obj\Release\net6.0\refint\EInvoicingSigner.dll
+E:\app\OTax New App\backend-service\EtaSigner\obj\Release\net6.0\EInvoicingSigner.pdb
+E:\app\OTax New App\backend-service\EtaSigner\obj\Release\net6.0\EtaSigner.genruntimeconfig.cache
+E:\app\OTax New App\backend-service\EtaSigner\obj\Release\net6.0\ref\EInvoicingSigner.dll

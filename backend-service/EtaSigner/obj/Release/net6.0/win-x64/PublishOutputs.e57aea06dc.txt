@@ -1,0 +1,8 @@
+E:\app\OTax New App\backend-service\EInvoicingSigner\EInvoicingSigner.exe
+E:\app\OTax New App\backend-service\EInvoicingSigner\EInvoicingSigner.dll
+E:\app\OTax New App\backend-service\EInvoicingSigner\EInvoicingSigner.deps.json
+E:\app\OTax New App\backend-service\EInvoicingSigner\EInvoicingSigner.runtimeconfig.json
+E:\app\OTax New App\backend-service\EInvoicingSigner\EInvoicingSigner.pdb
+E:\app\OTax New App\backend-service\EInvoicingSigner\BouncyCastle.Cryptography.dll
+E:\app\OTax New App\backend-service\EInvoicingSigner\Newtonsoft.Json.dll
+E:\app\OTax New App\backend-service\EInvoicingSigner\System.Security.Cryptography.Pkcs.dll

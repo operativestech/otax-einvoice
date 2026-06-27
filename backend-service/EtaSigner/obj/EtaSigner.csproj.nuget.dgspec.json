@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "E:\\E-Invoice\\E-Invoice\\EtaSigner\\EtaSigner.csproj": {}
+    "E:\\app\\OTax New App\\backend-service\\EtaSigner\\EtaSigner.csproj": {}
   },
   "projects": {
-    "E:\\E-Invoice\\E-Invoice\\EtaSigner\\EtaSigner.csproj": {
+    "E:\\app\\OTax New App\\backend-service\\EtaSigner\\EtaSigner.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\E-Invoice\\E-Invoice\\EtaSigner\\EtaSigner.csproj",
-        "projectName": "EtaSigner",
-        "projectPath": "E:\\E-Invoice\\E-Invoice\\EtaSigner\\EtaSigner.csproj",
-        "packagesPath": "C:\\Users\\DELL  LS\\.nuget\\packages\\",
-        "outputPath": "E:\\E-Invoice\\E-Invoice\\EtaSigner\\obj\\",
+        "projectUniqueName": "E:\\app\\OTax New App\\backend-service\\EtaSigner\\EtaSigner.csproj",
+        "projectName": "EInvoicingSigner",
+        "projectPath": "E:\\app\\OTax New App\\backend-service\\EtaSigner\\EtaSigner.csproj",
+        "packagesPath": "C:\\Users\\Combo\\.nuget\\packages\\",
+        "outputPath": "E:\\app\\OTax New App\\backend-service\\EtaSigner\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\DELL  LS\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Combo\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
@@ -32,6 +32,11 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -41,6 +46,10 @@
             "BouncyCastle.Cryptography": {
               "target": "Package",
               "version": "[2.2.1, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
             },
             "System.Security.Cryptography.Pkcs": {
               "target": "Package",
@@ -58,12 +67,30 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[6.0.36, 6.0.36]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[6.0.36, 6.0.36]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.428\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.418\\RuntimeIdentifierGraph.json"
         }
       }
     }
