@@ -10,14 +10,12 @@ interface LoginProps {
 }
 
 const OTaxLogo: React.FC<{ light?: boolean }> = ({ light }) => (
-  <div className="flex items-center gap-1.5 select-none">
-    <div className="w-8 h-8 flex-shrink-0">
-      <svg viewBox="0 0 120 120" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="40" cy="20" r="10" fill={light ? "#60a5fa" : "#0094da"} />
-        <path d="M 40 35 L 40 65 A 25 25 0 1 0 65 40" stroke={light ? "#60a5fa" : "#0094da"} strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      </svg>
-    </div>
-    <span className={`text-2xl font-extrabold tracking-tight ${light ? 'text-white' : 'text-[#0094da]'}`}>Tax</span>
+  <div className="flex items-center select-none py-1">
+    <img 
+      src="/logo.png" 
+      alt="OTax Logo" 
+      className={`h-8 w-auto object-contain ${light ? 'brightness-0 invert' : ''}`} 
+    />
   </div>
 );
 
