@@ -10,21 +10,14 @@ interface LoginProps {
 }
 
 const OTaxLogo: React.FC<{ light?: boolean }> = ({ light }) => (
-  <div className="flex items-center gap-2">
-    <div className="relative w-8 h-8 flex-shrink-0">
-      <svg viewBox="0 0 24 24" fill="none" className="w-full h-full drop-shadow-md">
-        <path d="M12 2L3.5 7V17L12 22L20.5 17V7L12 2Z" fill="url(#hex-gradient-login)" />
-        <path d="M12 6.5L6.5 9.7V14.3L12 17.5L17.5 14.3V9.7L12 6.5Z" fill="white" fillOpacity="0.15" />
-        <path d="M12 8.5L8.5 10.5V13.5L12 15.5L15.5 13.5V10.5L12 8.5Z" fill="white" />
-        <defs>
-          <linearGradient id="hex-gradient-login" x1="3.5" y1="2" x2="20.5" y2="22" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#60a5fa" />
-            <stop offset="1" stopColor="#2563eb" />
-          </linearGradient>
-        </defs>
+  <div className="flex items-center gap-1.5 select-none">
+    <div className="w-8 h-8 flex-shrink-0">
+      <svg viewBox="0 0 120 120" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="40" cy="20" r="10" fill={light ? "#60a5fa" : "#0094da"} />
+        <path d="M 40 35 L 40 65 A 25 25 0 1 0 65 40" stroke={light ? "#60a5fa" : "#0094da"} strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" fill="none" />
       </svg>
     </div>
-    <span className={`text-xl font-bold tracking-tight ${light ? 'text-white' : 'text-slate-900'}`}>OTax</span>
+    <span className={`text-2xl font-extrabold tracking-tight ${light ? 'text-white' : 'text-[#0094da]'}`}>Tax</span>
   </div>
 );
 
