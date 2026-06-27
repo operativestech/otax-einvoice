@@ -88,10 +88,7 @@ export function serialize(obj: any, type: 'JSON' | 'XML' = 'JSON'): string {
 }
 
 export function serializeInvoice(obj: any): string {
-    // CRITICAL: Even though we submit JSON to ETA API, the e-Invoice signature verification 
-    // on the ETA server expects the canonical string to use XML array key formatting 
-    // (e.g. "INVOICELINES""INVOICELINE"<item> instead of repeating "INVOICELINES").
-    return '"DOCUMENT"' + serialize(obj, 'XML');
+    return serialize(obj, 'JSON');
 }
 
 export function serializeReceiptBatch(batch: any): string {
