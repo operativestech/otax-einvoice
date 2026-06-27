@@ -18,8 +18,9 @@ import {
   CreditCard,
   Lock,
   ClipboardList,
-  FolderOpen,
   Send,
+  Sparkles,
+  ArrowRight,
 } from 'lucide-react';
 import { User } from '../types';
 import { useTranslation } from '../i18n';
@@ -41,7 +42,26 @@ interface MenuItem {
   isHeader?: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isExpanded, onExpand, user }) => {
+const SidebarLogo = () => (
+  <div className="flex items-center gap-2">
+    <div className="relative w-8 h-8 flex-shrink-0">
+      <svg viewBox="0 0 24 24" fill="none" className="w-full h-full drop-shadow-sm">
+        <path d="M12 2L3.5 7V17L12 22L20.5 17V7L12 2Z" fill="url(#sidebar-hex-grad)" />
+        <path d="M12 6.5L6.5 9.7V14.3L12 17.5L17.5 14.3V9.7L12 6.5Z" fill="white" fillOpacity="0.15" />
+        <path d="M12 8.5L8.5 10.5V13.5L12 15.5L15.5 13.5V10.5L12 8.5Z" fill="white" />
+        <defs>
+          <linearGradient id="sidebar-hex-grad" x1="3.5" y1="2" x2="20.5" y2="22" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#3b82f6" />
+            <stop offset="1" stopColor="#1d4ed8" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <span className="text-xl font-bold tracking-tight text-slate-800">OTax</span>
+  </div>
+);
+
+const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   const location = useLocation();
   const { t, lang } = useTranslation();
 
@@ -63,19 +83,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, onExpand, user }) => {
     { path: '/super-admin/activity', label: lang === 'ar' ? 'سجل النشاط' : 'Activity Logs', icon: <ClipboardList size={18} /> },
   ];
 
+  // Modified order: ETA SUBMISSIONS first, then DOCUMENTS HUB
   const appMenuItems: MenuItem[] = [
     { label: 'WORKSPACE', isHeader: true },
     { path: '/dashboard', label: t('nav.dashboard'), icon: <LayoutDashboard size={18} />, permission: 'dashboard.view' },
-    
-    { label: 'DOCUMENTS HUB', isHeader: true },
-    { path: '/manual-invoice', label: t('nav.manualInvoice'), icon: <PlusCircle size={18} />, permission: 'invoices.create' },
-    { path: '/import', label: t('nav.import'), icon: <FileSpreadsheet size={18} />, permission: 'invoices.create' },
-    { path: '/export-eta', label: t('nav.exportEta'), icon: <UploadCloud size={18} />, permission: 'invoices.create' },
     
     { label: 'ETA SUBMISSIONS', isHeader: true },
     { path: '/invoices', label: t('nav.invoices'), icon: <FileText size={18} />, permission: 'invoices.view' },
     { path: '/eta-reference', label: 'ETA Reference', icon: <Send size={18} /> },
     { path: '/export-packages', label: t('nav.exportPackages'), icon: <Package size={18} />, permission: 'reports.view' },
+
+    { label: 'DOCUMENTS HUB', isHeader: true },
+    { path: '/manual-invoice', label: t('nav.manualInvoice'), icon: <PlusCircle size={18} />, permission: 'invoices.create' },
+    { path: '/import', label: t('nav.import'), icon: <FileSpreadsheet size={18} />, permission: 'invoices.create' },
+    { path: '/export-eta', label: t('nav.exportEta'), icon: <UploadCloud size={18} />, permission: 'invoices.create' },
 
     { label: 'ANALYTICS & DATA', isHeader: true },
     { path: '/reports', label: t('nav.reports'), icon: <BarChart3 size={18} />, permission: 'reports.view' },
@@ -96,7 +117,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, onExpand, user }) => {
       return hasPermission(item.permission);
     });
 
-  // Filter out empty headers (if permissions hid all their children)
   const cleanedMenuItems = visibleMenuItems.filter((item, index, array) => {
     if (item.isHeader) {
       const nextItem = array[index + 1];
@@ -106,27 +126,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, onExpand, user }) => {
   });
 
   return (
-    <aside
-      className={`bg-white/80 backdrop-blur-xl border-r border-slate-200/60 text-slate-600 flex flex-col h-full transition-all duration-300 ease-in-out z-40 ${isExpanded ? 'w-64' : 'w-20'}`}
-      onMouseEnter={() => onExpand(true)}
-      onMouseLeave={() => onExpand(false)}
-    >
+    <aside className="bg-slate-50 border-r border-slate-200/60 text-slate-600 flex flex-col h-full w-64 shrink-0 relative z-40 select-none">
+      
       {/* Logo */}
-      <div className="p-4 flex items-center gap-3 overflow-hidden border-b border-slate-100 h-16 shrink-0">
-        <div className="bg-primary-600 p-2 rounded-xl shadow-soft shrink-0">
-          <ShieldCheck size={24} className="text-white" />
-        </div>
-        <span className={`font-bold text-lg text-slate-800 whitespace-nowrap transition-opacity duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>
-          OTax Premium
-        </span>
+      <div className="p-5 flex items-center justify-between border-b border-slate-200/50 h-16 shrink-0 bg-white">
+        <SidebarLogo />
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-4 space-y-1">
+      {/* Navigation list */}
+      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-0.5 custom-scrollbar">
         {cleanedMenuItems.map((item, idx) => {
           if (item.isHeader) {
             return (
-              <div key={`header-${idx}`} className={`px-6 pt-4 pb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest transition-opacity duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0 hidden'}`}>
+              <div key={`header-${idx}`} className="px-3 pt-4 pb-1 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                 {item.label}
               </div>
             );
@@ -139,45 +151,68 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, onExpand, user }) => {
             <Link
               key={item.path}
               to={item.path!}
-              className={`w-full flex items-center py-2.5 gap-3 transition-all duration-200 group relative ${isExpanded ? 'px-4 mx-3 rounded-xl w-[calc(100%-24px)]' : 'justify-center mx-2 rounded-xl w-[calc(100%-16px)]'} ${isActive
-                  ? 'bg-primary-50 text-primary-700 font-semibold shadow-sm'
-                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+              className={`w-full flex items-center py-2 px-3 gap-3 transition-all duration-200 rounded-xl ${isActive
+                  ? 'bg-blue-600 text-white font-bold shadow-[0_8px_20px_rgba(37,99,235,0.25)]'
+                  : 'text-slate-600 hover:bg-slate-200/50 hover:text-slate-900 font-medium'
                 }`}
             >
-              <div className={`shrink-0 transition-colors ${isActive ? 'text-primary-600' : 'text-slate-400 group-hover:text-primary-500'}`}>
+              <div className={`shrink-0 transition-colors ${isActive ? 'text-white' : 'text-slate-400'}`}>
                 {item.icon}
               </div>
-              <span className={`whitespace-nowrap transition-all duration-300 text-sm ${isExpanded ? 'opacity-100' : 'opacity-0 absolute'}`}>
+              <span className="whitespace-nowrap text-sm">
                 {item.label}
               </span>
-              {isExpanded && item.badge && (
-                <span className="ml-auto bg-emerald-100 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-1.5 py-0.5 rounded-md">
+              {item.badge && (
+                <span className={`ml-auto border text-[9px] font-bold px-1.5 py-0.5 rounded-md ${isActive ? 'bg-white/20 text-white border-white/20' : 'bg-emerald-100 text-emerald-700 border-emerald-200'}`}>
                   {item.badge}
                 </span>
-              )}
-              {!isExpanded && (
-                <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-800 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-all shadow-lg whitespace-nowrap z-50 transform translate-x-2 group-hover:translate-x-0">
-                  {item.label}
-                </div>
               )}
             </Link>
           );
         })}
+
+        {/* Seamless e-invoicing card at the bottom of sidebar from mockup */}
+        <div className="pt-6">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-4 space-y-3 relative overflow-hidden shadow-sm">
+            <div className="absolute right-[-10px] bottom-[-10px] w-20 h-20 bg-blue-500/5 blur-lg rounded-full pointer-events-none" />
+            
+            {/* Tiny Document Icon Card */}
+            <div className="w-8 h-8 rounded-lg bg-blue-600/10 flex items-center justify-center text-blue-600">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
+              </svg>
+            </div>
+
+            <div className="space-y-1">
+              <h4 className="text-xs font-bold text-slate-800">Seamless e-invoicing</h4>
+              <p className="text-[10px] text-slate-500 leading-normal">Trusted. Compliant. Future-Ready.</p>
+            </div>
+
+            <Link to="/settings/tokensign" className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700">
+              Learn more <ArrowRight size={10} />
+            </Link>
+          </div>
+        </div>
+
       </nav>
 
-      {/* Bottom: Role badge */}
-      {isExpanded && user && (
-        <div className="p-4 border-t border-slate-100 bg-slate-50/50">
+      {/* Role badge */}
+      {user && (
+        <div className="p-4 border-t border-slate-200/50 bg-white">
           <div className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1.5 rounded-lg text-center shadow-sm ${isSuperAdmin
-            ? 'bg-amber-100 text-amber-700 border border-amber-200'
+            ? 'bg-amber-50 text-amber-700 border border-amber-200'
             : isOrgAdmin
-              ? 'bg-primary-100 text-primary-700 border border-primary-200'
-              : 'bg-white text-slate-600 border border-slate-200'
+              ? 'bg-blue-50 text-blue-700 border border-blue-200'
+              : 'bg-slate-50 text-slate-600 border border-slate-200'
             }`}>
             {isSuperAdmin ? '⚡ Super Admin' : isOrgAdmin ? '🏢 Org Admin' : user.role || 'User'}
           </div>
           {user.organization?.name && (
-            <p className="text-xs font-medium text-slate-600 text-center mt-2 truncate">{user.organization.name}</p>
+            <p className="text-[10px] font-semibold text-slate-500 text-center mt-2 truncate">{user.organization.name}</p>
           )}
         </div>
       )}
