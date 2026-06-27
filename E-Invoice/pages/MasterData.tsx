@@ -209,13 +209,13 @@ const CustomersView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             <div className="relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input value={q} onChange={e => { setQ(e.target.value); setPageNo(1); }} placeholder="Name, tax ID, phone, email…"
-                className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/30" />
+                className="w-full pl-9 pr-3 py-2 bg-slate-50/50 border border-slate-200/60 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all" />
             </div>
           </div>
           <div>
             <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-1">Direction</label>
             <select value={directionFilter} onChange={e => { setDirectionFilter(e.target.value as any); setPageNo(1); }}
-              className="px-3 py-2 border border-gray-200 rounded-lg text-sm">
+              className="px-3 py-2 bg-slate-50/50 border border-slate-200/60 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all cursor-pointer">
               <option value="">All</option>
               <option value="Sent">Customers (Sent)</option>
               <option value="Received">Suppliers (Received)</option>
@@ -224,21 +224,21 @@ const CustomersView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           <div>
             <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-1">Tag</label>
             <select value={tagFilter} onChange={e => { setTagFilter(e.target.value); setPageNo(1); }}
-              className="px-3 py-2 border border-gray-200 rounded-lg text-sm min-w-[140px]">
+              className="px-3 py-2 bg-slate-50/50 border border-slate-200/60 rounded-xl text-sm min-w-[140px] focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all cursor-pointer">
               <option value="">All tags</option>
               {(stats?.topTags || []).map(t => (<option key={t.tag} value={t.tag}>{t.tag} ({t.n})</option>))}
             </select>
           </div>
           <button onClick={load} disabled={loading}
-            className="flex items-center gap-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold hover:bg-gray-50 disabled:opacity-50">
+            className="flex items-center gap-1.5 px-4 py-2 bg-white/70 border border-slate-200/60 rounded-xl text-sm font-semibold hover:bg-slate-50 disabled:opacity-50 transition-all">
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Refresh
           </button>
           <button onClick={handleExport}
-            className="flex items-center gap-1 px-3 py-2 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700">
+            className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 transition-all shadow-sm">
             <FileSpreadsheet size={14} /> Export
           </button>
           <button onClick={handleBackfill} disabled={backfilling}
-            className="flex items-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50" title="Scan existing invoices and fill the master table">
+            className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 transition-all shadow-sm" title="Scan existing invoices and fill the master table">
             {backfilling ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />} Backfill
           </button>
         </div>
@@ -251,17 +251,17 @@ const CustomersView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50/80">
-                <th className="px-3 py-2 text-left text-[11px] font-bold text-slate-500 uppercase">Tax ID</th>
-                <th className="px-3 py-2 text-left text-[11px] font-bold text-slate-500 uppercase">Name</th>
-                <th className="px-3 py-2 text-left text-[11px] font-bold text-slate-500 uppercase">Type</th>
-                <th className="px-3 py-2 text-left text-[11px] font-bold text-slate-500 uppercase">Location</th>
-                <th className="px-3 py-2 text-left text-[11px] font-bold text-slate-500 uppercase">Contact</th>
-                <th className="px-3 py-2 text-left text-[11px] font-bold text-slate-500 uppercase">Tags</th>
-                <th className="px-3 py-2 text-right text-[11px] font-bold text-slate-500 uppercase">Invoices</th>
-                <th className="px-3 py-2 text-right text-[11px] font-bold text-slate-500 uppercase">Total</th>
-                <th className="px-3 py-2 text-left text-[11px] font-bold text-slate-500 uppercase">Last Seen</th>
-                <th className="px-3 py-2 text-right text-[11px] font-bold text-slate-500 uppercase">Action</th>
+              <tr className="bg-slate-50/50 backdrop-blur-sm border-b border-slate-100/50">
+                <th className="px-4 py-3 text-left text-[11px] font-bold text-slate-500 uppercase">Tax ID</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold text-slate-500 uppercase">Name</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold text-slate-500 uppercase">Type</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold text-slate-500 uppercase">Location</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold text-slate-500 uppercase">Contact</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold text-slate-500 uppercase">Tags</th>
+                <th className="px-4 py-3 text-right text-[11px] font-bold text-slate-500 uppercase">Invoices</th>
+                <th className="px-4 py-3 text-right text-[11px] font-bold text-slate-500 uppercase">Total</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold text-slate-500 uppercase">Last Seen</th>
+                <th className="px-4 py-3 text-right text-[11px] font-bold text-slate-500 uppercase">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -274,11 +274,11 @@ const CustomersView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 </td></tr>
               )}
               {rows.map(r => (
-                <tr key={r.id} className="hover:bg-gray-50/50">
-                  <td className="px-3 py-2 font-mono text-xs">{r.tax_id}</td>
-                  <td className="px-3 py-2 text-slate-800">{r.name || '—'}</td>
-                  <td className="px-3 py-2">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                <tr key={r.id} className="hover:bg-slate-50/40 transition-colors">
+                  <td className="px-4 py-3 font-mono text-xs text-slate-600">{r.tax_id}</td>
+                  <td className="px-4 py-3 font-semibold text-slate-800">{r.name || '—'}</td>
+                  <td className="px-4 py-3">
+                    <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
                       r.party_type === 'B' ? 'bg-blue-50 text-blue-700' :
                       r.party_type === 'P' ? 'bg-violet-50 text-violet-700' :
                       r.party_type === 'F' ? 'bg-amber-50 text-amber-700' : 'bg-slate-50 text-slate-600'
@@ -287,15 +287,15 @@ const CustomersView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                       <span key={d} className="ml-1 text-[10px] text-slate-500">{d === 'Sent' ? '↗' : '↙'}</span>
                     ))}
                   </td>
-                  <td className="px-3 py-2 text-xs text-slate-600">
+                  <td className="px-4 py-3 text-xs text-slate-600">
                     {[r.region_city, r.governate, r.country].filter(Boolean).join(', ') || '—'}
                   </td>
-                  <td className="px-3 py-2 text-xs text-slate-600">
+                  <td className="px-4 py-3 text-xs text-slate-600">
                     {r.phone && <div className="flex items-center gap-1"><Phone size={10} /> {r.phone}</div>}
                     {r.email && <div className="flex items-center gap-1"><Mail size={10} /> {r.email}</div>}
                     {!r.phone && !r.email && '—'}
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-1 max-w-xs">
                       {(r.tags || []).length === 0 && <span className="text-slate-300 text-xs">—</span>}
                       {(r.tags || []).slice(0, 4).map(t => (
@@ -304,12 +304,12 @@ const CustomersView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                       {(r.tags || []).length > 4 && <span className="text-[10px] text-slate-400">+{r.tags.length - 4}</span>}
                     </div>
                   </td>
-                  <td className="px-3 py-2 text-right font-mono">{r.invoice_count}</td>
-                  <td className="px-3 py-2 text-right font-mono text-emerald-700">{Number(r.total_amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                  <td className="px-3 py-2 text-xs text-slate-500">{fmtDate(r.last_seen_at)}</td>
-                  <td className="px-3 py-2 text-right">
+                  <td className="px-4 py-3 text-right font-mono font-medium text-slate-700">{r.invoice_count}</td>
+                  <td className="px-4 py-3 text-right font-mono font-bold text-emerald-700">{Number(r.total_amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                  <td className="px-4 py-3 text-xs text-slate-500">{fmtDate(r.last_seen_at)}</td>
+                  <td className="px-4 py-3 text-right">
                     <button onClick={() => setSelected(r)}
-                      className="inline-flex items-center gap-1 px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded">
+                      className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-blue-600 hover:bg-blue-50 bg-blue-50/30 border border-blue-100/30 rounded-lg transition-all">
                       <Edit size={12} /> Edit
                     </button>
                   </td>
@@ -321,13 +321,13 @@ const CustomersView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-2 border-t border-gray-100 text-sm">
-            <div className="text-slate-500">Page {pageNo} of {totalPages} · {total} customers</div>
+          <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100/50 text-sm">
+            <div className="text-slate-500 text-xs">Page {pageNo} of {totalPages} · {total} customers</div>
             <div className="flex gap-2">
               <button onClick={() => setPageNo(p => Math.max(1, p - 1))} disabled={pageNo === 1}
-                className="px-3 py-1 border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50">← Prev</button>
+                className="px-4 py-1.5 border border-slate-200/60 rounded-xl disabled:opacity-40 hover:bg-slate-50 transition-all text-xs font-semibold">← Prev</button>
               <button onClick={() => setPageNo(p => Math.min(totalPages, p + 1))} disabled={pageNo === totalPages}
-                className="px-3 py-1 border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50">Next →</button>
+                className="px-4 py-1.5 border border-slate-200/60 rounded-xl disabled:opacity-40 hover:bg-slate-50 transition-all text-xs font-semibold">Next →</button>
             </div>
           </div>
         )}
@@ -794,7 +794,7 @@ const MasterData: React.FC = () => {
         </div>
 
         {/* Search bar */}
-        <div className="p-4 border-b border-gray-50 flex items-center gap-4">
+        <div className="p-4 border-b border-slate-100 flex items-center gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input
@@ -803,20 +803,20 @@ const MasterData: React.FC = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               placeholder="Search item codes..."
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-4 py-2 bg-slate-50/50 border border-slate-200/60 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all"
             />
           </div>
           <select
             value={searchType}
             onChange={(e) => setSearchType(e.target.value as 'EGS' | 'GS1')}
-            className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none"
+            className="bg-slate-50/50 border border-slate-200/60 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all cursor-pointer"
           >
             <option value="EGS">EGS</option>
             <option value="GS1">GS1</option>
           </select>
           <button
             onClick={handleSearch}
-            className="p-2 border border-gray-200 rounded-xl text-slate-400 hover:bg-gray-50"
+            className="p-2 border border-slate-200/60 rounded-xl text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all"
           >
             <Filter size={18} />
           </button>
