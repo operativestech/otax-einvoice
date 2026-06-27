@@ -182,19 +182,19 @@ const CustomersView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       {/* Stats strip */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="bg-white border border-gray-100 rounded-xl p-4">
+          <div className="soft-card p-4">
             <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Customers</div>
             <div className="text-2xl font-black text-slate-900 mt-1">{stats.totalCustomers}</div>
           </div>
-          <div className="bg-white border border-gray-100 rounded-xl p-4">
+          <div className="soft-card p-4">
             <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">From Invoices</div>
             <div className="text-2xl font-black text-emerald-700 mt-1">{stats.autoFromInvoices}</div>
           </div>
-          <div className="bg-white border border-gray-100 rounded-xl p-4">
+          <div className="soft-card p-4">
             <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Manually Added</div>
             <div className="text-2xl font-black text-blue-700 mt-1">{stats.manuallyAdded}</div>
           </div>
-          <div className="bg-white border border-gray-100 rounded-xl p-4">
+          <div className="soft-card p-4">
             <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Tags in Use</div>
             <div className="text-2xl font-black text-violet-700 mt-1">{stats.topTags.length}</div>
           </div>
@@ -202,7 +202,7 @@ const CustomersView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       )}
 
       {/* Controls */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+      <div className="glass-panel p-4">
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex-1 min-w-[200px]">
             <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-1">Search</label>
@@ -247,7 +247,7 @@ const CustomersView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       {err && <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-sm text-red-700 flex items-center gap-2"><AlertCircle size={14} /> {err}</div>}
 
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="glass-panel overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -711,7 +711,7 @@ const MasterData: React.FC = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button onClick={() => setView('items')}
-            className="text-left bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all group">
+            className="text-left glass-panel p-6 hover:-translate-y-0.5 transition-all group">
             <div className="flex items-start justify-between mb-3">
               <div className="p-3 bg-blue-50 rounded-2xl group-hover:bg-blue-100 transition-colors">
                 <Package size={24} className="text-blue-600" />
@@ -723,7 +723,7 @@ const MasterData: React.FC = () => {
           </button>
 
           <button onClick={() => setView('customers')}
-            className="text-left bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all group">
+            className="text-left glass-panel p-6 hover:-translate-y-0.5 transition-all group">
             <div className="flex items-start justify-between mb-3">
               <div className="p-3 bg-emerald-50 rounded-2xl group-hover:bg-emerald-100 transition-colors">
                 <Users size={24} className="text-emerald-600" />

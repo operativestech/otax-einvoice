@@ -1828,7 +1828,7 @@ const Settings: React.FC = () => {
             ) : (
               <>
                 {/* Mode picker */}
-                <section className="p-5 bg-white border border-gray-100 rounded-2xl">
+                <section className="glass-panel p-5">
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t('autosync.scheduleMode')}</label>
                   <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
                     {([
@@ -1851,7 +1851,7 @@ const Settings: React.FC = () => {
 
                 {/* Mode-specific fields */}
                 {autoSyncMode === 'interval' && (
-                  <section className="p-5 bg-white border border-gray-100 rounded-2xl">
+                  <section className="glass-panel p-5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t('autosync.interval')}</label>
                     <div className="mt-3 grid grid-cols-3 md:grid-cols-6 gap-2">
                       {[15, 30, 60, 120, 240, 360].map(v => (
@@ -1875,7 +1875,7 @@ const Settings: React.FC = () => {
                 )}
 
                 {autoSyncMode === 'times' && (
-                  <section className="p-5 bg-white border border-gray-100 rounded-2xl">
+                  <section className="glass-panel p-5">
                     <div className="flex items-center justify-between mb-3">
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t('autosync.times')}</label>
                       <button onClick={addTime} disabled={autoSyncTimes.length >= 10}
@@ -2388,7 +2388,7 @@ const Settings: React.FC = () => {
               <p className="text-[11px] text-slate-500 mb-3 px-1">{t('notif.channelsDesc')}</p>
               <div className="space-y-3">
                 {/* Daily Digest */}
-                <section className="p-5 bg-white border border-gray-100 rounded-2xl">
+                <section className="glass-panel p-5">
                   <label className="flex items-start gap-3 cursor-pointer">
                     <input type="checkbox" className="mt-1 w-5 h-5 accent-amber-600"
                       checked={notifyDailyDigest}
@@ -2451,7 +2451,7 @@ const Settings: React.FC = () => {
                 {/* Send a test email — pre-fills the recipient field with the
                     saved notification email when blank, so the user gets a
                     one-click "verify it landed" check. */}
-                <section className="p-5 bg-white border border-gray-100 rounded-2xl space-y-3">
+                <section className="glass-panel p-5 space-y-3">
                   <div className="flex items-start gap-3">
                     <Send size={16} className="mt-0.5 flex-shrink-0 text-blue-600" />
                     <div className="flex-1">
@@ -2802,7 +2802,7 @@ const Settings: React.FC = () => {
             </section>
 
             {/* Existing branches */}
-            <section className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
+            <section className="glass-panel overflow-hidden">
               <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
                 <h4 className="text-sm font-bold text-slate-800">{t('settings.branches')} ({branches.length})</h4>
                 <button onClick={loadBranches} className="text-xs text-slate-500 hover:text-slate-700 flex items-center gap-1"><RefreshCw size={12} /> {t('common.reload')}</button>

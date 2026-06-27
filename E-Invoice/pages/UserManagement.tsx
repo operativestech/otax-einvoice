@@ -621,7 +621,7 @@ const UserManagement: React.FC = () => {
 
             {/* Users Tab */}
             {activeTab === 'users' && (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="glass-panel overflow-hidden">
                     {loading ? (
                         <div className="flex items-center justify-center py-20">
                             <Loader2 size={32} className="animate-spin text-blue-500" />
@@ -709,7 +709,7 @@ const UserManagement: React.FC = () => {
 
             {/* Invitations Tab */}
             {activeTab === 'invitations' && (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="glass-panel overflow-hidden">
                     {invitations.length === 0 ? (
                         <div className="text-center py-16 text-slate-400">
                             <Mail size={48} className="mx-auto mb-3 opacity-30" />

@@ -701,7 +701,7 @@ const Reports: React.FC = () => {
       badge?: React.ReactNode;
     }> = ({ view, title, desc, icon, color, badge }) => (
       <button onClick={() => setReportView(view)}
-        className="text-left bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all group">
+        className="text-left glass-panel p-5 hover:-translate-y-0.5 transition-all group">
         <div className="flex items-start justify-between mb-3">
           <div className={`p-2.5 bg-${color}-50 rounded-xl group-hover:bg-${color}-100 transition-colors`}>
             {icon}
@@ -826,7 +826,7 @@ const Reports: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+      <div className="glass-panel p-4">
         <div className="flex items-end gap-3 flex-wrap">
           <div>
             <label className="block text-[10px] font-semibold text-slate-500 mb-1 uppercase tracking-wide">{t('reports.dateFrom')}</label>
@@ -852,7 +852,7 @@ const Reports: React.FC = () => {
         {reportError && <div className="mt-3 text-sm text-red-600 flex items-center gap-1"><AlertTriangle size={14} /> {reportError}</div>}
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="glass-panel overflow-hidden">
         {loadingReport === loadingKey && <div className="p-12 text-center text-slate-400"><Loader2 size={24} className="animate-spin mx-auto mb-2" /> {t('common.loading')}</div>}
         {loadingReport !== loadingKey && !hasData && (
           <div className="p-12 text-center text-slate-400">
@@ -1400,7 +1400,7 @@ const Reports: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+        <div className="glass-panel p-5 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
             <div>
               <label className="block text-[10px] font-semibold text-slate-500 mb-1 uppercase tracking-wide">{t('reports.dateFrom')}</label>
@@ -1711,21 +1711,21 @@ const Reports: React.FC = () => {
         <div className="space-y-4">
           {/* Financial Summary Cards */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <div className="soft-card p-4">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-7 h-7 bg-blue-50 rounded-lg flex items-center justify-center"><BarChart3 size={14} className="text-blue-600" /></div>
               </div>
               <p className="text-[10px] font-bold text-slate-400 uppercase">Total Sales</p>
               <p className="text-lg font-bold text-slate-800">{formatAmount(taxSummary.total_sales)}</p>
             </div>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <div className="soft-card p-4">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-7 h-7 bg-amber-50 rounded-lg flex items-center justify-center"><DollarSign size={14} className="text-amber-600" /></div>
               </div>
               <p className="text-[10px] font-bold text-slate-400 uppercase">Discount</p>
               <p className="text-lg font-bold text-amber-600">{formatAmount(taxSummary.total_discount)}</p>
             </div>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <div className="soft-card p-4">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-7 h-7 bg-slate-50 rounded-lg flex items-center justify-center"><TrendingUp size={14} className="text-slate-600" /></div>
               </div>
@@ -1740,14 +1740,14 @@ const Reports: React.FC = () => {
               <p className="text-lg font-bold text-red-700">{formatAmount(taxSummary.total_tax)}</p>
               <p className="text-[10px] text-red-400 mt-0.5">{taxPercentage.toFixed(1)}% of net</p>
             </div>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <div className="soft-card p-4">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-7 h-7 bg-emerald-50 rounded-lg flex items-center justify-center"><TrendingUp size={14} className="text-emerald-600" /></div>
               </div>
               <p className="text-[10px] font-bold text-slate-400 uppercase">Total Amount</p>
               <p className="text-lg font-bold text-emerald-700">{formatAmount(taxSummary.total_amount)}</p>
             </div>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <div className="soft-card p-4">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-7 h-7 bg-violet-50 rounded-lg flex items-center justify-center"><ArrowUpDown size={14} className="text-violet-600" /></div>
               </div>
@@ -1824,7 +1824,7 @@ const Reports: React.FC = () => {
 
           {/* If no detailed tax breakdown, show calculated summary */}
           {taxBreakdown.length === 0 && Number(taxSummary.total_tax) > 0 && (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div className="glass-panel p-6">
               <div className="flex items-center gap-2 mb-4">
                 <PieChart size={18} className="text-red-500" />
                 <h3 className="font-bold text-slate-800">{t('reports.taxSummary')}</h3>

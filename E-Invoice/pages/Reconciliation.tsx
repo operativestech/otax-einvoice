@@ -228,7 +228,7 @@ const UploadCard: React.FC<UploadCardProps> = ({ side, onUploaded }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+    <div className="glass-panel p-5 animate-in fade-in duration-300">
       <div className="flex items-start justify-between gap-3 mb-4">
         <div>
           <h2 className="font-semibold text-slate-800 flex items-center gap-2">
@@ -657,7 +657,7 @@ const MatchesTab: React.FC<MatchesTabProps> = ({ items, loading, onRun, onAccept
           </div>
         )}
         {items.map(m => (
-          <div key={m.id} className="bg-white border border-gray-200 rounded-xl p-3 hover:border-blue-300 transition-colors">
+          <div key={m.id} className="soft-card p-3 hover:border-primary-300 transition-colors">
             <div className="flex items-center justify-between gap-2 mb-2">
               <div className="flex items-center gap-2">
                 <span className={`text-[11px] font-bold uppercase px-2 py-0.5 rounded-full border ${matchTypeStyle[m.match_type]}`}>{m.match_type}</span>
@@ -819,7 +819,7 @@ const SummaryTab: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="bg-white border border-gray-100 rounded-xl p-4">
+            <div className="soft-card p-4">
               <h3 className="font-semibold text-slate-800 flex items-center gap-2 mb-2"><FileSpreadsheet size={14} className="text-blue-600" /> ERP Coverage</h3>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-slate-600">Matched</span>
@@ -830,7 +830,7 @@ const SummaryTab: React.FC = () => {
               </div>
               <div className="text-xs text-slate-500 mt-1">{erpMatchRate}% matched · {data.erp.unmatched} unmatched</div>
             </div>
-            <div className="bg-white border border-gray-100 rounded-xl p-4">
+            <div className="soft-card p-4">
               <h3 className="font-semibold text-slate-800 flex items-center gap-2 mb-2"><Landmark size={14} className="text-emerald-600" /> Bank Coverage</h3>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-slate-600">Matched</span>
@@ -1052,7 +1052,7 @@ const Reconciliation: React.FC = () => {
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+      <div className="glass-panel">
         <div className="px-5 pt-4 border-b border-gray-100">
           <div className="flex gap-1">
             {tabs.map(t => (

@@ -48,7 +48,7 @@ const ReconciliationWidget: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 h-full flex flex-col">
+    <div className="glass-panel p-6 h-full flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-bold text-slate-800 flex items-center gap-2"><GitCompare size={18} className="text-blue-600" /> {t('dashboard.reconciliation')}</h3>
         <Link to="/reconciliation" className="text-xs text-blue-600 font-semibold hover:underline flex items-center gap-1">
@@ -111,7 +111,7 @@ const SigningQueueWidget: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 h-full flex flex-col">
+    <div className="glass-panel p-6 h-full flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-bold text-slate-800 flex items-center gap-2"><FileSignature size={18} className="text-violet-600" /> {t('dashboard.signingQueue')}</h3>
         <Link to="/settings/tokensign" className="text-xs text-blue-600 font-semibold hover:underline flex items-center gap-1">
@@ -184,7 +184,7 @@ const VatPayableWidget: React.FC = () => {
   const isRefund = data && data.net < 0;
 
   return (
-    <div className="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 h-full flex flex-col">
+    <div className="glass-panel p-6 h-full flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-bold text-slate-800 flex items-center gap-2"><Receipt size={18} className="text-emerald-600" /> {t('dashboard.vatMonth')}</h3>
         <Link to="/reports" className="text-xs text-emerald-600 font-semibold hover:underline flex items-center gap-1">
@@ -243,7 +243,7 @@ const TopCustomersWidget: React.FC = () => {
   const max = rows && rows.length > 0 ? Number(rows[0].total_amount || 0) : 0;
 
   return (
-    <div className="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 h-full flex flex-col">
+    <div className="glass-panel p-6 h-full flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-bold text-slate-800 flex items-center gap-2"><Users size={18} className="text-violet-600" /> {t('dashboard.topCustomers')}</h3>
         <Link to="/reports" className="text-xs text-violet-600 font-semibold hover:underline flex items-center gap-1">
@@ -322,7 +322,7 @@ const AlertsWidget: React.FC = () => {
   const allClear = rejected && late && rejected.count === 0 && late.count === 0;
 
   return (
-    <div className="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 h-full flex flex-col">
+    <div className="glass-panel p-6 h-full flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-bold text-slate-800 flex items-center gap-2"><AlertCircle size={18} className="text-amber-600" /> {t('dashboard.alerts')}</h3>
       </div>
@@ -792,7 +792,7 @@ const Dashboard: React.FC = () => {
             return (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4 h-full">
                 {kpis.map((kpi, i) => (
-                  <div key={i} className="bg-white p-5 rounded-[24px] shadow-sm border border-gray-100 flex flex-col gap-3 hover:shadow-xl hover:-translate-y-1 transition-all group">
+                  <div key={i} className="soft-card p-5 flex flex-col gap-3 group">
                     <div className="flex items-center justify-between">
                       <div className="p-2.5 bg-gray-50 rounded-2xl group-hover:scale-110 transition-transform">{getIcon(kpi.icon)}</div>
                       <div className={`flex items-center gap-1 text-[10px] font-black ${kpi.trend > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>

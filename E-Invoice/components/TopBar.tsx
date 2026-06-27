@@ -178,22 +178,22 @@ const TopBar: React.FC<TopBarProps> = ({ user, isOnline, onLogout, onToggleNetwo
   }, [user, isSuperAdmin]);
 
   return (
-    <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-6 z-30 shadow-sm shrink-0">
+    <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 h-16 flex items-center justify-between px-6 z-30 shadow-sm shrink-0">
       <div className="flex items-center gap-4">
         {isSuperAdmin ? (
           <>
-            <h2 className="text-xl font-semibold text-slate-800">⚡ OTax Admin Panel</h2>
+            <h2 className="text-xl font-bold text-slate-800 tracking-tight">⚡ OTax Admin Panel</h2>
           </>
         ) : (
           <>
-            <h2 className="text-xl font-semibold text-slate-800">{companyName}</h2>
-            <div className="h-6 w-px bg-gray-200 mx-2" />
+            <h2 className="text-xl font-bold text-slate-800 tracking-tight">{companyName}</h2>
+            <div className="h-6 w-px bg-slate-200 mx-2" />
             <button
               onClick={onToggleNetwork}
-              className="flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-slate-200 shadow-sm hover:bg-slate-50 hover:shadow transition-all duration-200"
             >
-              <Circle size={10} className={isOnline ? 'fill-green-500 text-green-500' : 'fill-red-500 text-red-500'} />
-              <span className="text-xs font-medium uppercase tracking-wider text-slate-600">
+              <Circle size={10} className={isOnline ? 'fill-emerald-500 text-emerald-500' : 'fill-rose-500 text-rose-500'} />
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-600">
                 ETA: {isOnline ? 'Online' : 'Offline'}
               </span>
             </button>
@@ -206,9 +206,9 @@ const TopBar: React.FC<TopBarProps> = ({ user, isOnline, onLogout, onToggleNetwo
           <Link
             to="/settings/tokensign"
             title={`Signing queue — ${queueStats.queued} pending${queueStats.failed ? `, ${queueStats.failed} failed` : ''}`}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-semibold transition-colors ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-colors shadow-sm ${
               queueStats.failed > 0
-                ? 'bg-red-50 border-red-200 text-red-700 hover:bg-red-100'
+                ? 'bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-100'
                 : 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100'
             }`}
           >
@@ -225,30 +225,29 @@ const TopBar: React.FC<TopBarProps> = ({ user, isOnline, onLogout, onToggleNetwo
           <button
             type="button"
             onClick={toggleNotifPanel}
-            className="relative p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+            className="relative p-2 rounded-xl bg-white border border-slate-200 shadow-sm hover:bg-slate-50 hover:shadow transition-all duration-200"
             title={t('notifFeed.title')}
             aria-label={t('notifFeed.title')}
           >
-            <Bell size={20} className="text-slate-500 hover:text-blue-600 transition-colors" />
+            <Bell size={18} className="text-slate-600 hover:text-primary-600 transition-colors" />
             {notifUnread > 0 && (
-              // Red unread badge — caps at "9+" so it never overflows the icon.
-              <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white">
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full shadow-sm border-2 border-white">
                 {notifUnread > 9 ? '9+' : notifUnread}
               </span>
             )}
           </button>
 
           {notifOpen && (
-            // Wide dropdown — Facebook-style. Sits to the left so it doesn't
-            // clip the right edge of the viewport on narrow displays.
-            <div className="absolute right-0 mt-2 w-[360px] max-w-[92vw] bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+            <div className="absolute right-0 mt-3 w-[360px] max-w-[92vw] bg-white/95 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-glass overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
               {/* Header */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gradient-to-b from-gray-50 to-white">
-                <div className="flex items-center gap-2">
-                  <Bell size={14} className="text-slate-600" />
+              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50/50">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 bg-primary-100 rounded-lg">
+                    <Bell size={14} className="text-primary-600" />
+                  </div>
                   <span className="text-sm font-bold text-slate-800">{t('notifFeed.title')}</span>
                   {notifUnread > 0 && (
-                    <span className="text-[10px] font-bold text-red-700 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded-full">
+                    <span className="text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full">
                       {notifUnread} {t('notifFeed.new')}
                     </span>
                   )}
@@ -256,22 +255,24 @@ const TopBar: React.FC<TopBarProps> = ({ user, isOnline, onLogout, onToggleNetwo
                 {notifUnread > 0 && (
                   <button
                     onClick={onMarkAllRead}
-                    className="text-[11px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                    className="text-[11px] font-bold text-primary-600 hover:text-primary-700 flex items-center gap-1 transition-colors"
                   >
-                    <Check size={11} /> {t('notifFeed.markAll')}
+                    <Check size={12} /> {t('notifFeed.markAll')}
                   </button>
                 )}
               </div>
 
               {/* Body */}
-              <div className="max-h-[420px] overflow-y-auto">
+              <div className="max-h-[420px] overflow-y-auto custom-scrollbar">
                 {notifLoading && (
-                  <div className="text-center py-6 text-slate-400 text-xs">{t('common.loading')}</div>
+                  <div className="text-center py-8 text-slate-400 text-xs font-medium">{t('common.loading')}</div>
                 )}
                 {!notifLoading && notifRows.length === 0 && (
-                  <div className="text-center py-10 text-slate-400 text-sm flex flex-col items-center gap-2">
-                    <Bell size={28} className="text-slate-300" />
-                    <span>{t('notifFeed.empty')}</span>
+                  <div className="text-center py-12 text-slate-400 text-sm flex flex-col items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center">
+                      <Bell size={24} className="text-slate-300" />
+                    </div>
+                    <span className="font-medium">{t('notifFeed.empty')}</span>
                   </div>
                 )}
                 {!notifLoading && notifRows.map(row => {
@@ -281,25 +282,24 @@ const TopBar: React.FC<TopBarProps> = ({ user, isOnline, onLogout, onToggleNetwo
                     <button
                       key={row.id}
                       onClick={() => onNotifClick(row)}
-                      className={`w-full text-left px-3 py-2.5 flex items-start gap-2.5 border-b border-gray-50 last:border-b-0 transition-colors ${
-                        unread ? 'bg-blue-50/40 hover:bg-blue-50' : 'hover:bg-gray-50'
+                      className={`w-full text-left px-5 py-3 flex items-start gap-3.5 border-b border-slate-50 last:border-b-0 transition-all duration-200 ${
+                        unread ? 'bg-primary-50/30 hover:bg-primary-50/60' : 'hover:bg-slate-50'
                       }`}
                     >
-                      {/* Icon disc — colour matches the kind. */}
-                      <div className={`shrink-0 w-9 h-9 rounded-full flex items-center justify-center ${v.bg}`}>
-                        <v.Icon size={16} className={v.tint} />
+                      <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${v.bg}`}>
+                        <v.Icon size={18} className={v.tint} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <p className={`text-xs leading-snug line-clamp-2 ${unread ? 'font-bold text-slate-900' : 'font-medium text-slate-700'}`}>
+                          <p className={`text-[13px] leading-snug line-clamp-2 ${unread ? 'font-bold text-slate-900' : 'font-semibold text-slate-700'}`}>
                             {row.title}
                           </p>
-                          {unread && <span className="shrink-0 w-2 h-2 bg-blue-600 rounded-full mt-1" />}
+                          {unread && <span className="shrink-0 w-2 h-2 bg-primary-500 rounded-full mt-1.5 shadow-sm" />}
                         </div>
                         {row.message && (
-                          <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">{row.message}</p>
+                          <p className="text-[11.5px] text-slate-500 line-clamp-1 mt-1 font-medium">{row.message}</p>
                         )}
-                        <p className="text-[10px] text-slate-400 font-mono mt-0.5">{relTime(row.created_at)}</p>
+                        <p className="text-[10px] text-slate-400 font-mono mt-1.5">{relTime(row.created_at)}</p>
                       </div>
                     </button>
                   );
@@ -309,12 +309,10 @@ const TopBar: React.FC<TopBarProps> = ({ user, isOnline, onLogout, onToggleNetwo
           )}
         </div>
 
-        {/* Language toggle — single-click flip between EN and AR. Flips HTML dir so
-            the layout mirrors correctly without a global CSS rebuild. */}
         <button
           type="button"
           onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-white hover:bg-gray-50 border border-gray-200 rounded-lg transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-white shadow-sm hover:shadow hover:bg-slate-50 border border-slate-200 rounded-lg transition-all duration-200"
           title={lang === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
         >
           <Languages size={14} className="text-slate-500" />
@@ -324,35 +322,39 @@ const TopBar: React.FC<TopBarProps> = ({ user, isOnline, onLogout, onToggleNetwo
         <div className="relative">
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-3 hover:bg-gray-50 p-1 rounded-lg transition-colors"
+            className="flex items-center gap-3 bg-white border border-slate-200 shadow-sm hover:shadow hover:bg-slate-50 px-2 py-1.5 rounded-xl transition-all duration-200"
           >
-            <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-primary-100 text-primary-700 flex items-center justify-center font-bold shadow-sm">
               {user?.name?.[0] || 'U'}
             </div>
-            <div className="hidden md:block text-left">
-              <p className="text-sm font-semibold text-slate-800">{user?.name || user?.username || 'Guest User'}</p>
-              <p className="text-xs text-slate-500">{user?.role || 'User'}</p>
+            <div className="hidden md:block text-left pr-1">
+              <p className="text-sm font-bold text-slate-800 leading-tight">{user?.name || user?.username || 'Guest User'}</p>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">{user?.role || 'User'}</p>
             </div>
-            <ChevronDown size={16} className={`text-slate-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown size={14} className={`text-slate-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg py-2 overflow-hidden">
+            <div className="absolute right-0 mt-3 w-56 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-glass py-2 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/50 mb-1">
+                <p className="text-sm font-bold text-slate-800 truncate">{user?.email || 'user@example.com'}</p>
+                <p className="text-xs text-slate-500 mt-0.5">Manage your account</p>
+              </div>
               <button
                 onClick={() => {
                   setIsDropdownOpen(false);
                   window.location.href = '/profile';
                 }}
-                className="w-full px-4 py-2 text-sm text-slate-700 hover:bg-gray-50 flex items-center gap-2"
+                className="w-full px-4 py-2 text-[13px] font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 transition-colors"
               >
-                <User size={16} /> Profile Settings
+                <User size={16} className="text-slate-400" /> Profile Settings
               </button>
-              <div className="h-px bg-gray-100 my-1" />
+              <div className="h-px bg-slate-100 my-1 mx-2" />
               <button
                 onClick={onLogout}
-                className="w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                className="w-full px-4 py-2.5 text-[13px] font-bold text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 transition-colors"
               >
-                <LogOut size={16} /> Sign Out
+                <LogOut size={16} className="text-rose-500" /> Sign Out
               </button>
             </div>
           )}

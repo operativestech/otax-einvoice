@@ -267,7 +267,7 @@ const ERPConnector: React.FC = () => {
       </div>
 
       {/* Auto-import schedule */}
-      <section className="bg-gradient-to-br from-violet-50 to-blue-50 border border-violet-100 rounded-2xl p-5 space-y-3">
+      <section className="glass-panel p-5 space-y-3 bg-gradient-to-br from-indigo-50/50 to-blue-50/50">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
             <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
@@ -313,7 +313,7 @@ const ERPConnector: React.FC = () => {
       </section>
 
       {/* Date filter + 3 actions */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+      <section className="glass-panel p-5 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div>
             <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">{t('reports.dateFrom')}</label>
@@ -394,7 +394,7 @@ const ERPConnector: React.FC = () => {
 
       {/* Preview output */}
       {preview !== null && (
-        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <section className="glass-panel overflow-hidden">
           <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
             <h3 className="text-sm font-bold text-slate-800">{t('erpconn.preview')} ({preview.length})</h3>
             <span className="text-[10px] text-slate-400">{t('erpconn.previewNote')}</span>
@@ -443,7 +443,7 @@ const ERPConnector: React.FC = () => {
       )}
 
       {/* Run history */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <section className="glass-panel overflow-hidden">
         <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
           <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2"><Calendar size={14} /> {t('erpconn.history')}</h3>
           <button onClick={loadRuns} className="text-xs text-slate-500 hover:text-slate-700 flex items-center gap-1">

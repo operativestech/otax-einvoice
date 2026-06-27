@@ -579,16 +579,16 @@ const Invoices: React.FC = () => {
         </div>
         <div className="flex items-center gap-3">
           {/* Task 10: Renamed Export Selection → Export and wired to XLSX */}
-          <button onClick={handleExportXLSX} className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 hover:scale-[1.02] active:scale-[0.98]">
+          <button onClick={handleExportXLSX} className="btn-primary flex items-center gap-2 px-6 py-3 text-sm font-bold">
             <Download size={18} /> Export
           </button>
-          <button className="p-3 bg-white border border-gray-200 rounded-2xl text-slate-600 hover:bg-gray-50 transition-all shadow-sm">
+          <button className="btn-secondary p-3">
             <Printer size={20} />
           </button>
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 space-y-6">
+      <div className="glass-panel p-6 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex-1 min-w-[300px] relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />

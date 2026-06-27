@@ -154,7 +154,7 @@ const ProfileSettings: React.FC = () => {
             )}
 
             {/* Tabs */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="glass-panel overflow-hidden">
                 <div className="flex border-b border-gray-200">
                     <button
                         onClick={() => setActiveTab('profile')}
