@@ -400,6 +400,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             </div>
 
           </div>
+        </div>
 
       </div>
     </div>
